@@ -2,6 +2,8 @@ CREATE DATABASE integrated CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE integrated;
 
+SET time_zone = '+00:00';
+
 CREATE TABLE tasks (
     taskId INT AUTO_INCREMENT PRIMARY KEY,
     taskTitle VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
