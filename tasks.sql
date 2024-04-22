@@ -15,3 +15,21 @@ CREATE TABLE tasks (
     CONSTRAINT CHK_taskTitle_not_empty CHECK (taskTitle <> ''),
     CONSTRAINT CHK_taskAssignees_not_empty CHECK (taskAssignees <> '')
 );
+
+
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus) 
+VALUES ('Design UI Mockups', 'Create mockups for the new project', 'John Doe', 'To Do');
+
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
+VALUES ('Implement Backend API', 'Develop RESTful API endpoints', 'Jane Smith', 'Doing', NOW(), NOW());
+
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
+VALUES ('Write Documentation', 'Document the project requirements and architecture', 'John Doe, Jane Smith', 'To Do', NOW(), NOW());
+
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
+VALUES ('Perform Testing', 'Conduct unit and integration tests', 'Alice Johnson', 'Doing', NOW(), NOW());
+
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
+VALUES ('Deploy to Production', 'Release the application to production environment', 'Bob Williams', 'Done', NOW(), NOW());
+
+select * from tasks;
