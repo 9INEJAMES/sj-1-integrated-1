@@ -11,29 +11,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/itb-kk")
-public class TaskController {
+@RequestMapping("/v1")
+public class TaskControllerV1 {
     @Autowired
     private TaskService service;
-    @GetMapping("/v1/tasks")
+    @GetMapping("/tasks")
     public ResponseEntity<Object> getAllSupplier() {
         List<Task> taskList = service.getAllTask();
         return ResponseEntity.ok(taskList);
     }
 
-    @GetMapping("/v1/tasks/{taskId}")
+    @GetMapping("/tasks/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId){
         Task task = service.findByID(taskId);
         return ResponseEntity.ok(task);
     }
 
-    @PostMapping("/v1/tasks")
+    @PostMapping("/tasks")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO){
         Task task = service.createNewTask(taskDTO);
         return  ResponseEntity.ok(task);
     }
 
-    @PatchMapping("/v1/tasks/{taskId}")
+    @PatchMapping("/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@PathVariable Integer taskId,@RequestBody TaskDTO taskDTO){
         Task task = service.updateTask(taskId,taskDTO);
         return ResponseEntity.ok(task);
