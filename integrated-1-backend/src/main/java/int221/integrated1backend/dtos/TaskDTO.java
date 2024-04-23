@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class TaskDTO {
-    private String taskTitle;
-    private String taskDescription;
-    private String taskAssignees;
-    private String taskStatus;
+    private String title;
+    private String description;
+    private String assignees;
+    private String status;
 }
