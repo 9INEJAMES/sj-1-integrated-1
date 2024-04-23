@@ -18,11 +18,11 @@ const getTask = async () => {
 </script>
 
 <template>
-    <div class="flex-col justify-start gap-[2vh] rounded-md border-none shadow-lg p-[2vh]">
-        <button class="font-bold" @click="getTask()">{{ task.taskTitle }}</button>
-        <p>{{ task.taskDescription }}</p>
-        <p>{{ task.taskAssignees }}</p>
-        <p>{{ task.taskStatus }}</p>
+    <div class="flex-col justify-start gap-[2vh] rounded-md border-none shadow-lg p-[2vh] ดสำป">
+        <button class="font-bold" @click="getTask()">{{ task.title }}</button>
+        <p>{{ task.description }}</p>
+        <p>{{ task.assignees }}</p>
+        <p>{{ task.status }}</p>
         <p>{{ task.createdOn }}</p>
         <p>{{ task.updatedOn }}</p>
     </div>
