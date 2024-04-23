@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -33,8 +35,10 @@ public class TaskService {
 
     @Transactional
     public Task createNewTask(TaskDTO taskDTO) {
-        Task task = repository.save(modelMapper.map(taskDTO,Task.class));
-        Task newTask = findByID(task.getTaskId());
-        return newTask;
+        Task tmp = modelMapper.map(taskDTO,Task.class);
+        tmp.setTaskAssignees(tmp.getTaskAssignees().trim());
+        tmp.setCreatedOn(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        tmp.setUpdatedOn(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        return repository.save(tmp);
     }
 }

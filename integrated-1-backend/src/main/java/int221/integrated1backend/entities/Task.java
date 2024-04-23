@@ -11,12 +11,12 @@ import java.util.Date;
 @Table(name = "tasks")
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer taskId;
     private String taskTitle;
     private String taskDescription;
     private String taskAssignees;
     private String taskStatus;
-    private Date createdOn;
-    private Date updatedOn;
+    private String createdOn;
+    private String updatedOn;
 }
