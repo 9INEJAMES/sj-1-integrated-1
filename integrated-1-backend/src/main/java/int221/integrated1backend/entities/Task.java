@@ -34,4 +34,15 @@ public class Task {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss zzz");
         return formatter.format(updatedOn);
     }
+
+    public void setCreated(){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        timestamp.setTime(timestamp.getTime());
+        this.setCreatedOn(timestamp);
+    }
+    public void setUpdated(){
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        timestamp.setTime(timestamp.getTime());
+        this.setUpdatedOn(timestamp);
+    }
 }
