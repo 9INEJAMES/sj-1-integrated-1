@@ -4,32 +4,41 @@ import { getAllTasks } from '../libs/FetchAPI.js'
 import TaskCard from '../components/TaskCard.vue'
 import { useTasks } from '../stores/task.js'
 import TaskDetails from '../components/TaskDetails.vue'
+import { useVariables } from '../stores/store.js'
 
 const myTasks = useTasks()
+const myVariables = useVariables()
+const isSelectTask = ref(false)
+
+const refreshPage = () => {
+  window.location.reload(); // Reloads the current page
+};
+
 
 onMounted(async () => {
-  // Await the promise returned by getAllTasks
+  isSelectTask.value = await myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
     const tasksData = await getAllTasks()
     myTasks.addTasks(tasksData)
     console.log(tasksData)
   }
-  // Assign the result to the reactive variable
 })
-const isSelectTask = ref(false)
 
+console.log(isSelectTask.value)
 const selectedTask = ref({})
-
 const chosenTask = (task) => {
   selectedTask.value = { ...task }
-  isSelectTask.value = true
+  myVariables.isSelectTask = true
+  isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
-
-
+const handleUpdatedTask = () => {
+  isSelectTask.value = false // Close the modal
+  refreshPage()
+}
 </script>
 
 <template>
-  <TaskDetails v-if="isSelectTask" :task="selectedTask" />
+  <TaskDetails v-if="isSelectTask" :task="selectedTask" @updatedTask="handleUpdatedTask" />
 
   <div class="px-[5vh]">
     <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>

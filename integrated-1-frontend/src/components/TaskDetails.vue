@@ -3,8 +3,11 @@ import { updateTask } from '@/libs/FetchAPI'
 import router from '@/router'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
 import { useTasks } from '../stores/task.js'
+import { useVariables } from '../stores/store.js'
 
 const Tasks = useTasks()
+const myVariables = useVariables()
+const isSelectTask = ref(false)
 
 const props = defineProps({
   task: {
@@ -12,40 +15,36 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['saveTask', 'deleteTask'])
+const emit = defineEmits(['updatedTask', 'deleteTask'])
 
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
 
 const switchTimeZone = (task) => {
-  // Get the local time zone of the device
   localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
-  // Format createdOn and updatedOn to ISO 8601 format
-
 }
 
 const onSubmit = async () => {
   try {
-    const Task =  Tasks.getTaskById(props.task.id)
+    const Task = Tasks.getTaskById(props.task.id)
     const editedTask = {
       ...Task,
       title: props.task.title,
       description: props.task.description,
       assignees: props.task.assignees,
-      status: props.task.status,
-      createdOn: '',
-      updatedOn: ''
+      status: props.task.status
     }
-    console.log('Edited Task:', editedTask)
     await updateTask(editedTask)
-    router.push({ path: '/' })
+    emit('updatedTask') // Emit an event to parent component
   } catch (error) {
     console.error('Update Task Error:', error)
   }
 }
 
-onMounted(() => {
+
+onMounted(async () => {
+  isSelectTask.value = await myVariables.isSelectTask
   const task = Tasks.getTaskById(props.task.id)
   switchTimeZone(task)
 })
@@ -55,7 +54,13 @@ onMounted(() => {
   <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
     <div class="bg-white w-full rounded-lg">
       <form class="grid gap-[2vh] rounded-md border-none p-[2vh]" @submit.prevent="onSubmit()">
-        <input type="text" name="title" class="font-bold text-[4vh]" id="title" v-model="props.task.title" />
+        <input
+          type="text"
+          name="title"
+          class="font-bold text-[4vh]"
+          id="title"
+          v-model="props.task.title"
+        />
         <hr />
         <div class="grid grid-cols-12 gap-[3vh]">
           <div class="grid col-span-8">
@@ -100,7 +105,7 @@ onMounted(() => {
               </div>
 
               <div class="pt-[4vh] flex justify-evenly">
-                <button type="submit" class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg " @click="">
+                <button type="submit" class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="onSubmit()"> 
                   Confirm
                 </button>
                 <button class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg">Cancel</button>
