@@ -2,13 +2,11 @@
 import NavHeader from './components/NavHeader.vue';
 import { ref } from 'vue';
 import { useChangeBg } from './stores/changeBg';
-const isChecked = useChangeBg();
-
-// const isChecked = ref(false);
+const isChecked = ref(false);
 </script>
 
 <template>
-  <div class="roboto-light h-screen  " :class="{ 'bg-white': !isChecked.getBg, 'bg-slate-800': isChecked },{ 'text-black': !isChecked, 'text-white': isChecked } ">
+  <div class="roboto-light h-screen  " :class="{ 'bg-white': !isChecked, 'bg-slate-800': isChecked },{ 'text-black': !isChecked, 'text-white': isChecked } ">
     
     <NavHeader />
     <div class=" float-end pr-[5vh]">
