@@ -20,7 +20,7 @@ const useTasks = defineStore('tasks', () => {
     }
 
     function getTaskById(searchId) {
-        return tasks.value.find((task) => task.taskId == searchId)
+        return tasks.value.find((task) => task.id == searchId)
     }
 
     function findIndexTask(searchId) {

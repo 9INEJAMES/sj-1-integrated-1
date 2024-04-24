@@ -9,10 +9,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
-    },
-    {
-      path: '/:id',
-      component: TaskDetails,
     }
   ]
 })

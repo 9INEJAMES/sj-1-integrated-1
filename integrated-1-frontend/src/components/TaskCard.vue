@@ -11,20 +11,28 @@ const props = defineProps({
 
 const task = ref(props.task)
 
-const getTask = async () => {
-    await router.push({ path: `/${props.task.taskId}` })    
+const emit = defineEmits(['getTask'])
 
+const getTask = async () => {
+    emit('getTask', props.task)
 }
+
+const localTimeZone = ref('')
+
+const switchTimeZone = () => {
+    localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+}
+
 </script>
 
 <template>
-    <div class="flex-col justify-start gap-[2vh] rounded-md border-none shadow-lg p-[2vh] ดสำป">
-        <button class="font-bold" @click="getTask()">{{ task.title }}</button>
-        <p>{{ task.description }}</p>
+    <div class="flex-col justify-start gap-[2vh] rounded-md border-none shadow-lg p-[2vh] w-[50vh] h-[30vh]">
+        <button class="font-bold pb-[2vh] hover:text-blue-500 " @click="getTask()">{{ task.title }}</button>
+        <p v-if="task.description">{{ task.description }}</p>
+        <p v-else class=" italic text-gray-500">No description provided</p>
         <p>{{ task.assignees }}</p>
         <p>{{ task.status }}</p>
-        <p>{{ task.createdOn }}</p>
-        <p>{{ task.updatedOn }}</p>
+
     </div>
 </template>
 
