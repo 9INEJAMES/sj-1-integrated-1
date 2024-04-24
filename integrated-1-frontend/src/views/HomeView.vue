@@ -21,25 +21,23 @@ const isSelectTask = ref(false)
 const selectedTask = ref({})
 
 const chosenTask = (task) => {
-  selectedTask.value = {...task}
+  selectedTask.value = { ...task }
   isSelectTask.value = true
 }
-
-console.log(myTasks.tasks)
 </script>
 
 <template>
-        <TaskDetails v-if="isSelectTask" :task="selectedTask" />
+  <TaskDetails v-if="isSelectTask" :task="selectedTask" />
 
   <div class="px-[5vh]">
-      <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+    <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
 
-      <div class="flex gap-[5vh] py-[3vh] flex-wrap">
-        <div v-for="task in myTasks.getTasks()" :key="task.id" class=" ">
-          <TaskCard :task="task" @get-task="chosenTask" />
-        </div>
+    <div class="flex gap-[5vh] py-[3vh] flex-wrap">
+      <div v-for="task in myTasks.getTasks()" :key="task.id" class=" ">
+        <TaskCard :task="task" @get-task="chosenTask" />
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped></style>

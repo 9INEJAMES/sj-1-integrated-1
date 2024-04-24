@@ -14,9 +14,9 @@ const createdOn = ref('')
 const updatedOn = ref('')
 const switchTimeZone = () => {
   // Get the local time zone of the device
-    localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
-    createdOn.value = props.task.createdOn.slice(0, 19)
-  updatedOn.value = props.task.updatedOn.slice(0, 19)
+  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+  createdOn.value = props.task.createdOn.slice(0, 19).replace("T", " ");
+  updatedOn.value = props.task.updatedOn.slice(0, 19).replace("T", " ");
 }
 
 const convertToLocalTime = (dateTimeString) => {
@@ -27,11 +27,6 @@ const convertToLocalTime = (dateTimeString) => {
 onMounted(() => {
   // Call the switchTimeZone function when the component is mounted
   switchTimeZone()
-  emit('saveTask', {
-    ...props.task,
-    createdOn: convertToLocalTime(props.task.createdOn.slice(0, 19)),
-    updatedOn: convertToLocalTime(props.task.updatedOn.slice(0, 19))
-  })
 })
 </script>
 
