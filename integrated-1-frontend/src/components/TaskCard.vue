@@ -4,9 +4,9 @@ import { ref, defineProps, defineEmits } from 'vue'
 import { getTaskById } from '../libs/FetchAPI.js'
 
 const props = defineProps({
-    task: {
-        type: Object
-    }
+  task: {
+    type: Object
+  }
 })
 
 const task = ref(props.task)
@@ -14,26 +14,73 @@ const task = ref(props.task)
 const emit = defineEmits(['getTask'])
 
 const getTask = async () => {
-    emit('getTask', props.task)
+  emit('getTask', props.task)
 }
 
 const localTimeZone = ref('')
 
 const switchTimeZone = () => {
-    localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
 }
-
+const colorStatus = (task) => {
+  if (task == 'Done') {
+    return 'bg-emerald-500'
+  } else if (task == 'Doing') {
+    return 'bg-sky-300'
+  } else if (task == 'No Status') {
+    return 'bg-slate-300'
+  } else {
+    return 'bg-amber-300'
+  }
+}
 </script>
 
 <template>
-    <div class="flex-col justify-start gap-[2vh] rounded-md border-none shadow-lg p-[2vh] w-[50vh] h-[30vh]">
-        <button class="font-bold pb-[2vh] hover:text-blue-500 " @click="getTask()">{{ task.title }}</button>
-        <p v-if="task.description">{{ task.description }}</p>
-        <p v-else class=" italic text-gray-500">No description provided</p>
-        <p>{{ task.assignees }}</p>
-        <p>{{ task.status }}</p>
+  <div
+    class="flex flex-col justify-between border-none rounded-md shadow-lg p-[2vh] w-[50vh] h-[30vh] gap-[2vh]"
+  >
+    <div class="flex-col justify-start">
+      <button
+        v-if="task.title.length < 40"
+        class="font-bold pb-[2vh] hover:text-blue-500 break-all"
+        @click="getTask()"
+      >
+        {{ task.title }}
+      </button>
+      <button v-else class="font-bold pb-[2vh] hover:text-blue-500 break-all" @click="getTask()">
+        {{ task.title.slice(0, 30) }}...
+      </button>
 
+      <p
+        v-if="task.description === null || task.description.length === 0"
+        class="italic text-gray-500"
+      >
+        No description provided
+      </p>
+      <p v-else-if="task.description.length > 75" class="break-all">
+        <span class="text-cyan-600">Description : </span> {{ task.description.slice(0, 75) }} ...
+      </p>
+      <p v-else><span class="text-cyan-600">Description : </span>{{ task.description }}</p>
+
+      <p v-if="task.assignees">
+        <span class="text-amber-600">Assignees : </span>{{ task.assignees }}
+      </p>
+      <p v-else class="italic text-gray-500">Unassigned</p>
     </div>
+    <div class="flex justify-end">
+      <button
+        class="rounded-2xl p-4 font-bold cursor-default statusbtn"
+        :class="colorStatus(task.status)"
+      >
+        {{ task.status }}
+      </button>
+    </div>
+  </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.statusbtn {
+  width: 120px;
+  height: 50px;
+}
+</style>
