@@ -70,7 +70,7 @@ public class TaskService {
         task.setTitle(task.getTitle().trim());
         task.setDescription(task.getDescription().trim());
         task.setAssignees(task.getAssignees().trim());
-        task.setCreatedOn(Timestamp.valueOf(LocalDateTime.parse(existingTask.getCreatedOn(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz"))));
+        task.setCreatedOn(Timestamp.valueOf(LocalDateTime.parse(existingTask.getCreatedOn(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss zzz"))).toString());
         task.setUpdated();//ถ้าไม่ใส่ตรงนี้จะ error json
         Task result = repository.save(task);
         return result;
