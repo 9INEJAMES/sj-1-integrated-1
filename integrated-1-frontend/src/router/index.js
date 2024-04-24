@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import TaskDetails from '../views/TaskDetails.vue'
+import TaskDetails from '../components/TaskDetails.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,6 +9,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/task/:taskId',
+      name: 'TaskDetails',
+      component: TaskDetails,
+      props: true
     }
   ]
 })

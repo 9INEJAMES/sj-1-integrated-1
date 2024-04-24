@@ -1,5 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { updateTask } from '@/libs/FetchAPI'
+import router from '@/router'
+import { ref, onMounted, defineProps, defineEmits } from 'vue'
+import { useTasks } from '../stores/task.js'
+
+const Tasks = useTasks()
 
 const props = defineProps({
   task: {
@@ -12,29 +17,45 @@ const emit = defineEmits(['saveTask', 'deleteTask'])
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
-const switchTimeZone = () => {
+
+const switchTimeZone = (task) => {
   // Get the local time zone of the device
   localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
-  createdOn.value = props.task.createdOn.slice(0, 19).replace("T", " ");
-  updatedOn.value = props.task.updatedOn.slice(0, 19).replace("T", " ");
+  // Format createdOn and updatedOn to ISO 8601 format
+
 }
 
-const convertToLocalTime = (dateTimeString) => {
-  const utcDateTime = new Date(dateTimeString)
-  return new Date(utcDateTime.toLocaleString('en-US', { timeZone: 'America/New_York' }))
+const onSubmit = async () => {
+  try {
+    const Task =  Tasks.getTaskById(props.task.id)
+    const editedTask = {
+      ...Task,
+      title: props.task.title,
+      description: props.task.description,
+      assignees: props.task.assignees,
+      status: props.task.status,
+      createdOn: '',
+      updatedOn: ''
+    }
+    console.log('Edited Task:', editedTask)
+    await updateTask(editedTask)
+    router.push({ path: '/' })
+  } catch (error) {
+    console.error('Update Task Error:', error)
+  }
 }
 
 onMounted(() => {
-  // Call the switchTimeZone function when the component is mounted
-  switchTimeZone()
+  const task = Tasks.getTaskById(props.task.id)
+  switchTimeZone(task)
 })
 </script>
 
 <template>
   <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
     <div class="bg-white w-full rounded-lg">
-      <form class="grid gap-[2vh] rounded-md border-none p-[2vh]" @submit.prevet="">
-        <input type="text" class="font-bold text-[4vh]" v-model="task.title" />
+      <form class="grid gap-[2vh] rounded-md border-none p-[2vh]" @submit.prevent="onSubmit()">
+        <input type="text" name="title" class="font-bold text-[4vh]" id="title" v-model="props.task.title" />
         <hr />
         <div class="grid grid-cols-12 gap-[3vh]">
           <div class="grid col-span-8">
@@ -42,7 +63,7 @@ onMounted(() => {
               <label for="description">Description</label>
               <textarea
                 id="description"
-                v-model="task.description"
+                v-model="props.task.description"
                 rows="20"
                 class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Write your thoughts here..."
@@ -56,7 +77,7 @@ onMounted(() => {
                 <label for="assignees">Assignees</label>
                 <textarea
                   id="assignees"
-                  v-model="task.assignees"
+                  v-model="props.task.assignees"
                   rows="5"
                   class="block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Write your thoughts here..."
@@ -64,12 +85,12 @@ onMounted(() => {
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" name="carlist" form="carform" class="border rounded-lg">
-                  <option selected disabled hidden value="" class="">Status</option>
+                <select id="status" v-model="props.task.status" class="select select-bordered">
+                  <option selected disabled hidden value="">Status</option>
                   <option value="No status">No status</option>
                   <option value="To do">To do</option>
                   <option value="Doing">Doing</option>
-                  <option value="Doing">Done</option>
+                  <option value="Done">Done</option>
                 </select>
               </div>
               <div class="pt-[4vh]">
@@ -79,7 +100,7 @@ onMounted(() => {
               </div>
 
               <div class="pt-[4vh] flex justify-evenly">
-                <button class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg">
+                <button type="submit" class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg " @click="">
                   Confirm
                 </button>
                 <button class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg">Cancel</button>
