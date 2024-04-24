@@ -38,15 +38,15 @@ async function addTask(task) {
 
 async function updateTask(task) {
     try {
-        const response = await fetch(`${url}/${user.id}`, {
+        const response = await fetch(`${url}/${task.id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ ...task })
         })
-        const updatedUser = await response.json()
-        return updatedUser
+        const updatedTask = await response.json()
+        return updatedTask
     } catch (error) {
         console.error(`Error updating user: ${error}`)
     }

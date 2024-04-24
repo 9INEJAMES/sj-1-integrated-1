@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 import { getAllTasks } from '../libs/FetchAPI.js'
 import TaskCard from '../components/TaskCard.vue'
 import { useTasks } from '../stores/task.js'
-import TaskDetails from './TaskDetails.vue'
+import TaskDetails from '../components/TaskDetails.vue'
 
 const myTasks = useTasks()
 
@@ -24,6 +24,8 @@ const chosenTask = (task) => {
   selectedTask.value = { ...task }
   isSelectTask.value = true
 }
+
+
 </script>
 
 <template>
