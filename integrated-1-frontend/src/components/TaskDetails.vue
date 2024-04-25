@@ -54,6 +54,7 @@ const switchTimeZone = () => {
 }
 
 onMounted(async () => {
+  selectedTask.value = ''
   isSelectTask.value = await myVariables.isSelectTask
   const task =  myTasks.getIdOfTask(props.task.id)
   selectedTask.value = await getTaskById(task.id)
