@@ -1,5 +1,5 @@
 <script setup>
-import { updateTask } from '@/libs/FetchAPI'
+import { getTaskById, updateTask } from '@/libs/FetchAPI'
 import router from '@/router'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
 import { useTasks } from '../stores/task.js'
@@ -8,7 +8,7 @@ import { useVariables } from '../stores/store.js'
 const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
-
+const selectedTask = ref({})
 const props = defineProps({
   task: {
     type: Object
@@ -21,24 +21,17 @@ const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
 
-const switchTimeZone = (task) => {
-  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
-  const localCreatedOn = new Date(task.createdOn).toLocaleString('en-US', { timeZone: localTimeZone.value })
-  const localUpdatedOn = new Date(task.updatedOn).toLocaleString('en-US', { timeZone: localTimeZone.value })
 
-  createdOn.value = localCreatedOn
-  updatedOn.value = localUpdatedOn
-}
 
 const onSubmit = async () => {
   try {
-    const Task = myTasks.getTaskById(props.task.id)
+    const Task = myTasks.getIdOfTask(props.task.id)
     const editedTask = {
       ...Task,
-      title: props.task.title,
-      description: props.task.description,
-      assignees: props.task.assignees,
-      status: props.task.status
+      title: selectedTask.value.title,
+      description: selectedTask.value.description,
+      assignees: selectedTask.value.assignees,
+      status: selectedTask.value.status
     }
     await updateTask(editedTask)
     // location.reload();
@@ -48,13 +41,28 @@ const onSubmit = async () => {
   }
 }
 
+const switchTimeZone = () => {
+  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  
+  if (selectedTask.value) {
+    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-US', { timeZone: localTimeZone.value });
+    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-US', { timeZone: localTimeZone.value });
+
+    createdOn.value = localCreatedOn;
+    updatedOn.value = localUpdatedOn;
+  }
+}
 
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask
-  const task = myTasks.getTaskById(props.task.id)
-
-  switchTimeZone(task)
+  const task =  myTasks.getIdOfTask(props.task.id)
+  selectedTask.value = await getTaskById(task.id)
+  console.log(selectedTask.value)
+  switchTimeZone(selectedTask.value)
+  createdOn
 })
+
+
 </script>
 
 <template>
@@ -66,7 +74,7 @@ onMounted(async () => {
           name="title"
           class="font-bold text-[4vh]"
           id="title"
-          v-model="props.task.title"
+          v-model="selectedTask.title"
         />
         <hr />
         <div class="grid grid-cols-12 gap-[3vh]">
@@ -75,7 +83,7 @@ onMounted(async () => {
               <label for="description">Description</label>
               <textarea
                 id="description"
-                v-model="props.task.description"
+                v-model="selectedTask.description"
                 rows="20"
                 class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Write your thoughts here..."
@@ -89,7 +97,7 @@ onMounted(async () => {
                 <label for="assignees">Assignees</label>
                 <textarea
                   id="assignees"
-                  v-model="props.task.assignees"
+                  v-model="selectedTask.assignees"
                   rows="5"
                   class="block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Write your thoughts here..."
@@ -97,7 +105,7 @@ onMounted(async () => {
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" v-model="props.task.status" class="select select-bordered">
+                <select id="status" v-model="selectedTask.status" class="select select-bordered">
                   <option selected disabled hidden value="">Status</option>
                   <option value="No status">No status</option>
                   <option value="To do">To do</option>

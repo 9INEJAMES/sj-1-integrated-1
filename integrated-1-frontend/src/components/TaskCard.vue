@@ -50,16 +50,6 @@ const colorStatus = (task) => {
         {{ task.title.slice(0, 30) }}...
       </button>
 
-      <p
-        v-if="task.description === null || task.description.length === 0"
-        class="italic text-gray-500"
-      >
-        No description provided
-      </p>
-      <p v-else-if="task.description.length > 75" class="break-all">
-        <span class="text-cyan-600">Description : </span> {{ task.description.slice(0, 75) }} ...
-      </p>
-      <p v-else><span class="text-cyan-600">Description : </span>{{ task.description }}</p>
 
       <p v-if="task.assignees">
         <span class="text-amber-600">Assignees : </span>{{ task.assignees }}
