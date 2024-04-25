@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted ,onUpdated} from 'vue'
 import { getAllTasks } from '../libs/FetchAPI.js'
 import TaskCard from '../components/TaskCard.vue'
 import { useTasks } from '../stores/task.js'
@@ -15,6 +15,7 @@ const refreshPage = () => {
 };
 
 
+
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
@@ -23,6 +24,7 @@ onMounted(async () => {
     console.log(tasksData)
   }
 })
+
 
 console.log(isSelectTask.value)
 const selectedTask = ref({})

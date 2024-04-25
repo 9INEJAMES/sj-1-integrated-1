@@ -46,6 +46,8 @@ const onSubmit = async () => {
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask
   const task = Tasks.getTaskById(props.task.id)
+  createdOn.value = props.task.createdOn
+  updatedOn.value = props.task.updatedOn
   switchTimeZone(task)
 })
 </script>
