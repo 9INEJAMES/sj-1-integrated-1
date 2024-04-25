@@ -15,7 +15,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['updatedTask', 'deleteTask', 'cancel'])
+const emit = defineEmits(['updatedTask', 'deleteTask'])
 
 const localTimeZone = ref('')
 const createdOn = ref('')
@@ -60,7 +60,6 @@ onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask
   const task = myTasks.getIdOfTask(props.task.id)
   selectedTask.value = await getTaskById(task.id)
-  console.log(selectedTask.value)
   switchTimeZone(selectedTask.value)
   createdOn
 })
@@ -130,7 +129,6 @@ onMounted(async () => {
                 </button>
                 <button
                   class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                  @click="$emit('cancel')"
                 >
                   Cancel
                 </button>

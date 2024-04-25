@@ -20,8 +20,6 @@ onMounted(async () => {
     taskList.value = myTasks.getTasks()
   }
 })
-
-console.log(isSelectTask.value)
 const selectedTask = ref({})
 const chosenTask = async (id) => {
   selectedTask.value = await getTaskById(id)
@@ -34,12 +32,15 @@ const handleUpdatedTask = (editedTask) => {
   myTasks.updateTask(editedTask)
   isSelectTask.value = false // Close the modal
   taskList.value = myTasks.getTasks()
-  console.log(myTasks.getTasks())
 }
 </script>
 
 <template>
-  <TaskDetails v-if="isSelectTask" :task="selectedTask" @updatedTask="handleUpdatedTask" @cancel="isSelectTask = false" />
+  <TaskDetails
+    v-if="isSelectTask"
+    :task="selectedTask"
+    @updatedTask="handleUpdatedTask"
+  />
 
   <div class="px-[5vh]">
     <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
@@ -53,7 +54,7 @@ const handleUpdatedTask = (editedTask) => {
             <th>Status</th>
           </tr>
         </thead>
-        
+
         <TaskTable
           v-if="taskList.length > 0"
           :taskList="taskList"
@@ -65,5 +66,4 @@ const handleUpdatedTask = (editedTask) => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
