@@ -27,7 +27,7 @@ onMounted(async () => {
    
   }
    taskList.value = myTasks.getTasks()
-  closeModalAfterTimeout()
+  // closeModalAfterTimeout()
 })
 const selectedTask = ref({})
 const chosenTask = async (id) => {
@@ -38,7 +38,7 @@ const chosenTask = async (id) => {
 }
 
 const handleUpdatedTask = (editedTask) => {
-    myTasks.updateTask(editedTask)
+    if (editedTask) myTasks.updateTask(editedTask)
     isSelectTask.value = false // Close the modal
     taskList.value = myTasks.getTasks()
 }
@@ -48,7 +48,8 @@ const handleUpdatedTask = (editedTask) => {
   <TaskDetailsPage
     v-if="isSelectTask"
     :task="selectedTask"
-    @updatedTask="handleUpdatedTask" @notFoundTask="closeModalAfterTimeout"
+    @closeModal="handleUpdatedTask"
+    
   />
 
     <div class="px-[5vh]">

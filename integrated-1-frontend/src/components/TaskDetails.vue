@@ -71,7 +71,6 @@ const switchTimeZone = () => {
 
 onMounted(async () => {
   try {
-    console.log(route.params.taskId ? route.params.taskId : props.task.id)
     selectedTask.value = ''
     isSelectTask.value = await myVariables.isSelectTask
     const task = myTasks.getIdOfTask(props.task.id)
@@ -82,9 +81,7 @@ onMounted(async () => {
       }, 3000)
     } else {
       foundTask.value = true
-      console.log('Task found')
       selectedTask.value = await getTaskById(task.id)
-      console.log(selectedTask.value)
       switchTimeZone(selectedTask.value)
       createdOn
     }
