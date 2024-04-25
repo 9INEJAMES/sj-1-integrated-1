@@ -3,7 +3,7 @@ CREATE DATABASE integratedV2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE integratedV2;
 
-SET time_zone = '+00:00';
+SET GLOBAL time_zone = '+00:00';
 
 CREATE TABLE task_statuses (
     statusName VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci PRIMARY KEY,

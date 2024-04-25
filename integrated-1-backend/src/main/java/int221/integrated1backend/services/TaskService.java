@@ -13,6 +13,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -45,9 +47,12 @@ public class TaskService {
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
+        tmp.setStatus(tmp.getStatus()!=null? tmp.getStatus() : "No Status");
+//        tmp.setCreatedOn();
+//        tmp.setUpdatedOn();
         Task newTask = repository.save(tmp);
-        newTask.setCreatedOn();
-        newTask.setUpdatedOn();
+//        newTask.setCreatedOn();
+//        newTask.setUpdatedOn();
         return newTask;
     }
 
@@ -71,7 +76,8 @@ public class TaskService {
         task.setTitle(task.getTitle().trim());
         task.setDescription(task.getDescription().trim());
         task.setAssignees(task.getAssignees().trim());
-        task.setCreatedOn(Timestamp.valueOf(LocalDateTime.parse(existingTask.getCreatedOn(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))));
+
+        task.setCreatedOn();
         task.setUpdatedOn();//ถ้าไม่ใส่ตรงนี้จะ error json
         Task result = repository.save(task);
         return result;

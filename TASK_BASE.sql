@@ -12,5 +12,8 @@ VALUES ('ดาต้าเบส', 'ສ້າງຖານຂໍ້ມູນ', '
 INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
 VALUES ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน', 'Done','2024-04-22 09:15:00+00:00','2024-04-22 10:00:00+00:00');
 
+INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 
+VALUES ('testใส่data', '_อิอิอิอิอิอิอิ๘', 'เจมส์เองkub', 'To Do',Now(),Now());
+
 select * from tasks;
 
