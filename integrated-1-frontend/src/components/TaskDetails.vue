@@ -23,6 +23,11 @@ const updatedOn = ref('')
 
 const switchTimeZone = (task) => {
   localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+  const localCreatedOn = new Date(task.createdOn).toLocaleString('en-US', { timeZone: localTimeZone.value })
+  const localUpdatedOn = new Date(task.updatedOn).toLocaleString('en-US', { timeZone: localTimeZone.value })
+
+  createdOn.value = localCreatedOn
+  updatedOn.value = localUpdatedOn
 }
 
 const onSubmit = async () => {
@@ -46,6 +51,7 @@ const onSubmit = async () => {
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask
   const task = Tasks.getTaskById(props.task.id)
+
   switchTimeZone(task)
 })
 </script>
