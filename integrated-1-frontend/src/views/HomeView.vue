@@ -12,6 +12,12 @@ const myVariables = useVariables()
 const isSelectTask = ref(false)
 const taskList = ref([])
 
+const closeModalAfterTimeout = () => {
+  setTimeout(() => {
+    isSelectTask.value = false // Change the value of isSelectedTask after 3 minutes
+  }, 3000) // 3 minutes in milliseconds
+}
+
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
@@ -19,6 +25,7 @@ onMounted(async () => {
     myTasks.addTasks(tasksData)
     taskList.value = myTasks.getTasks()
   }
+  closeModalAfterTimeout()
 })
 const selectedTask = ref({})
 const chosenTask = async (id) => {
@@ -39,7 +46,7 @@ const handleUpdatedTask = (editedTask) => {
   <TaskDetails
     v-if="isSelectTask"
     :task="selectedTask"
-    @updatedTask="handleUpdatedTask"
+    @updatedTask="handleUpdatedTask" @notFoundTask="closeModalAfterTimeout"
   />
 
   <div class="px-[5vh]">
