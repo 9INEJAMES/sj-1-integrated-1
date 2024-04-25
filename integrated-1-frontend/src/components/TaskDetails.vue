@@ -37,7 +37,7 @@ const onSubmit = async () => {
           ? (selectedTask.value.description = '')
           : selectedTask.value.description,
       assignees:
-        selectedTask.value.description == null ||
+        selectedTask.value.assignees == null ||
         selectedTask.value.assignees.length === 0 ||
         selectedTask.value.assignees === ''
           ? (selectedTask.value.assignees = '')
@@ -73,7 +73,7 @@ onMounted(async () => {
   try {
     selectedTask.value = ''
     isSelectTask.value = await myVariables.isSelectTask
-    const task = myTasks.getIdOfTask(444)
+    const task = myTasks.getIdOfTask(props.task.id)
     if (task === null || task === undefined) {
       foundTask.value = false
       setTimeout(() => {
@@ -137,7 +137,7 @@ onMounted(async () => {
                   <select id="status" v-model="selectedTask.status" class="select select-bordered">
                     <option selected disabled hidden value="">Status</option>
                     <option value="No Status">No Status</option>
-                    <option value="To do">To do</option>
+                    <option value="To Do">To Do</option>
                     <option value="Doing">Doing</option>
                     <option value="Done">Done</option>
                   </select>
