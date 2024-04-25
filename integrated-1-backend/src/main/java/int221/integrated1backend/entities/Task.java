@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 @Getter
@@ -24,8 +25,8 @@ public class Task {
     private String assignees;
     @Column(name = "taskStatus")
     private String status;
-    private Timestamp createdOn;
-    private Timestamp updatedOn;
+    private Date createdOn;
+    private Date updatedOn;
 
     public String getCreatedOn() {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
