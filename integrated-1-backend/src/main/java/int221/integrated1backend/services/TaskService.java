@@ -35,12 +35,16 @@ public class TaskService {
                         "Task id " + id + " does not exists !!!"));
     }
 
+    private String isStringNull(String string) {
+        return string != null ? string.trim() : null;
+    }
+
     @Transactional
     public Task createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
-        tmp.setTitle(tmp.getTitle().trim());
-        tmp.setDescription(tmp.getDescription().trim());
-        tmp.setAssignees(tmp.getAssignees().trim());
+        tmp.setTitle(isStringNull(tmp.getTitle()));
+        tmp.setDescription(isStringNull(tmp.getDescription()));
+        tmp.setAssignees(isStringNull(tmp.getAssignees()));
         Task newTask = repository.save(tmp);
         newTask.setCreatedOn();
         newTask.setUpdatedOn();
@@ -59,10 +63,10 @@ public class TaskService {
         task.setId(taskId);
 
         Task existingTask = findByID(taskId);
-        if (task.getTitle() == null) task.setTitle(existingTask.getTitle());
-        if (task.getDescription() == null) task.setDescription(existingTask.getDescription());
-        if (task.getAssignees() == null) task.setAssignees(existingTask.getAssignees());
-        if (task.getStatus() == null) task.setStatus(existingTask.getStatus());
+        if (task.getTitle() == null) task.setTitle(isStringNull(existingTask.getTitle()));
+        if (task.getDescription() == null) task.setDescription(isStringNull(existingTask.getDescription()));
+        if (task.getAssignees() == null) task.setAssignees(isStringNull(existingTask.getAssignees()));
+        if (task.getStatus() == null) task.setStatus(isStringNull(existingTask.getStatus()));
 
         task.setTitle(task.getTitle().trim());
         task.setDescription(task.getDescription().trim());
