@@ -1,6 +1,6 @@
 <script setup>
 import router from '@/router'
-import { ref, defineProps, defineEmits,computed } from 'vue'
+import { ref, defineProps, defineEmits, computed } from 'vue'
 import { getTaskById } from '../libs/FetchAPI.js'
 
 const props = defineProps({
@@ -8,7 +8,7 @@ const props = defineProps({
     type: Object
   }
 })
-const task = computed(() => props.task);
+const task = computed(() => props.task)
 
 const emit = defineEmits(['getTask'])
 
@@ -36,8 +36,10 @@ const colorStatus = (task) => {
 
 <template>
   <div
-    class="flex flex-col justify-between border-none rounded-md shadow-lg p-[2vh] w-[50vh] h-[30vh] gap-[2vh]"
+    class="flex flex-col justify-between border-none rounded-md shadow-lg p-[2vh] w-[40vh] h-[25vh] gap-[2vh]"
   >
+  
+  
     <div class="flex-col justify-start">
       <button
         v-if="task.title.length < 40"
@@ -50,7 +52,6 @@ const colorStatus = (task) => {
         {{ task.title.slice(0, 30) }}...
       </button>
 
-
       <p v-if="task.assignees">
         <span class="text-amber-600">Assignees : </span>{{ task.assignees }}
       </p>
@@ -58,7 +59,7 @@ const colorStatus = (task) => {
     </div>
     <div class="flex justify-end">
       <button
-        class="rounded-2xl p-4 font-bold cursor-default statusbtn"
+        class="rounded-xl w-[100px] h-[35px] text-[2vh] font-bold cursor-default"
         :class="colorStatus(task.status)"
       >
         {{ task.status }}
@@ -67,9 +68,4 @@ const colorStatus = (task) => {
   </div>
 </template>
 
-<style scoped>
-.statusbtn {
-  width: 120px;
-  height: 50px;
-}
-</style>
+<style scoped></style>

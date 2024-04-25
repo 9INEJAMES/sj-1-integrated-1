@@ -15,13 +15,11 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['updatedTask', 'deleteTask'])
+const emit = defineEmits(['updatedTask', 'deleteTask', 'cancel'])
 
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
-
-
 
 const onSubmit = async () => {
   try {
@@ -35,35 +33,37 @@ const onSubmit = async () => {
     }
     await updateTask(editedTask)
     // location.reload();
-    emit('updatedTask',editedTask) // Emit an event to parent component
+    emit('updatedTask', editedTask) // Emit an event to parent component
   } catch (error) {
     console.error('Update Task Error:', error)
   }
 }
 
 const switchTimeZone = () => {
-  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  
-  if (selectedTask.value) {
-    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-US', { timeZone: localTimeZone.value });
-    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-US', { timeZone: localTimeZone.value });
+  localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
 
-    createdOn.value = localCreatedOn;
-    updatedOn.value = localUpdatedOn;
+  if (selectedTask.value) {
+    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-US', {
+      timeZone: localTimeZone.value
+    })
+    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-US', {
+      timeZone: localTimeZone.value
+    })
+
+    createdOn.value = localCreatedOn
+    updatedOn.value = localUpdatedOn
   }
 }
 
 onMounted(async () => {
   selectedTask.value = ''
   isSelectTask.value = await myVariables.isSelectTask
-  const task =  myTasks.getIdOfTask(props.task.id)
+  const task = myTasks.getIdOfTask(props.task.id)
   selectedTask.value = await getTaskById(task.id)
   console.log(selectedTask.value)
   switchTimeZone(selectedTask.value)
   createdOn
 })
-
-
 </script>
 
 <template>
@@ -121,10 +121,19 @@ onMounted(async () => {
               </div>
 
               <div class="pt-[4vh] flex justify-evenly">
-                <button type="submit" class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="onSubmit()"> 
+                <button
+                  type="submit"
+                  class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                  @click="onSubmit()"
+                >
                   Confirm
                 </button>
-                <button class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg">Cancel</button>
+                <button
+                  class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                  @click="$emit('cancel')"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
