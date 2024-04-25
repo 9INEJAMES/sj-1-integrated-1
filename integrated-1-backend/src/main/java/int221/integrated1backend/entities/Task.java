@@ -50,11 +50,11 @@ public class Task {
         return getDateString(updatedOn);
     }
     public void setCreatedOn() {
-        this.setCreatedOn(null);
+        this.setCreatedOn(new Date());
     }
 
     public void setUpdatedOn() {
-        this.setUpdatedOn(null);
+        this.setUpdatedOn(new Date());
     }
 
 }

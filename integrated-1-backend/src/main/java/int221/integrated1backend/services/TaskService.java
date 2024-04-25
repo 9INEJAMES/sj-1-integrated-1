@@ -68,18 +68,13 @@ public class TaskService {
         task.setId(taskId);
 
         Task existingTask = findByID(taskId);
-        if (task.getTitle() == null) task.setTitle(isStringNull(existingTask.getTitle()));
-        if (task.getDescription() == null) task.setDescription(isStringNull(existingTask.getDescription()));
-        if (task.getAssignees() == null) task.setAssignees(isStringNull(existingTask.getAssignees()));
-        if (task.getStatus() == null) task.setStatus(isStringNull(existingTask.getStatus()));
-
-        task.setTitle(task.getTitle().trim());
-        task.setDescription(task.getDescription().trim());
-        task.setAssignees(task.getAssignees().trim());
-
+        if (task.getTitle() != null) existingTask.setTitle(task.getTitle().trim());
+        existingTask.setDescription(isStringNull(task.getDescription()));
+        existingTask.setAssignees(isStringNull(task.getAssignees()));
+        existingTask.setStatus(task.getStatus()!=null? task.getStatus() : "No Status");
         task.setCreatedOn();
         task.setUpdatedOn();//ถ้าไม่ใส่ตรงนี้จะ error json
-        Task result = repository.save(task);
+        Task result = repository.save(existingTask);
         return result;
     }
 
