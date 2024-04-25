@@ -18,29 +18,12 @@ const props = defineProps({
     },
 })
 
-const emit = defineEmits(['updatedTask', 'deleteTask'])
 
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
 
-const onSubmit = async () => {
-    try {
-        const Task = myTasks.getIdOfTask(route.params.taskId)
-        const editedTask = {
-            ...Task,
-            title: selectedTask.value.title,
-            description: selectedTask.value.description,
-            assignees: selectedTask.value.assignees,
-            status: selectedTask.value.status,
-        }
-        await updateTask(editedTask)
-        // location.reload();
-        emit('updatedTask', editedTask) // Emit an event to parent component
-    } catch (error) {
-        console.error('Update Task Error:', error)
-    }
-}
+
 
 const switchTimeZone = () => {
     localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -59,9 +42,10 @@ const switchTimeZone = () => {
 }
 
 onMounted(async () => {
+    const id = route.params.taskId ? route.params.taskId : props.task.id
     selectedTask.value = ''
     isSelectTask.value = myVariables.isSelectTask
-  selectedTask.value = await getTaskById(route.params.taskId)
+    selectedTask.value = await getTaskById(id)
     console.log(selectedTask.value.status)
     if (selectedTask.value.status==404) router.push({ path: `/` })
     switchTimeZone(selectedTask.value)

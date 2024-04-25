@@ -5,8 +5,10 @@ import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
 import TaskDetails from '../components/TaskDetails.vue'
 import { useVariables } from '../stores/store.js'
+import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 
 const myTasks = useTasks()
+
 const myVariables = useVariables()
 const isSelectTask = ref(false)
 const taskList = ref([])
@@ -18,12 +20,13 @@ const closeModalAfterTimeout = () => {
 }
 
 onMounted(async () => {
-  isSelectTask.value = await myVariables.isSelectTask // Assign the value to isSelectTask.value
+  isSelectTask.value =  myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
     const tasksData = await getAllTasks()
     myTasks.addTasks(tasksData)
-    taskList.value = myTasks.getTasks()
+   
   }
+   taskList.value = myTasks.getTasks()
   closeModalAfterTimeout()
 })
 const selectedTask = ref({})
@@ -42,7 +45,7 @@ const handleUpdatedTask = (editedTask) => {
 </script>
 
 <template>
-  <TaskDetails
+  <TaskDetailsPage
     v-if="isSelectTask"
     :task="selectedTask"
     @updatedTask="handleUpdatedTask" @notFoundTask="closeModalAfterTimeout"

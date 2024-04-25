@@ -5,8 +5,8 @@ import { useTasks } from '../stores/task.js'
 import { useVariables } from '../stores/store.js'
 import { useRoute } from 'vue-router'
 
-// const route = useRoute()
-// route.params.taskId
+const route = useRoute()
+route.params.taskId
 const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
@@ -71,6 +71,7 @@ const switchTimeZone = () => {
 
 onMounted(async () => {
   try {
+    console.log(route.params.taskId ? route.params.taskId : props.task.id)
     selectedTask.value = ''
     isSelectTask.value = await myVariables.isSelectTask
     const task = myTasks.getIdOfTask(props.task.id)
