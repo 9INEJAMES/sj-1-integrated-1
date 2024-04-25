@@ -32,7 +32,7 @@ public class TaskService {
     public Task findByID(Integer id) {
         return repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Task ID '" + id + "' NOT FOUND !!!"));
+                        "Task id " + id + " does not exists !!!"));
     }
 
     @Transactional
@@ -58,9 +58,7 @@ public class TaskService {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
-        Task existingTask = repository.findById(taskId).orElseThrow(
-                () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
-                        "Task Id " + taskId + " DOES NOT EXIST !!!"));
+        Task existingTask = findByID(taskId);
         if (task.getTitle() == null) task.setTitle(existingTask.getTitle());
         if (task.getDescription() == null) task.setDescription(existingTask.getDescription());
         if (task.getAssignees() == null) task.setAssignees(existingTask.getAssignees());
