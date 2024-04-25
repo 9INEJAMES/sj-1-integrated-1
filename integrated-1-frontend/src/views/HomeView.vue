@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted ,onUpdated} from 'vue'
+import { ref, onMounted , computed, watchEffect} from 'vue'
 import { getAllTasks } from '../libs/FetchAPI.js'
 import TaskCard from '../components/TaskCard.vue'
 import { useTasks } from '../stores/task.js'
@@ -9,10 +9,7 @@ import { useVariables } from '../stores/store.js'
 const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
-
-const refreshPage = () => {
-  window.location.reload(); // Reloads the current page
-};
+const taskList = ref([])
 
 
 
@@ -21,7 +18,7 @@ onMounted(async () => {
   if (myTasks.getTasks().length == 0) {
     const tasksData = await getAllTasks()
     myTasks.addTasks(tasksData)
-    console.log(tasksData)
+    taskList.value = myTasks.getTasks()
   }
 })
 
@@ -33,10 +30,13 @@ const chosenTask = (task) => {
   myVariables.isSelectTask = true
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
-const handleUpdatedTask = () => {
-  isSelectTask.value = false // Close the modal
-  refreshPage()
+const handleUpdatedTask = (editedTask) => {
+  myTasks.updateTask(editedTask)
+  isSelectTask.value = false // Close the modal 
+  taskList.value = myTasks.getTasks()
+  console.log(myTasks.getTasks())
 }
+
 </script>
 
 <template>
@@ -46,7 +46,7 @@ const handleUpdatedTask = () => {
     <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
 
     <div class="flex gap-[5vh] py-[3vh] flex-wrap">
-      <div v-for="task in myTasks.getTasks()" :key="task.id" class=" ">
+      <div v-for="task in taskList" :key="task.id" class=" ">
         <TaskCard :task="task" @get-task="chosenTask" />
       </div>
     </div>

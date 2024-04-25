@@ -5,7 +5,7 @@ import { ref, onMounted, defineProps, defineEmits } from 'vue'
 import { useTasks } from '../stores/task.js'
 import { useVariables } from '../stores/store.js'
 
-const Tasks = useTasks()
+const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
 
@@ -32,7 +32,7 @@ const switchTimeZone = (task) => {
 
 const onSubmit = async () => {
   try {
-    const Task = Tasks.getTaskById(props.task.id)
+    const Task = myTasks.getTaskById(props.task.id)
     const editedTask = {
       ...Task,
       title: props.task.title,
@@ -41,7 +41,8 @@ const onSubmit = async () => {
       status: props.task.status
     }
     await updateTask(editedTask)
-    emit('updatedTask') // Emit an event to parent component
+    // location.reload();
+    emit('updatedTask',editedTask) // Emit an event to parent component
   } catch (error) {
     console.error('Update Task Error:', error)
   }
@@ -50,7 +51,7 @@ const onSubmit = async () => {
 
 onMounted(async () => {
   isSelectTask.value = await myVariables.isSelectTask
-  const task = Tasks.getTaskById(props.task.id)
+  const task = myTasks.getTaskById(props.task.id)
 
   switchTimeZone(task)
 })

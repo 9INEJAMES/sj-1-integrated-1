@@ -1,6 +1,6 @@
 <script setup>
 import router from '@/router'
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits,computed } from 'vue'
 import { getTaskById } from '../libs/FetchAPI.js'
 
 const props = defineProps({
@@ -8,8 +8,7 @@ const props = defineProps({
     type: Object
   }
 })
-
-const task = ref(props.task)
+const task = computed(() => props.task);
 
 const emit = defineEmits(['getTask'])
 
