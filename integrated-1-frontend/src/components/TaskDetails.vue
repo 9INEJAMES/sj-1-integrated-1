@@ -108,7 +108,7 @@ onMounted(async () => {
                 <label for="status">Status</label>
                 <select id="status" v-model="selectedTask.status" class="select select-bordered">
                   <option selected disabled hidden value="">Status</option>
-                  <option value="No status">No status</option>
+                  <option value="No Status">No Status</option>
                   <option value="To do">To do</option>
                   <option value="Doing">Doing</option>
                   <option value="Done">Done</option>
