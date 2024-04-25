@@ -48,7 +48,7 @@ public class TaskService {
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
-        tmp.setStatus(tmp.getStatus() != null ? tmp.getStatus() : "No Status");
+        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "No Status" : isStringNull(tmp.getStatus()));
 //        tmp.setCreatedOn();
 //        tmp.setUpdatedOn();
         Task newTask = repository.save(tmp);
@@ -72,7 +72,7 @@ public class TaskService {
         if (task.getTitle() != null) existingTask.setTitle(task.getTitle().trim());
         existingTask.setDescription(isStringNull(task.getDescription()));
         existingTask.setAssignees(isStringNull(task.getAssignees()));
-        existingTask.setStatus(task.getStatus() != null ? task.getStatus() : "No Status");
+        existingTask.setStatus(isStringNull(task.getStatus()) == null ? "No Status" : isStringNull(task.getStatus()));
         existingTask.setUpdatedOn(new Date());
         Task result = repository.save(existingTask);
         return result;

@@ -10,7 +10,7 @@ CREATE TABLE task_statuses (
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),
     CONSTRAINT CHK_statusDescription_length CHECK (CHAR_LENGTH(TRIM(statusDescription)) <= 200)
-);
+)ENGINE=InnoDB;
 
 CREATE TABLE tasks (
     taskId INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,17 +24,20 @@ CREATE TABLE tasks (
     CONSTRAINT CHK_taskDescription_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees_not_empty CHECK (taskAssignees <> ''),
     CONSTRAINT FK_status FOREIGN KEY (taskStatus) REFERENCES task_statuses(statusName) ON DELETE CASCADE
-);
+)ENGINE=InnoDB;
 
 DELIMITER $$
 
 CREATE TRIGGER before_insert_tasks
 BEFORE INSERT ON tasks
 FOR EACH ROW
-BEGIN
-    SET NEW.taskTitle = TRIM(NEW.taskTitle);
+BEGIN 
+	SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
     SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+    IF NEW.taskStatus IS NULL THEN
+        SET NEW.taskStatus = 'No Status';
+    END IF;
     IF NEW.createdOn IS NULL THEN
         SET NEW.createdOn = CURRENT_TIMESTAMP;
     END IF;
