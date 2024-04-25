@@ -13,7 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -36,7 +39,7 @@ public class TaskService {
     }
 
     private String isStringNull(String string) {
-        return string != null ? string.trim() : null;
+        return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
 
     @Transactional
@@ -45,9 +48,12 @@ public class TaskService {
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
+        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "No Status" : isStringNull(tmp.getStatus()));
+//        tmp.setCreatedOn();
+//        tmp.setUpdatedOn();
         Task newTask = repository.save(tmp);
-        newTask.setCreatedOn();
-        newTask.setUpdatedOn();
+//        newTask.setCreatedOn();
+//        newTask.setUpdatedOn();
         return newTask;
     }
 
@@ -63,17 +69,12 @@ public class TaskService {
         task.setId(taskId);
 
         Task existingTask = findByID(taskId);
-        if (task.getTitle() == null) task.setTitle(isStringNull(existingTask.getTitle()));
-        if (task.getDescription() == null) task.setDescription(isStringNull(existingTask.getDescription()));
-        if (task.getAssignees() == null) task.setAssignees(isStringNull(existingTask.getAssignees()));
-        if (task.getStatus() == null) task.setStatus(isStringNull(existingTask.getStatus()));
-
-        task.setTitle(task.getTitle().trim());
-        task.setDescription(task.getDescription().trim());
-        task.setAssignees(task.getAssignees().trim());
-        task.setCreatedOn(Timestamp.valueOf(LocalDateTime.parse(existingTask.getCreatedOn(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))));
-        task.setUpdatedOn();//ถ้าไม่ใส่ตรงนี้จะ error json
-        Task result = repository.save(task);
+        if (task.getTitle() != null) existingTask.setTitle(task.getTitle().trim());
+        existingTask.setDescription(isStringNull(task.getDescription()));
+        existingTask.setAssignees(isStringNull(task.getAssignees()));
+        existingTask.setStatus(isStringNull(task.getStatus()) == null ? "No Status" : isStringNull(task.getStatus()));
+        existingTask.setUpdatedOn(new Date());
+        Task result = repository.save(existingTask);
         return result;
     }
 
