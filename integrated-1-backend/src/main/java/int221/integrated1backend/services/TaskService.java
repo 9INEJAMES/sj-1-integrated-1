@@ -1,6 +1,7 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.TaskDTO;
+import int221.integrated1backend.dtos.TaskWithIdDTO;
 import int221.integrated1backend.entities.Task;
 import int221.integrated1backend.repositories.TaskRepository;
 import org.modelmapper.ModelMapper;
@@ -41,20 +42,19 @@ public class TaskService {
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
+    private String isStringNull(String string,String oldString) {
+        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
+    }
 
     @Transactional
-    public Task createNewTask(TaskDTO taskDTO) {
+    public TaskWithIdDTO createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
         tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "No Status" : isStringNull(tmp.getStatus()));
-//        tmp.setCreatedOn();
-//        tmp.setUpdatedOn();
         Task newTask = repository.save(tmp);
-//        newTask.setCreatedOn();
-//        newTask.setUpdatedOn();
-        return newTask;
+        return modelMapper.map(newTask, TaskWithIdDTO.class);
     }
 
     @Transactional
@@ -64,18 +64,18 @@ public class TaskService {
     }
 
     @Transactional
-    public Task updateTask(Integer taskId, TaskDTO taskDTO) {
+    public TaskWithIdDTO updateTask(Integer taskId, TaskDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
         Task existingTask = findByID(taskId);
-        if (task.getTitle() != null) existingTask.setTitle(task.getTitle().trim());
+        existingTask.setTitle(isStringNull(task.getTitle(), existingTask.getTitle()));
         existingTask.setDescription(isStringNull(task.getDescription()));
         existingTask.setAssignees(isStringNull(task.getAssignees()));
-        existingTask.setStatus(isStringNull(task.getStatus()) == null ? "No Status" : isStringNull(task.getStatus()));
-        existingTask.setUpdatedOn(new Date());
+        existingTask.setStatus(isStringNull(task.getStatus(), existingTask.getStatus()));
+//        existingTask.setUpdatedOn(new Date());
         Task result = repository.save(existingTask);
-        return result;
+        return modelMapper.map(result, TaskWithIdDTO.class);
     }
 
 }

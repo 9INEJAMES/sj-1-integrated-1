@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173","http://localhost:4173"})
 public class TaskControllerV1 {
     @Autowired
     private TaskService service;
@@ -37,15 +37,14 @@ public class TaskControllerV1 {
 
     @PostMapping("/tasks")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO){
-        Task task = service.createNewTask(taskDTO);
-        TaskWithIdDTO taskWithIdDTO = modelMapper.map(task,TaskWithIdDTO.class);
+        TaskWithIdDTO taskWithIdDTO = service.createNewTask(taskDTO);
         return  ResponseEntity.ok(taskWithIdDTO);
     }
 
     @PatchMapping("/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@PathVariable Integer taskId,@RequestBody TaskDTO taskDTO){
-        Task task = service.updateTask(taskId,taskDTO);
-        return ResponseEntity.ok(task);
+        TaskWithIdDTO TaskWithIdDTO = service.updateTask(taskId,taskDTO);
+        return ResponseEntity.ok(TaskWithIdDTO);
     }
 }
 

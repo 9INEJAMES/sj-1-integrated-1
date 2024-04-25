@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watchEffect } from 'vue'
 import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
-import TaskCard from '../components/TaskCard.vue'
 import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
 import TaskDetails from '../components/TaskDetails.vue'
@@ -29,16 +28,16 @@ onMounted(async () => {
 })
 const selectedTask = ref({})
 const chosenTask = async (id) => {
-  selectedTask.value = await getTaskById(id)
-  // selectedTask.value = { ...task }
-  myVariables.isSelectTask = true
-  isSelectTask.value = true // Update isSelectTask when a task is chosen
+    selectedTask.value = await getTaskById(id)
+    // selectedTask.value = { ...task }
+    myVariables.isSelectTask = true
+    isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
 const handleUpdatedTask = (editedTask) => {
-  myTasks.updateTask(editedTask)
-  isSelectTask.value = false // Close the modal
-  taskList.value = myTasks.getTasks()
+    myTasks.updateTask(editedTask)
+    isSelectTask.value = false // Close the modal
+    taskList.value = myTasks.getTasks()
 }
 </script>
 
@@ -49,28 +48,25 @@ const handleUpdatedTask = (editedTask) => {
     @updatedTask="handleUpdatedTask" @notFoundTask="closeModalAfterTimeout"
   />
 
-  <div class="px-[5vh]">
-    <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
-    <div class="overflow-x-auto">
-      <table class="myTable">
-        <!-- head -->
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Assignees</th>
-            <th>Status</th>
-          </tr>
-        </thead>
+    <div class="px-[5vh]">
+        <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+        <div class="overflow-x-auto">
+            <table class="myTable">
+                <!-- head -->
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Title</th>
+                        <th>Assignees</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-        <TaskTable
-          v-if="taskList.length > 0"
-          :taskList="taskList"
-          @get-task="chosenTask"
-        ></TaskTable>
-        <!-- <div v-else>No record</div> -->
-      </table>
+                <TaskTable v-if="taskList.length > 0" :taskList="taskList" @get-task="chosenTask"></TaskTable>
+                <!-- <div v-else>No record</div> -->
+            </table>
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped></style>

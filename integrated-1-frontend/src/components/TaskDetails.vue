@@ -1,10 +1,12 @@
 <script setup>
 import { getTaskById, updateTask } from '@/libs/FetchAPI'
-import router from '@/router'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
 import { useTasks } from '../stores/task.js'
 import { useVariables } from '../stores/store.js'
+import { useRoute } from 'vue-router'
 
+// const route = useRoute()
+// route.params.taskId
 const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
@@ -55,10 +57,10 @@ const switchTimeZone = () => {
   localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   if (selectedTask.value) {
-    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-US', {
+    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-GB', {
       timeZone: localTimeZone.value
     })
-    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-US', {
+    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-GB', {
       timeZone: localTimeZone.value
     })
 
