@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -72,8 +73,7 @@ public class TaskService {
         existingTask.setDescription(isStringNull(task.getDescription()));
         existingTask.setAssignees(isStringNull(task.getAssignees()));
         existingTask.setStatus(task.getStatus()!=null? task.getStatus() : "No Status");
-        task.setCreatedOn();
-        task.setUpdatedOn();//ถ้าไม่ใส่ตรงนี้จะ error json
+        existingTask.setUpdatedOn(new Date());
         Task result = repository.save(existingTask);
         return result;
     }
