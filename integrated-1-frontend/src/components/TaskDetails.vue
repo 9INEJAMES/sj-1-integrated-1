@@ -1,10 +1,12 @@
 <script setup>
 import { getTaskById, updateTask } from '@/libs/FetchAPI'
-import router from '@/router'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
 import { useTasks } from '../stores/task.js'
 import { useVariables } from '../stores/store.js'
+import { useRoute } from 'vue-router'
 
+// const route = useRoute()
+// route.params.taskId
 const myTasks = useTasks()
 const myVariables = useVariables()
 const isSelectTask = ref(false)
@@ -43,10 +45,10 @@ const switchTimeZone = () => {
   localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
 
   if (selectedTask.value) {
-    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-US', {
+    const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-GB', {
       timeZone: localTimeZone.value
     })
-    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-US', {
+    const localUpdatedOn = new Date(selectedTask.value.updatedOn).toLocaleString('en-GB', {
       timeZone: localTimeZone.value
     })
 
@@ -57,7 +59,7 @@ const switchTimeZone = () => {
 
 onMounted(async () => {
   selectedTask.value = ''
-  isSelectTask.value = await myVariables.isSelectTask
+  isSelectTask.value = myVariables.isSelectTask
   const task = myTasks.getIdOfTask(props.task.id)
   selectedTask.value = await getTaskById(task.id)
   switchTimeZone(selectedTask.value)
@@ -72,7 +74,7 @@ onMounted(async () => {
         <input
           type="text"
           name="title"
-          class="font-bold text-[4vh]"
+          class="itbkk-title font-bold text-[4vh]"
           id="title"
           v-model="selectedTask.title"
         />
@@ -85,9 +87,10 @@ onMounted(async () => {
                 id="description"
                 v-model="selectedTask.description"
                 rows="20"
-                class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Write your thoughts here..."
               ></textarea>
+              <!-- <p class="itbkk-description">{{ selectedTask.description }}</p> -->
             </div>
           </div>
 
@@ -99,13 +102,13 @@ onMounted(async () => {
                   id="assignees"
                   v-model="selectedTask.assignees"
                   rows="5"
-                  class="block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Write your thoughts here..."
                 ></textarea>
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" v-model="selectedTask.status" class="select select-bordered">
+                <select id="status" v-model="selectedTask.status" class="itbkk-status select select-bordered">
                   <option selected disabled hidden value="">Status</option>
                   <option value="No Status">No Status</option>
                   <option value="To do">To do</option>
@@ -114,9 +117,9 @@ onMounted(async () => {
                 </select>
               </div>
               <div class="pt-[4vh]">
-                <p>Local Time Zone: {{ localTimeZone }}</p>
-                <p>Created On: {{ createdOn }}</p>
-                <p>Last Updated On: {{ updatedOn }}</p>
+                <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
+                <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
+                <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
               </div>
 
               <div class="pt-[4vh] flex justify-evenly">
