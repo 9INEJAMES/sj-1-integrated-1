@@ -1,20 +1,9 @@
 version: '3'
 
 services:
-  frontend:
-    build: ./integrated-1-frontend
-    ports:
-      - "80:80"
-
-  backend:
-    build: ./integrated-2-backend
-    ports:
-      - "8080:8080"
-    depends_on:
-      - database
 
   database:
-    image: mysql:mysql-server
+    image: mysql/mysql-server
     ports:
       - "3306:3306"
     environment:
@@ -22,3 +11,17 @@ services:
       MYSQL_DATABASE: integrated
       MYSQL_USER: dev
       MYSQL_PASSWORD: mysql@sit
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+      
+  frontend:
+    build: ./integrated-1-frontend
+    ports:
+      - "80:80"
+
+  backend:
+    build: ./integrated-1-backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
