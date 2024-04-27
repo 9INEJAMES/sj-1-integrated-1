@@ -1,4 +1,6 @@
 FROM mysql:latest
+ENV MYSQL_USER=dev
+ENV MYSQL_PASSWORD=mysql@sit
 ENV MYSQL_ROOT_PASSWORD=mysql@sit
 ENV MYSQL_DATABASE=integrated
 ENV MYSQL_CHARSET=utf8mb4
