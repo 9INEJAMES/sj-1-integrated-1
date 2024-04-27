@@ -1,45 +1,76 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { getAllTasks } from '../libs/FetchAPI.js'
-import TaskCard from '../components/TaskCard.vue'
+import { ref, onMounted, computed, watchEffect } from 'vue'
+import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
+import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
 import TaskDetails from '../components/TaskDetails.vue'
+import { useVariables } from '../stores/store.js'
+import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 
 const myTasks = useTasks()
 
+const myVariables = useVariables()
+const isSelectTask = ref(false)
+const taskList = ref([])
+
+const closeModalAfterTimeout = () => {
+  setTimeout(() => {
+    isSelectTask.value = false // Change the value of isSelectedTask after 3 minutes
+  }, 3000) // 3 minutes in milliseconds
+}
+
 onMounted(async () => {
-  // Await the promise returned by getAllTasks
+  isSelectTask.value =  myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
     const tasksData = await getAllTasks()
     myTasks.addTasks(tasksData)
-    console.log(tasksData)
+   
   }
-  // Assign the result to the reactive variable
+   taskList.value = myTasks.getTasks()
+  // closeModalAfterTimeout()
 })
-const isSelectTask = ref(false)
-
 const selectedTask = ref({})
-
-const chosenTask = (task) => {
-  selectedTask.value = { ...task }
-  isSelectTask.value = true
+const chosenTask = async (id) => {
+    selectedTask.value = await getTaskById(id)
+    // selectedTask.value = { ...task }
+    myVariables.isSelectTask = true
+    isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
-
+const handleUpdatedTask = (editedTask) => {
+    if (editedTask) myTasks.updateTask(editedTask)
+    isSelectTask.value = false // Close the modal
+    taskList.value = myTasks.getTasks()
+}
 </script>
 
 <template>
-  <TaskDetails v-if="isSelectTask" :task="selectedTask" />
+  <TaskDetailsPage
+    v-if="isSelectTask"
+    :task="selectedTask"
+    @closeModal="handleUpdatedTask"
+    
+  />
 
-  <div class="px-[5vh]">
-    <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+    <div class="px-[5vh]">
+        <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+        <div class="overflow-x-auto">
+            <table class="myTable">
+                <!-- head -->
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Title</th>
+                        <th>Assignees</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-    <div class="flex gap-[5vh] py-[3vh] flex-wrap">
-      <div v-for="task in myTasks.getTasks()" :key="task.id" class=" ">
-        <TaskCard :task="task" @get-task="chosenTask" />
-      </div>
+                <TaskTable v-if="taskList.length > 0" :taskList="taskList" @get-task="chosenTask"></TaskTable>
+                <!-- <div v-else>No record</div> -->
+            </table>
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped></style>

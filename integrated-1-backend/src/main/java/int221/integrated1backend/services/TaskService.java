@@ -1,6 +1,7 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.TaskDTO;
+import int221.integrated1backend.dtos.TaskWithIdDTO;
 import int221.integrated1backend.entities.Task;
 import int221.integrated1backend.repositories.TaskRepository;
 import org.modelmapper.ModelMapper;
@@ -13,7 +14,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,19 +36,25 @@ public class TaskService {
     public Task findByID(Integer id) {
         return repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Task ID '" + id + "' NOT FOUND !!!"));
+                        "Task id " + id + " does not exists !!!"));
+    }
+
+    private String isStringNull(String string) {
+        return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
+    }
+    private String isStringNull(String string,String oldString) {
+        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
     }
 
     @Transactional
-    public Task createNewTask(TaskDTO taskDTO) {
+    public TaskWithIdDTO createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
-        tmp.setTitle(tmp.getTitle().trim());
-        tmp.setDescription(tmp.getDescription().trim());
-        tmp.setAssignees(tmp.getAssignees().trim());
+        tmp.setTitle(isStringNull(tmp.getTitle()));
+        tmp.setDescription(isStringNull(tmp.getDescription()));
+        tmp.setAssignees(isStringNull(tmp.getAssignees()));
+        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "No Status" : isStringNull(tmp.getStatus()));
         Task newTask = repository.save(tmp);
-        newTask.setCreatedOn();
-        newTask.setUpdatedOn();
-        return newTask;
+        return modelMapper.map(newTask, TaskWithIdDTO.class);
     }
 
     @Transactional
@@ -54,25 +64,18 @@ public class TaskService {
     }
 
     @Transactional
-    public Task updateTask(Integer taskId, TaskDTO taskDTO) {
+    public TaskWithIdDTO updateTask(Integer taskId, TaskDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
-        Task existingTask = repository.findById(taskId).orElseThrow(
-                () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,
-                        "Task Id " + taskId + " DOES NOT EXIST !!!"));
-        if (task.getTitle() == null) task.setTitle(existingTask.getTitle());
-        if (task.getDescription() == null) task.setDescription(existingTask.getDescription());
-        if (task.getAssignees() == null) task.setAssignees(existingTask.getAssignees());
-        if (task.getStatus() == null) task.setStatus(existingTask.getStatus());
-
-        task.setTitle(task.getTitle().trim());
-        task.setDescription(task.getDescription().trim());
-        task.setAssignees(task.getAssignees().trim());
-        task.setCreatedOn(Timestamp.valueOf(LocalDateTime.parse(existingTask.getCreatedOn(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"))));
-        task.setUpdatedOn();//ถ้าไม่ใส่ตรงนี้จะ error json
-        Task result = repository.save(task);
-        return result;
+        Task existingTask = findByID(taskId);
+        existingTask.setTitle(isStringNull(task.getTitle(), existingTask.getTitle()));
+        existingTask.setDescription(isStringNull(task.getDescription()));
+        existingTask.setAssignees(isStringNull(task.getAssignees()));
+        existingTask.setStatus(isStringNull(task.getStatus(), existingTask.getStatus()));
+//        existingTask.setUpdatedOn(new Date());
+        Task result = repository.save(existingTask);
+        return modelMapper.map(result, TaskWithIdDTO.class);
     }
 
 }
