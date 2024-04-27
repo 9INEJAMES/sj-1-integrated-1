@@ -4,14 +4,9 @@ services:
 
   database:
     container_name: database
-    image: mysql/mysql-server
+    build: ./inetgrated-1-database
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_DATABASE: integrated
-      MYSQL_ROOT_PASSWORD: mysql@sit
-    volumes:
-      - ./mysql:/docker-entrypoint-initdb.d
       
   backend:
     build: ./integrated-1-backend
@@ -23,7 +18,7 @@ services:
   frontend:
     build: ./integrated-1-frontend
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - backend
 
