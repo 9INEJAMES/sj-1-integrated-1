@@ -36,13 +36,11 @@ const colorStatus = (task) => {
       <tbody>
         <tr v-for="(task, index) in taskList" :key="task.id" class="itbkk-item">
           <td>{{ index + 1 }}</td>
-          <td class="itbkk-title">
-            <p
-              class="font-bold pb-[2vh] hover:text-blue-500 break-all hover:cursor-pointer"
-              @click="getTask(task.id)"
-            >
-              {{ task.title }}
-            </p>
+          <td
+            class="itbkk-title font-bold h-[30px] text-[2vh] hover:text-blue-500 break-all hover:cursor-pointer"
+            @click="getTask(task.id)"
+          >
+            {{ task.title }}
           </td>
           <td
             class="itbkk-assignees"
