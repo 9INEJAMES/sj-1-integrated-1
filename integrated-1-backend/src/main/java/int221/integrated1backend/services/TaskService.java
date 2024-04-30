@@ -58,9 +58,10 @@ public class TaskService {
     }
 
     @Transactional
-    public void removeTask(Integer taskId) {
-        Task task = repository.findById(taskId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Task Id " + taskId + " DOES NOT EXIST !!!"));
+    public TaskWithIdDTO removeTask(Integer taskId) {
+        Task task = repository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(task);
+        return modelMapper.map(task, TaskWithIdDTO.class);
     }
 
     @Transactional

@@ -40,7 +40,7 @@ const deleteTask = (task) => {
 </script>
 
 <template>
-    <div class="overflow-x-auto">
+    <div class="">
       <table class="myTable">
         <!-- head -->
         <thead>

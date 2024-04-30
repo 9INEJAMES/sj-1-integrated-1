@@ -5,7 +5,7 @@ import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
 import { useVariables } from '../stores/store.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
-import LineMdPlusCircleTwotone from '../../public/LineMdPlusCircleTwotone.vue'
+import Addicon from '../../public/Addicon.vue'
 
 const myTasks = useTasks()
 
@@ -54,7 +54,7 @@ const handleUpdatedTask = (editedTask) => {
     <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
     <br />
 
-    <div class="overflow-x-auto">
+    <div class="">
       <TaskTable
         v-if="taskList.length > 0"
         :taskList="taskList"
@@ -63,7 +63,7 @@ const handleUpdatedTask = (editedTask) => {
       <!-- <div v-else>No record</div> -->
     </div>
   </div>
-  <LineMdPlusCircleTwotone
+  <Addicon
     class="bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
     style="color: #443ad8"
     @click=""
