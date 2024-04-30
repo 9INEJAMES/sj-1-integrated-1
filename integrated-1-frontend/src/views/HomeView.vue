@@ -6,6 +6,7 @@ import { useTasks } from '../stores/task.js'
 import TaskDetails from '../components/TaskDetails.vue'
 import { useVariables } from '../stores/store.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
+import LineMdPlusCircleTwotone from '../../public/LineMdPlusCircleTwotone.vue'
 
 const myTasks = useTasks()
 
@@ -20,27 +21,26 @@ const closeModalAfterTimeout = () => {
 }
 
 onMounted(async () => {
-  isSelectTask.value =  myVariables.isSelectTask // Assign the value to isSelectTask.value
+  isSelectTask.value = myVariables.isSelectTask // Assign the value to isSelectTask.value
   if (myTasks.getTasks().length == 0) {
     const tasksData = await getAllTasks()
     myTasks.addTasks(tasksData)
-   
   }
-   taskList.value = myTasks.getTasks()
+  taskList.value = myTasks.getTasks()
   // closeModalAfterTimeout()
 })
 const selectedTask = ref({})
 const chosenTask = async (id) => {
-    selectedTask.value = await getTaskById(id)
-    // selectedTask.value = { ...task }
-    myVariables.isSelectTask = true
-    isSelectTask.value = true // Update isSelectTask when a task is chosen
+  selectedTask.value = await getTaskById(id)
+  // selectedTask.value = { ...task }
+  myVariables.isSelectTask = true
+  isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
 const handleUpdatedTask = (editedTask) => {
-    if (editedTask) myTasks.updateTask(editedTask)
-    isSelectTask.value = false // Close the modal
-    taskList.value = myTasks.getTasks()
+  if (editedTask) myTasks.updateTask(editedTask)
+  isSelectTask.value = false // Close the modal
+  taskList.value = myTasks.getTasks()
 }
 </script>
 
@@ -49,20 +49,26 @@ const handleUpdatedTask = (editedTask) => {
     v-if="isSelectTask"
     :task="selectedTask"
     @closeModal="handleUpdatedTask"
-    
   />
 
-    <div class="px-[5vh]">
-        <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p><br>
+  <div class="px-[5vh]">
+    <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+    <br />
 
-        <div class="overflow-x-auto">
-           
-
-                <TaskTable v-if="taskList.length > 0" :taskList="taskList" @get-task="chosenTask"></TaskTable>
-                <!-- <div v-else>No record</div> -->
-            
-        </div>
+    <div class="overflow-x-auto">
+      <TaskTable
+        v-if="taskList.length > 0"
+        :taskList="taskList"
+        @get-task="chosenTask"
+      ></TaskTable>
+      <!-- <div v-else>No record</div> -->
     </div>
+  </div>
+  <LineMdPlusCircleTwotone
+    class="bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
+    style="color: #443ad8"
+    @click=""
+  />
 </template>
 
 <style scoped></style>

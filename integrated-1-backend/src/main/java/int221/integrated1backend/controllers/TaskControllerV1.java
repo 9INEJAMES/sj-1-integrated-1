@@ -44,8 +44,14 @@ public class TaskControllerV1 {
 
     @PutMapping("/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@PathVariable Integer taskId, @RequestBody TaskDTO taskDTO) {
-        TaskWithIdDTO TaskWithIdDTO = service.updateTask(taskId, taskDTO);
-        return ResponseEntity.ok(TaskWithIdDTO);
+        TaskWithIdDTO taskWithIdDTO = service.updateTask(taskId, taskDTO);
+        return ResponseEntity.ok(taskWithIdDTO);
+    }
+
+    @DeleteMapping("/tasks/{taskId}")
+    public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId){
+        TaskWithIdDTO taskWithIdDTO = service.removeTask(taskId);
+        return  ResponseEntity.ok(taskWithIdDTO);
     }
 }
 
