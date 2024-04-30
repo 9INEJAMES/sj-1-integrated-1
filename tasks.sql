@@ -16,7 +16,7 @@ CREATE TABLE tasks (
     CONSTRAINT CHK_taskTitle_not_empty CHECK (taskTitle <> ''),
 	CONSTRAINT CHK_taskDescription_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees_not_empty CHECK (taskAssignees <> '')
-)ENGINE=InnoDB;
+);
 DELIMITER $$
 
 CREATE TRIGGER before_insert_tasks
