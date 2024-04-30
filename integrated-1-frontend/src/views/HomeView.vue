@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watchEffect } from 'vue'
+import { ref, onMounted, computed, watchEffect, onUpdated } from 'vue'
 import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
 import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
@@ -30,6 +30,11 @@ const chosenTask = async (id) => {
   // selectedTask.value = { ...task }
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
+
+onUpdated(() => {
+  myTasks.resetTasks()
+  taskList.value = myTasks.getTasks()
+})
 
 const handleUpdatedTask = (editedTask) => {
   if (editedTask) myTasks.updateTask(editedTask)
