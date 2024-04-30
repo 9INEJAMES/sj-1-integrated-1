@@ -53,22 +53,14 @@ const handleUpdatedTask = (editedTask) => {
   />
 
     <div class="px-[5vh]">
-        <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
+        <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p><br>
+
         <div class="overflow-x-auto">
-            <table class="myTable">
-                <!-- head -->
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Title</th>
-                        <th>Assignees</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
+           
 
                 <TaskTable v-if="taskList.length > 0" :taskList="taskList" @get-task="chosenTask"></TaskTable>
                 <!-- <div v-else>No record</div> -->
-            </table>
+            
         </div>
     </div>
 </template>

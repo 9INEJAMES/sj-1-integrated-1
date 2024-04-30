@@ -6,7 +6,7 @@ const isChecked = ref(false)
 </script>
 
 <template>
-    <div class="roboto-light min-h-screen max-h-fit" :class="isChecked ? 'bg-slate-600 text-black' : 'bg-white text-black'">
+    <div class="roboto-light min-h-screen max-h-fit" :class="isChecked ? 'bg-slate-600 text-amber-50' : 'bg-white text-black'">
         <NavHeader />
         <div class="float-end pr-[5vh]">
             <label class="flex cursor-pointer gap-2">
