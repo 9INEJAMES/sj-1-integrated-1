@@ -45,8 +45,7 @@ const onSubmit = async () => {
       status: selectedTask.value.status,
     }
     await updateTask(editedTask)
-    // location.reload();
-    emit('updatedTask', editedTask) // Emit an event to parent component
+    emit('updatedTask', editedTask) 
     foundTask.value = false
   } catch (error) {
     console.error('Update Task Error:', error)
