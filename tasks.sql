@@ -1,9 +1,7 @@
 DROP DATABASE IF EXISTS integrated;
-CREATE DATABASE integrated CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS integrated CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE integrated;
-
-SET GLOBAL time_zone = '+00:00';
 
 CREATE TABLE tasks (
     taskId INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,7 +14,7 @@ CREATE TABLE tasks (
     CONSTRAINT CHK_taskTitle_not_empty CHECK (taskTitle <> ''),
 	CONSTRAINT CHK_taskDescription_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees_not_empty CHECK (taskAssignees <> '')
-);
+)ENGINE=InnoDB;
 DELIMITER $$
 
 CREATE TRIGGER before_insert_tasks
@@ -25,7 +23,7 @@ FOR EACH ROW
 BEGIN
     SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
-    SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+    SET NEW.taskAssignees = UPPER(REPLACE(TRIM(NEW.taskAssignees), ' ', '_'));
     IF NEW.taskStatus IS NULL THEN
         SET NEW.taskStatus = 'NO_STATUS';
     END IF;
@@ -38,4 +36,7 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
 
