@@ -23,7 +23,8 @@ FOR EACH ROW
 BEGIN
     SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
-    SET NEW.taskAssignees = UPPER(REPLACE(TRIM(NEW.taskAssignees), ' ', '_'));
+    SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+    SET NEW.taskStatus = UPPER(REPLACE(TRIM(NEW.taskStatus), ' ', '_'));
     IF NEW.taskStatus IS NULL THEN
         SET NEW.taskStatus = 'NO_STATUS';
     END IF;
