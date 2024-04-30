@@ -52,7 +52,7 @@ public class TaskService {
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
-        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "No Status" : isStringNull(tmp.getStatus()));
+        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "NO_STATUS" : isStringNull(tmp.getStatus()));
         Task newTask = repository.save(tmp);
         return modelMapper.map(newTask, TaskWithIdDTO.class);
     }

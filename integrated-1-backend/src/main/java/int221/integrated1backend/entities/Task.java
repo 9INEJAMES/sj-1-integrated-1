@@ -33,6 +33,14 @@ public class Task {
     private Date createdOn;
     private Date updatedOn;
 
+    public String getStatus() {
+        return this.status.replace(" ", "_").toUpperCase();
+    }
+
+    public void setStatus(String status) {
+        this.status =  status.replace(" ", "_").toUpperCase();
+    }
+
     private String getDateString (Date d) throws ParseException {
         if (d==null) d = new Date();
         SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");

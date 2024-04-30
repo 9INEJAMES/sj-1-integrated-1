@@ -8,7 +8,7 @@ CREATE TABLE tasks (
     taskTitle VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     taskDescription VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     taskAssignees VARCHAR(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    taskStatus ENUM('No Status', 'To Do', 'Doing', 'Done') DEFAULT 'No Status',
+    taskStatus ENUM('NO_STATUS', 'TO_DO', 'DOING', 'DONE') DEFAULT 'NO_STATUS',
     createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT CHK_taskTitle_not_empty CHECK (taskTitle <> ''),
@@ -25,7 +25,7 @@ BEGIN
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
     SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
     IF NEW.taskStatus IS NULL THEN
-        SET NEW.taskStatus = 'No Status';
+        SET NEW.taskStatus = 'NO_STATUS';
     END IF;
     IF NEW.createdOn IS NULL THEN
         SET NEW.createdOn = CURRENT_TIMESTAMP;
