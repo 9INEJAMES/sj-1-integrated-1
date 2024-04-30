@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1")
-@CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th:80","http://ip23sj1.sit.kmutt.ac.th"})
+@CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th:80", "http://ip23sj1.sit.kmutt.ac.th", "http://localhost:4173", "http://localhost:5173"})
 public class TaskControllerV1 {
     @Autowired
     private TaskService service;
@@ -22,28 +22,29 @@ public class TaskControllerV1 {
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
+
     @GetMapping("/tasks")
     public ResponseEntity<Object> getAllSupplier() {
         List<Task> taskList = service.getAllTask();
-        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class,modelMapper);
+        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class, modelMapper);
         return ResponseEntity.ok(taskWithIdDTOList);
     }
 
     @GetMapping("/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId){
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
         Task task = service.findByID(taskId);
         return ResponseEntity.ok(task);
     }
 
     @PostMapping("/tasks")
-    public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO){
+    public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO) {
         TaskWithIdDTO taskWithIdDTO = service.createNewTask(taskDTO);
-        return  ResponseEntity.ok(taskWithIdDTO);
+        return ResponseEntity.ok(taskWithIdDTO);
     }
 
     @PutMapping("/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@PathVariable Integer taskId,@RequestBody TaskDTO taskDTO){
-        TaskWithIdDTO TaskWithIdDTO = service.updateTask(taskId,taskDTO);
+    public ResponseEntity<Object> updateTask(@PathVariable Integer taskId, @RequestBody TaskDTO taskDTO) {
+        TaskWithIdDTO TaskWithIdDTO = service.updateTask(taskId, taskDTO);
         return ResponseEntity.ok(TaskWithIdDTO);
     }
 }
