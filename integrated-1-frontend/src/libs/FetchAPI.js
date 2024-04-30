@@ -39,7 +39,7 @@ async function addTask(task) {
 async function updateTask(task) {
     try {
         const response = await fetch(`${url}/${task.id}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
