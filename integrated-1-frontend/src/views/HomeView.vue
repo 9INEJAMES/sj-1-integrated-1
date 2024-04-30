@@ -3,7 +3,6 @@ import { ref, onMounted, computed, watchEffect } from 'vue'
 import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
 import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
-import TaskDetails from '../components/TaskDetails.vue'
 import { useVariables } from '../stores/store.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 
