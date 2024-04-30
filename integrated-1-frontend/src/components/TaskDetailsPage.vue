@@ -51,7 +51,13 @@ onMounted(async () => {
   isSelectTask.value = myVariables.isSelectTask
   selectedTask.value = await getTaskById(id)
   if (selectedTask.value.status == 404) router.push({ path: `/` })
-  switchTimeZone(selectedTask.value)
+  else {
+    selectedTask.value.status = selectedTask.value.status
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
+    switchTimeZone(selectedTask.value)
+  }
 })
 </script>
 
