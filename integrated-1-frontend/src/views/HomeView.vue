@@ -3,13 +3,11 @@ import { ref, onMounted, computed, watchEffect } from 'vue'
 import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
 import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
-import { useVariables } from '../stores/store.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 import Addicon from '../../public/Addicon.vue'
 
 const myTasks = useTasks()
 
-const myVariables = useVariables()
 const isSelectTask = ref(false)
 const taskList = ref([])
 
@@ -20,11 +18,9 @@ const closeModalAfterTimeout = () => {
 }
 
 onMounted(async () => {
-  isSelectTask.value = myVariables.isSelectTask // Assign the value to isSelectTask.value
-  if (myTasks.getTasks().length == 0) {
-    const tasksData = await getAllTasks()
-    myTasks.addTasks(tasksData)
-  }
+  myTasks.resetTasks()
+  const tasksData = await getAllTasks()
+  myTasks.addTasks(tasksData)
   taskList.value = myTasks.getTasks()
   // closeModalAfterTimeout()
 })
@@ -32,13 +28,13 @@ const selectedTask = ref({})
 const chosenTask = async (id) => {
   selectedTask.value = await getTaskById(id)
   // selectedTask.value = { ...task }
-  myVariables.isSelectTask = true
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
 const handleUpdatedTask = (editedTask) => {
   if (editedTask) myTasks.updateTask(editedTask)
   isSelectTask.value = false // Close the modal
+  selectedTask.value = {}
   taskList.value = myTasks.getTasks()
 }
 </script>
@@ -49,7 +45,6 @@ const handleUpdatedTask = (editedTask) => {
     :task="selectedTask"
     @closeModal="handleUpdatedTask"
   />
-
   <div class="px-[5vh]">
     <p class="font-bold text-[3vh] pt-[4vh]">All your task is Here</p>
     <br />
@@ -63,11 +58,13 @@ const handleUpdatedTask = (editedTask) => {
       <!-- <div v-else>No record</div> -->
     </div>
   </div>
-  <Addicon
-    class="bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
-    style="color: #443ad8"
-    @click=""
-  />
+
+  <RouterLink to="/tasks/add"
+    ><Addicon
+      class="bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
+      style="color: #443ad8"
+      @click=""
+  /></RouterLink>
 </template>
 
 <style scoped></style>

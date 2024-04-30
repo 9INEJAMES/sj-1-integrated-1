@@ -26,8 +26,8 @@ public class TaskControllerV1 {
     @GetMapping("/tasks")
     public ResponseEntity<Object> getAllSupplier() {
         List<Task> taskList = service.getAllTask();
-        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class, modelMapper);
-        return ResponseEntity.ok(taskWithIdDTOList);
+//        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class, modelMapper);
+        return ResponseEntity.ok(taskList);
     }
 
     @GetMapping("/tasks/{taskId}")
@@ -38,8 +38,8 @@ public class TaskControllerV1 {
 
     @PostMapping("/tasks")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO) {
-        TaskWithIdDTO taskWithIdDTO = service.createNewTask(taskDTO);
-        return ResponseEntity.ok(taskWithIdDTO);
+        Task task = service.createNewTask(taskDTO);
+        return ResponseEntity.ok(task);
     }
 
     @PutMapping("/tasks/{taskId}")

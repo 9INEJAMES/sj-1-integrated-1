@@ -10,8 +10,8 @@
         </div>
         <div class="pt-[2vh] space-x-[15vh]">
             <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/aboutUs">About us </RouterLink>
-            <RouterLink to="/ourMember">Member</RouterLink>
+            <!-- <RouterLink to="/aboutUs">About us </RouterLink>
+            <RouterLink to="/ourMember">Member</RouterLink> -->
             <div>
         </div>
             

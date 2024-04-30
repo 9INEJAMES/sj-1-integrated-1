@@ -30,18 +30,12 @@ const onSubmit = async () => {
     const editedTask = {
       ...Task,
       title: selectedTask.value.title,
-      description:
-        selectedTask.value.description == null ||
-        selectedTask.value.description.length === 0 ||
-        selectedTask.value.description === ''
-          ? (selectedTask.value.description = '')
-          : selectedTask.value.description,
-      assignees:
-        selectedTask.value.assignees == null ||
-        selectedTask.value.assignees.length === 0 ||
-        selectedTask.value.assignees === ''
-          ? (selectedTask.value.assignees = '')
-          : selectedTask.value.assignees,
+      description: !selectedTask.value.description
+        ? (selectedTask.value.description = '')
+        : selectedTask.value.description,
+      assignees: !selectedTask.value.assignees
+        ? (selectedTask.value.assignees = '')
+        : selectedTask.value.assignees,
       status: selectedTask.value.status,
     }
     await updateTask(editedTask)
@@ -76,7 +70,7 @@ const switchTimeZone = () => {
 onMounted(async () => {
   try {
     selectedTask.value = ''
-    isSelectTask.value = await myVariables.isSelectTask
+    isSelectTask.value = myVariables.isSelectTask
     const task = myTasks.getIdOfTask(props.task.id)
     if (task === null || task === undefined) {
       foundTask.value = false

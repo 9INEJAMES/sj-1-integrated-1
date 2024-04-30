@@ -34,11 +34,12 @@ public class Task {
     private Date updatedOn;
 
     public String getStatus() {
-        return this.status.replace(" ", "_").toUpperCase();
+        return this.status.replaceAll("\\s", "_").toUpperCase();
     }
 
     public void setStatus(String status) {
-        this.status =  status.replace(" ", "_").toUpperCase();
+        this.status =  status.replaceAll("\\s", "_").toUpperCase();
+        
     }
 
     private String getDateString (Date d) throws ParseException {

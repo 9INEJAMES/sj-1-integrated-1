@@ -5,8 +5,8 @@ import { getTaskById } from '../libs/FetchAPI.js'
 
 const props = defineProps({
   task: {
-    type: Object
-  }
+    type: Object,
+  },
 })
 const task = computed(() => props.task)
 
@@ -38,8 +38,6 @@ const colorStatus = (task) => {
   <div
     class="flex flex-col justify-between border-none rounded-md shadow-lg p-[2vh] w-[40vh] h-[25vh] gap-[2vh]"
   >
-  
-  
     <div class="flex-col justify-start">
       <button
         v-if="task.title.length < 40"
@@ -48,7 +46,11 @@ const colorStatus = (task) => {
       >
         {{ task.title }}
       </button>
-      <button v-else class="font-bold pb-[2vh] hover:text-blue-500 break-all" @click="getTask()">
+      <button
+        v-else
+        class="font-bold pb-[2vh] hover:text-blue-500 break-all"
+        @click="getTask()"
+      >
         {{ task.title.slice(0, 30) }}...
       </button>
 

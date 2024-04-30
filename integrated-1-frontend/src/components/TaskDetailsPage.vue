@@ -1,14 +1,10 @@
 <script setup>
 import { getTaskById, updateTask } from '@/libs/FetchAPI'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
-import { useTasks } from '../stores/task.js'
-import { useVariables } from '../stores/store.js'
-import { useRoute } from 'vue-router'
-import { useRouter } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
-const myVariables = useVariables()
 const isSelectTask = ref(false)
 const selectedTask = ref({})
 const props = defineProps({
@@ -48,7 +44,6 @@ const close = () => {
 onMounted(async () => {
   const id = route.params.taskId ? route.params.taskId : props.task.id
   // selectedTask.value = ''
-  isSelectTask.value = myVariables.isSelectTask
   selectedTask.value = await getTaskById(id)
   if (selectedTask.value.status == 404) router.push({ path: `/` })
   else {

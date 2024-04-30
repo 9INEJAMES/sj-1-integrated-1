@@ -41,6 +41,9 @@ const useTasks = defineStore('tasks', () => {
   function getTasks() {
     return tasks.value
   }
+  function resetTasks() {
+    tasks.value = []
+  }
 
   return {
     addTasks,
@@ -49,6 +52,7 @@ const useTasks = defineStore('tasks', () => {
     findIndexTask,
     removeTask,
     getTasks,
+    resetTasks,
   }
 })
 

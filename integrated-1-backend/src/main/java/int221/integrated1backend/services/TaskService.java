@@ -47,14 +47,15 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskWithIdDTO createNewTask(TaskDTO taskDTO) {
+    public Task createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
         tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "NO_STATUS" : isStringNull(tmp.getStatus()));
         Task newTask = repository.save(tmp);
-        return modelMapper.map(newTask, TaskWithIdDTO.class);
+        //        return modelMapper.map(newTask, Task.class);
+        return findByID(newTask.getId());
     }
 
     @Transactional
