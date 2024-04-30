@@ -20,6 +20,14 @@ const onSubmit = async (isSave) => {
   }
   router.push({ path: `/` })
 }
+const checkLength = (name, value, length) => {
+  if (value.trim().length > length) {
+    if (name === 'title') newTask.value.title = value.trim().slice(0, length)
+    if (name === 'description')
+      newTask.value.description = value.trim().slice(0, length)
+    if (name === 'assignees') newTask.value.assignees = value.trim().slice(0, length)
+  }
+}
 </script>
 
 <template>
@@ -35,6 +43,7 @@ const onSubmit = async (isSave) => {
           <input
             type="text"
             name="title"
+            @input="checkLength('title', newTask.title, 100)"
             class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
             id="title"
             placeholder="Write your task's title"
@@ -50,6 +59,8 @@ const onSubmit = async (isSave) => {
                 rows="20"
                 class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Write your description"
+                name="description"
+                @input="checkLength('description', newTask.description, 500)"
                 v-model="newTask.description"
               ></textarea>
             </div>
@@ -64,6 +75,8 @@ const onSubmit = async (isSave) => {
                   rows="5"
                   class="block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="Enter assignees"
+                  name="assignees"
+                  @input="checkLength('assignees', newTask.assignees, 30)"
                   v-model="newTask.assignees"
                 ></textarea>
               </div>
