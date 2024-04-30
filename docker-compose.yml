@@ -30,7 +30,7 @@ services:
       - DB_PORT=3306
       - DB_NAME=integrated
       - DB_USER=dev
-      - DB_PASS=mysql@sit
+      - DB_PASS=Mysql@sit123
 
   frontend:
     build: ./integrated-1-frontend
