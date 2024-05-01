@@ -38,6 +38,26 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE TRIGGER before_update_tasks
+BEFORE UPDATE ON tasks
+FOR EACH ROW
+BEGIN
+    SET NEW.taskTitle = TRIM(NEW.taskTitle);
+    SET NEW.taskDescription = TRIM(NEW.taskDescription);
+    SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+    SET NEW.taskStatus = UPPER(REPLACE(TRIM(NEW.taskStatus), ' ', '_'));
+    IF NEW.taskStatus IS NULL THEN
+        SET NEW.taskStatus = 'NO_STATUS';
+    END IF;
+    IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
+END$$
+
+DELIMITER ;
+
 USE integrated;
 
 INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, createdOn, updatedOn) 

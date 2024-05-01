@@ -74,12 +74,12 @@ public class Task {
         return getDateString(updatedOn);
     }
 
-    public void setCreatedOn() {
-        this.setCreatedOn(new Date());
-    }
-
-    public void setUpdatedOn() {
-        this.setUpdatedOn(new Date());
-    }
+//    public void setCreatedOn() {
+//        this.setCreatedOn(new Date());
+//    }
+//
+//    public void setUpdatedOn() {
+//        this.setUpdatedOn(new Date());
+//    }
 
 }

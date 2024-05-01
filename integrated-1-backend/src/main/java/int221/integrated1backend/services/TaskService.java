@@ -66,7 +66,7 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskWithIdDTO updateTask(Integer taskId, TaskDTO taskDTO) {
+    public Task updateTask(Integer taskId, TaskDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
@@ -75,9 +75,9 @@ public class TaskService {
         existingTask.setDescription(isStringNull(task.getDescription()));
         existingTask.setAssignees(isStringNull(task.getAssignees()));
         existingTask.setStatus(isStringNull(task.getStatus(), existingTask.getStatus()));
-//        existingTask.setUpdatedOn(new Date());
+        existingTask.setUpdatedOn(null);
         Task result = repository.save(existingTask);
-        return modelMapper.map(result, TaskWithIdDTO.class);
+        return result;
     }
 
 }
