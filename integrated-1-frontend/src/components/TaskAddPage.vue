@@ -78,7 +78,7 @@ onMounted(() => {
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="myTheme.getTheme()">
             <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-lg font-semibold">New Task</p>
+                <p class="text-lg font-semibold">{{ route.params.taskId ? 'Edit':'New' }} Task</p>
                 <hr />
                 <div>
                     <label for="title">Titie</label><br />
