@@ -33,17 +33,32 @@ public class Task {
     private Date createdOn;
     private Date updatedOn;
 
+//    public void setTitle(String title) {
+//        if (title == null) this.title = null;
+//        else this.title = title.trim().substring(0, 101);
+//    }
+//
+//    public void setDescription(String description) {
+//        if (description == null) this.description = null;
+//        else this.description = description.trim().substring(0, 501);
+//    }
+//
+//    public void setAssignees(String assignees) {
+//        if (assignees == null) this.assignees = null;
+//        else this.assignees = assignees.trim().substring(0, 31);
+//    }
+
     public String getStatus() {
         return this.status.replaceAll("\\s", "_").toUpperCase();
     }
 
     public void setStatus(String status) {
-        this.status =  status.replaceAll("\\s", "_").toUpperCase();
-        
+        this.status = status.replaceAll("\\s", "_").toUpperCase();
+
     }
 
-    private String getDateString (Date d) throws ParseException {
-        if (d==null) d = new Date();
+    private String getDateString(Date d) throws ParseException {
+        if (d == null) d = new Date();
         SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");
         SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
         in.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -58,6 +73,7 @@ public class Task {
     public String getUpdatedOn() throws ParseException {
         return getDateString(updatedOn);
     }
+
     public void setCreatedOn() {
         this.setCreatedOn(new Date());
     }
