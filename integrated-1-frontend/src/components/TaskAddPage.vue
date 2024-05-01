@@ -3,7 +3,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import { addTask } from '@/libs/FetchAPI'
 import { useTasks } from '../stores/task.js'
+import { useTheme } from '@/stores/theme.js'
 
+const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
 const myTask = useTasks()
@@ -25,7 +27,8 @@ const checkLength = (name, value, length) => {
     if (name === 'title') newTask.value.title = value.trim().slice(0, length)
     if (name === 'description')
       newTask.value.description = value.trim().slice(0, length)
-    if (name === 'assignees') newTask.value.assignees = value.trim().slice(0, length)
+    if (name === 'assignees')
+      newTask.value.assignees = value.trim().slice(0, length)
   }
 }
 </script>
@@ -34,7 +37,7 @@ const checkLength = (name, value, length) => {
   <div
     class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full"
   >
-    <div class="bg-white w-full rounded-lg">
+    <div class="w-full rounded-lg" :class="myTheme.getTheme()">
       <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
         <p class="text-lg font-semibold">New Task</p>
         <hr />
@@ -55,9 +58,9 @@ const checkLength = (name, value, length) => {
             <div>
               <label for="description">Description</label>
               <textarea
+              rows="15"
                 id="description"
-                rows="20"
-                class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                class="block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                 placeholder="Write your description"
                 name="description"
                 @input="checkLength('description', newTask.description, 500)"
@@ -84,7 +87,7 @@ const checkLength = (name, value, length) => {
                 <label for="status">Status</label>
                 <select
                   id="status"
-                  class="select select-bordered"
+                  class="select select-bordered text-black"
                   v-model="newTask.status"
                 >
                   <option selected value="No Status">No Status</option>

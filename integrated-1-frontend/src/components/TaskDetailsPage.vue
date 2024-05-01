@@ -1,8 +1,10 @@
 <script setup>
 import { getTaskById, updateTask } from '@/libs/FetchAPI'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
-import { useRoute,useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useTheme } from '@/stores/theme.js'
 
+const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
 const isSelectTask = ref(false)
@@ -60,7 +62,10 @@ onMounted(async () => {
   <div
     class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full"
   >
-    <div class="bg-white w-full rounded-lg flex flex-col justify-between">
+    <div
+      class="w-full rounded-lg flex flex-col justify-between"
+      :class="myTheme.getTheme()"
+    >
       <div
         v-if="selectedTask"
         class="grid gap-[2vh] rounded-md border-none p-[2vh] break-all"

@@ -2,12 +2,12 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
 const useTheme = defineStore('theme', () => {
-  const currTheme = ref('')
+  const currTheme = ref('bg-white text-black')
   const ligthTheme = 'bg-white text-black'
   const darkTheme = 'bg-slate-600 text-amber-50'
 
-  function changeTheme(isDark) {
-    isDark ? (currTheme.value = darkTheme) : (currTheme.value = ligthTheme)
+  function changeTheme(isLight) {
+    !isLight ? (currTheme.value = darkTheme) : (currTheme.value = ligthTheme)
   }
 
   function getTheme() {
@@ -17,7 +17,7 @@ const useTheme = defineStore('theme', () => {
     currTheme.value = ligthTheme
   }
 
-  return {}
+  return { changeTheme, getTheme, resetTheme }
 })
 
 export { useTheme }

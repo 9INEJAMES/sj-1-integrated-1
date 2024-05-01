@@ -3,12 +3,13 @@ import NavHeader from './components/NavHeader.vue'
 import { ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 const isChecked = ref(false)
+const myTheme = useTheme()
 </script>
 
 <template>
   <div
     class="roboto-light min-h-screen max-h-fit pb-24"
-    :class="isChecked ? 'bg-slate-600 text-amber-50' : 'bg-white text-black'"
+    :class="myTheme.getTheme()"
   >
     <NavHeader />
     <div class="float-end pr-[5vh]">
@@ -33,6 +34,7 @@ const isChecked = ref(false)
           type="checkbox"
           value="synthwave"
           class="toggle theme-controller"
+          @click="myTheme.changeTheme(isChecked)"
           v-model="isChecked"
         />
         <svg
