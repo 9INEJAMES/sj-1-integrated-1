@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, onUpdated } from 'vue'
-import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
-import TaskTable from '../components/TaskTable.vue'
-import { useTasks } from '../stores/task.js'
+import { getAllTasks, getTaskById } from '@/libs/FetchAPI.js'
+import TaskTable from '@/components/TaskTable.vue'
+import { useTasks } from '@/stores/task.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 import Addicon from '../../public/Addicon.vue'
 
@@ -31,15 +31,12 @@ const chosenTask = async (id) => {
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
-
-
 const handleUpdatedTask = (editedTask) => {
   if (editedTask) myTasks.updateTask(editedTask)
   isSelectTask.value = false // Close the modal
   selectedTask.value = {}
   taskList.value = myTasks.getTasks()
 }
-
 </script>
 
 <template>
@@ -64,7 +61,7 @@ const handleUpdatedTask = (editedTask) => {
 
   <RouterLink to="/tasks/add"
     ><Addicon
-      class="bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
+      class="fixed bottom-0 right-0 bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
       style="color: #443ad8"
       @click=""
   /></RouterLink>
