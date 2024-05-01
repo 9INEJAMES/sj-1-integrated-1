@@ -5,55 +5,80 @@ import { addTask, updateTask } from '@/libs/FetchAPI'
 import { useTasks } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 
+
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
 const myTasks = useTasks()
 const newTask = ref({
-    title: '',
-    description: '',
-    assignees: '',
-    status: 'No Status',
+  title: "",
+  description: "",
+  assignees: "",
+  status: "No Status",
 })
 
 const submitTask = async (isSave) => {
-    if (isSave) {
-        if (route.params.taskId) {
-            await updateTask(newTask.value)
-        }
-        const task = await addTask(newTask.value)
-        myTask.addTasks([task])
-    }
-    router.push({ path: `/` })
-}
-const checkLength = (name, value, length) => {
-    if (value.trim().length > length) {
-        if (name === 'title') newTask.value.title = value.trim().slice(0, length)
-        if (name === 'description') newTask.value.description = value.trim().slice(0, length)
-        if (name === 'assignees') newTask.value.assignees = value.trim().slice(0, length)
-    }
-}
-onMounted(() => {
+  if (isSave) {
     if (route.params.taskId) {
-        const task = myTasks.getIdOfTask(route.params.taskId)
-        newTask.value = {
-            id: task.id,
-            title: task.title,
-            description: task.description,
-            assignees: task.assignees,
-            status: task.status,
-            createdOn: task.createdOn,
-            updatedOn: task.updatedOn,
-        }
+      const updated = await updateTask(newTask.value)
+      myTasks.updateTask({
+        ...updated,
+        title: newTask.value.title,
+        description:
+          newTask.value.description == null ||
+          newTask.value.description.length === 0 ||
+          newTask.value.description === ""
+            ? (newTask.value.description = "")
+            : newTask.value.description,
+        assignees:
+          newTask.value.assignees == null ||
+          newTask.value.assignees.length === 0 ||
+          newTask.value.assignees === ""
+            ? (newTask.value.assignees = "")
+            : newTask.value.assignees,
+        status: newTask.value.status,
+      })
+    } else {
+      const task = await addTask(newTask.value)
+      myTasks.addTasks([task])
     }
-})
+  }
+  router.push({ path: `/` })
+};
+const checkLength = (name, value, length) => {
+  if (value.trim().length > length) {
+    if (name === "title") newTask.value.title = value.trim().slice(0, length);
+    if (name === "description")
+      newTask.value.description = value.trim().slice(0, length);
+    if (name === "assignees")
+      newTask.value.assignees = value.trim().slice(0, length);
+  }
+};
+
+const convertFormat = (date) => {
+  return new Date(date).toLocaleString();
+};
+onMounted(() => {
+  if (route.params.taskId) {
+    const task = myTasks.getIdOfTask(route.params.taskId);
+    newTask.value = {
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      assignees: task.assignees,
+      status: task.status,
+      createdOn: task.createdOn,
+      updatedOn: task.updatedOn,
+    };
+  }
+});
 </script>
 
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="myTheme.getTheme()">
             <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-lg font-semibold">New Task</p>
+                <p class="text-lg font-semibold">{{ route.params.taskId ? 'Edit':'New' }} Task</p>
                 <hr />
                 <div>
                     <label for="title">Titie</label><br />
