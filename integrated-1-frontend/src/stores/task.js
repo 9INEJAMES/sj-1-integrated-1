@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
-const useTasks = defineStore('tasks', () => {
+export const useTasks = defineStore('tasks', () => {
   const tasks = ref([])
 
   function addTasks(newTasks) {
@@ -55,8 +55,6 @@ const useTasks = defineStore('tasks', () => {
     resetTasks,
   }
 })
-
-export { useTasks }
 
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useTasks, import.meta.hot))

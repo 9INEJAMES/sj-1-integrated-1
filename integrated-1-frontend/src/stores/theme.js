@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
-const useTheme = defineStore('theme', () => {
+export const useTheme = defineStore('theme', () => {
     const currTheme = ref('bg-white text-black')
     const alterTheme = ref('bg-slate-600 text-amber-50')
     const ligthTheme = 'bg-white text-black'
@@ -24,8 +24,6 @@ const useTheme = defineStore('theme', () => {
 
     return { changeTheme, getTheme, resetTheme, getAlterTheme }
 })
-
-export { useTheme }
 
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useTheme, import.meta.hot))
