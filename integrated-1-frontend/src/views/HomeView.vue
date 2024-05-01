@@ -7,24 +7,32 @@ import Addicon from '../../public/Addicon.vue'
 import { useToast } from '@/stores/toast.js'
 import { useTaskApi } from '@/composables/task-api.js'
 import VToast from '@/ui/VToast.vue'
+import { useTheme } from '@/stores/theme'
 
 const taskApi = useTaskApi()
 const myTasks = useTasksStore()
 const myToast = useToast()
 const isSelectTask = ref(false)
 const taskList = ref([])
+const myTheme = useTheme()
 
 onMounted(async () => {
-    // myTasks.resetTasks()
     if (myTasks.getTasks().length <= 0) {
         const tasksData = await taskApi.getAllTasks()
         myTasks.addTasks(tasksData)
     }
+    if (myToast.currToast.style === 'alert-error') {
+        myTasks.resetTasks()
+        const tasksData = await taskApi.getAllTasks()
+        myTasks.addTasks(tasksData)
+        isSelectTask.value = false
+    }
     taskList.value = myTasks.getTasks()
 })
+
 watch(myToast.currToast, async () => {
+    console.log(myToast.currToast.style)
     if (myToast.currToast.style === 'alert-error') {
-        console.log('xd')
         myTasks.resetTasks()
         const tasksData = await taskApi.getAllTasks()
         myTasks.addTasks(tasksData)
@@ -54,8 +62,8 @@ const handleUpdatedTask = () => {
         </div>
     </div>
 
-    <RouterLink v-show="!isSelectTask" to="/tasks/add"
-        ><Addicon class="fixed bottom-0 right-0 bg-white w-16 h-16 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer" style="color: #443ad8"
+    <RouterLink v-show="!isSelectTask" to="/tasks/add" class="itbkk-button-add"
+        ><Addicon :class="myTheme.getAlterTheme()" class="fixed bottom-0 right-0 w-16 h-16 rounded-full p-2 m-5 transition-all ease-in hover:cursor-pointer" style="color: #443ad8"
     /></RouterLink>
     <VToast />
 </template>

@@ -21,7 +21,6 @@ const updatedOn = ref('')
 
 const switchTimeZone = () => {
     localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
-
     if (selectedTask.value) {
         const localCreatedOn = new Date(selectedTask.value.createdOn).toLocaleString('en-GB', {
             timeZone: localTimeZone.value,
@@ -43,12 +42,11 @@ onMounted(async () => {
     const id = route.params.taskId ? route.params.taskId : props.task.id
     // selectedTask.value = ''
     selectedTask.value = await taskApi.getTaskById(id)
-        selectedTask.value.status = selectedTask.value.status
-            .split('_')
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ')
-        switchTimeZone(selectedTask.value)
-    
+    selectedTask.value.status = selectedTask.value.status
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ')
+    switchTimeZone(selectedTask.value)
 })
 </script>
 
@@ -66,7 +64,7 @@ onMounted(async () => {
                             <label for="description">Description</label>
                             <p
                                 id="description"
-                                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all"
+                                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all h-full"
                                 :class="selectedTask.description ? '' : 'italic text-gray-500'"
                             >
                                 {{ selectedTask.description ? selectedTask.description : 'No Description Provided' }}

@@ -6,7 +6,8 @@ const myToast = useToast()
 <template>
     <div v-if="myToast.currToast.msg.length > 0" class="toast toast-start toast-top">
         <div class="alert text-white" :class="myToast.currToast.style">
-            <span>{{ myToast.currToast.msg }}</span>
+            <span class="text-xl font-semibold">{{ myToast.currToast.style === 'alert-success' ? 'Success' : 'Error' }}:</span>
+            <span class="itbkk-message">{{ myToast.currToast.msg }}</span>
             <button
                 type="button"
                 class="ms-auto -mx-1.5 -my-1.5 text-gray-200 hover:text-gray-900 rounded-lg p-1.5 inline-flex items-center justify-center h-8 w-8"

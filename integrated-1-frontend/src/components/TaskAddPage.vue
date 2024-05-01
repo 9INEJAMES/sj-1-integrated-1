@@ -9,14 +9,13 @@ const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
 const myTasks = useTasksStore()
+const taskApi = useTaskApi()
 const newTask = ref({
     title: '',
     description: '',
     assignees: '',
     status: 'No Status',
 })
-
-const taskApi = useTaskApi()
 
 const submitTask = async (isSave) => {
     if (isSave) {
@@ -46,7 +45,6 @@ const checkLength = (name, value, length) => {
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
-const selectedTask = ref({})
 const switchTimeZone = (task) => {
     localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
     createdOn.value = new Date(task.createdOn).toLocaleString('en-GB', {
@@ -77,7 +75,7 @@ onMounted(() => {
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="myTheme.getTheme()">
             <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-lg font-semibold">{{ route.params.taskId ? 'Edit' : 'New' }} Task</p>
+                <p class="text-xl font-semibold">{{ route.params.taskId ? 'Edit' : 'New' }} Task</p>
                 <hr />
                 <div>
                     <label for="title">Titie</label><br />
@@ -85,7 +83,7 @@ onMounted(() => {
                         type="text"
                         name="title"
                         @input="checkLength('title', newTask.title, 100)"
-                        class="block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                        class="itbkk-title block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                         id="title"
                         placeholder="Write your task's title"
                         v-model="newTask.title"
@@ -98,7 +96,7 @@ onMounted(() => {
                             <textarea
                                 rows="15"
                                 id="description"
-                                class="block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                                class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                                 placeholder="Write your description"
                                 name="description"
                                 @input="checkLength('description', newTask.description, 500)"
@@ -107,14 +105,14 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="grid col-span-4">
+                    <div class="flex col-span-4 flex-col justify-between">
                         <div>
                             <div>
                                 <label for="assignees">Assignees</label>
                                 <textarea
                                     id="assignees"
-                                    rows="5"
-                                    class="block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                                    rows="1"
+                                    class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                                     placeholder="Enter assignees"
                                     name="assignees"
                                     @input="checkLength('assignees', newTask.assignees, 30)"
@@ -123,7 +121,7 @@ onMounted(() => {
                             </div>
                             <div class="flex flex-col pt-[3vh]">
                                 <label for="status">Status</label>
-                                <select id="status" class="select select-bordered" :class="myTheme.getTheme()" v-model="newTask.status">
+                                <select id="status" class="itbkk-status select select-bordered" :class="myTheme.getTheme()" v-model="newTask.status">
                                     <option selected value="No Status">No Status</option>
                                     <option value="To Do">To Do</option>
                                     <option value="Doing">Doing</option>
@@ -135,10 +133,10 @@ onMounted(() => {
                                 <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
                                 <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
                             </div>
-                            <div class="pt-[4vh] flex justify-evenly">
-                                <button class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">Ok</button>
-                                <button class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
-                            </div>
+                        </div>
+                        <div class="pt-[4vh] flex justify-evenly">
+                            <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">Ok</button>
+                            <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
                         </div>
                     </div>
                 </div>
