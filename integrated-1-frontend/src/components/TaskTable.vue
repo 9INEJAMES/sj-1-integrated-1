@@ -38,7 +38,7 @@ const colorStatus = (task) => {
 }
 
 const toEditPage = (id) => {
-    router.push({ path: `tasks/${id}/edit` })
+    router.push({ path: `task/${id}/edit` })
     if (selectedTask.value === null) {
         selectedTask.value = myTasks.getIdOfTask(id)
     }

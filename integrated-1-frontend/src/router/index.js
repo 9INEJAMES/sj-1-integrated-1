@@ -8,30 +8,30 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            redirect: '/tasks',
+            redirect: '/task',
         },
         {
             path: '/:pathMatch(.*)*',
-            redirect: '/tasks',
+            redirect: '/task',
         },
         {
-            path: '/tasks',
+            path: '/task',
             name: 'home',
             component: HomeView,
         },
         {
-            path: '/tasks/:taskId',
+            path: '/task/:taskId',
             name: 'TaskDetailsPage',
             component: TaskDetailsPage,
             props: true,
         },
         {
-            path: '/tasks/add',
+            path: '/task/add',
             name: 'AddTask',
             component: TaskAddPage,
         },
         {
-            path: '/tasks/:taskId/edit',
+            path: '/task/:taskId/edit',
             name: 'EditTask',
             component: TaskAddPage,
         },

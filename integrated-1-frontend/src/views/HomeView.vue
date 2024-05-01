@@ -62,7 +62,7 @@ const handleUpdatedTask = () => {
         </div>
     </div>
 
-    <RouterLink v-show="!isSelectTask" to="/tasks/add" class="itbkk-button-add"
+    <RouterLink v-show="!isSelectTask" to="/task/add" class="itbkk-button-add"
         ><Addicon :class="myTheme.getAlterTheme()" class="fixed bottom-0 right-0 w-16 h-16 rounded-full p-2 m-5 transition-all ease-in hover:cursor-pointer" style="color: #443ad8"
     /></RouterLink>
     <VToast />

@@ -42,11 +42,16 @@ onMounted(async () => {
     const id = route.params.taskId ? route.params.taskId : props.task.id
     // selectedTask.value = ''
     selectedTask.value = await taskApi.getTaskById(id)
-    selectedTask.value.status = selectedTask.value.status
-        .split('_')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ')
-    switchTimeZone(selectedTask.value)
+    if (selectedTask.value) {
+        selectedTask.value.status = selectedTask.value.status
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
+        switchTimeZone(selectedTask.value)
+    }
+    if (!selectedTask.value) {
+        router.push({ path: `/` })
+    }
 })
 </script>
 
