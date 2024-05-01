@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps, defineEmits, onUnmounted } from 'vue'
 import { deleteTask } from '@/libs/FetchAPI.js'
-import { useTasks } from '@/stores/task';
+import { useTasks } from '@/stores/task'
 
 
 const props = defineProps({

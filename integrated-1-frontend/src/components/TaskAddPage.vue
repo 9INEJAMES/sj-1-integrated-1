@@ -1,9 +1,9 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
-import { addTask } from '@/libs/FetchAPI'
-import { useTasks } from '@/stores/task.js'
-import { useTheme } from '@/stores/theme.js'
+import { useRoute, useRouter } from "vue-router"
+import { onMounted, ref } from "vue"
+import { addTask,updateTask } from "@/libs/FetchAPI"
+import { useTasks } from "../stores/task.js"
+import { useTheme } from "@/stores/theme.js"
 
 const myTheme = useTheme()
 const route = useRoute()
@@ -18,17 +18,20 @@ const newTask = ref({
 
 const submitTask = async (isSave) => {
   if (isSave) {
-    const tasks = await addTask(newTask.value)
+    if(route.params.taskId){
+       await updateTask(newTask.value)
+    }
+    const task = await addTask(newTask.value)
     myTask.addTasks([task])
   }
   router.push({ path: `/` })
 }
 const checkLength = (name, value, length) => {
   if (value.trim().length > length) {
-    if (name === 'title') newTask.value.title = value.trim().slice(0, length)
-    if (name === 'description')
+    if (name === "title") newTask.value.title = value.trim().slice(0, length)
+    if (name === "description")
       newTask.value.description = value.trim().slice(0, length)
-    if (name === 'assignees')
+    if (name === "assignees")
       newTask.value.assignees = value.trim().slice(0, length)
   }
 }
@@ -36,6 +39,7 @@ onMounted(() => {
   if (route.params.taskId) {
     const task = myTasks.getIdOfTask(route.params.taskId)
     newTask.value = {
+      id: task.id,
       title: task.title,
       description: task.description,
       assignees: task.assignees,
