@@ -18,9 +18,11 @@ const closeModalAfterTimeout = () => {
 }
 
 onMounted(async () => {
-  myTasks.resetTasks()
-  const tasksData = await getAllTasks()
-  myTasks.addTasks(tasksData)
+  // myTasks.resetTasks()
+  if (myTasks.getTasks().length <= 0) {
+    const tasksData = await getAllTasks()
+    myTasks.addTasks(tasksData)
+  }
   taskList.value = myTasks.getTasks()
   // closeModalAfterTimeout()
 })
