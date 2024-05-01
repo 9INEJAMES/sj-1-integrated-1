@@ -2,13 +2,13 @@
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { addTask } from '@/libs/FetchAPI'
-import { useTasks } from '../stores/task.js'
+import { useTasks } from '@/stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
-const myTask = useTasks()
+const myTasks = useTasks()
 const newTask = ref({
       title: '',
       description: '',
@@ -18,7 +18,7 @@ const newTask = ref({
 
 const submitTask = async (isSave) => {
   if (isSave) {
-    const task = await addTask(newTask.value)
+    const tasks = await addTask(newTask.value)
     myTask.addTasks([task])
   }
   router.push({ path: `/` })
