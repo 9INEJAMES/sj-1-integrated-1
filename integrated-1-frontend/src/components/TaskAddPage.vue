@@ -1,43 +1,66 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router"
 import { onMounted, ref } from "vue"
-import { addTask,updateTask } from "@/libs/FetchAPI"
+import { addTask, updateTask } from "@/libs/FetchAPI"
 import { useTasks } from "../stores/task.js"
 import { useTheme } from "@/stores/theme.js"
+
 
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
 const myTasks = useTasks()
 const newTask = ref({
-  title: '',
-  description: '',
-  assignees: '',
-  status: 'No Status',
+  title: "",
+  description: "",
+  assignees: "",
+  status: "No Status",
 })
 
 const submitTask = async (isSave) => {
   if (isSave) {
-    if(route.params.taskId){
-       await updateTask(newTask.value)
+    if (route.params.taskId) {
+      const updated = await updateTask(newTask.value)
+      myTasks.updateTask({
+        ...updated,
+        title: newTask.value.title,
+        description:
+          newTask.value.description == null ||
+          newTask.value.description.length === 0 ||
+          newTask.value.description === ""
+            ? (newTask.value.description = "")
+            : newTask.value.description,
+        assignees:
+          newTask.value.assignees == null ||
+          newTask.value.assignees.length === 0 ||
+          newTask.value.assignees === ""
+            ? (newTask.value.assignees = "")
+            : newTask.value.assignees,
+        status: newTask.value.status,
+      })
+    } else {
+      const task = await addTask(newTask.value)
+      myTasks.addTasks([task])
     }
-    const task = await addTask(newTask.value)
-    myTask.addTasks([task])
   }
   router.push({ path: `/` })
-}
+};
 const checkLength = (name, value, length) => {
   if (value.trim().length > length) {
-    if (name === "title") newTask.value.title = value.trim().slice(0, length)
+    if (name === "title") newTask.value.title = value.trim().slice(0, length);
     if (name === "description")
-      newTask.value.description = value.trim().slice(0, length)
+      newTask.value.description = value.trim().slice(0, length);
     if (name === "assignees")
-      newTask.value.assignees = value.trim().slice(0, length)
+      newTask.value.assignees = value.trim().slice(0, length);
   }
-}
+};
+
+const convertFormat = (date) => {
+  return new Date(date).toLocaleString();
+};
 onMounted(() => {
   if (route.params.taskId) {
-    const task = myTasks.getIdOfTask(route.params.taskId)
+    const task = myTasks.getIdOfTask(route.params.taskId);
     newTask.value = {
       id: task.id,
       title: task.title,
@@ -46,9 +69,9 @@ onMounted(() => {
       status: task.status,
       createdOn: task.createdOn,
       updatedOn: task.updatedOn,
-    }
+    };
   }
-})
+});
 </script>
 
 <template>
