@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { addTask } from '@/libs/FetchAPI'
 import { useTasks } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
@@ -10,12 +10,13 @@ const route = useRoute()
 const router = useRouter()
 const myTask = useTasks()
 const newTask = ref({
-  title: '',
-  description: '',
-  assignees: '',
-  status: 'No Status',
-})
-const onSubmit = async (isSave) => {
+      title: '',
+      description: '',
+      assignees: '',
+      status: 'No Status',})
+
+
+const submitTask = async (isSave) => {
   if (isSave) {
     const task = await addTask(newTask.value)
     myTask.addTasks([task])
@@ -31,6 +32,19 @@ const checkLength = (name, value, length) => {
       newTask.value.assignees = value.trim().slice(0, length)
   }
 }
+onMounted(() => {
+  if(route.params.taskId) {
+    const task =  myTask.getIdOfTask(route.params.taskId)
+    newTask.value = {
+      title: task.title,
+      description: task.description,
+      assignees: task.assignees,
+      status: task.status,
+      createdOn: task.createdOn,
+      updatedOn: task.updatedOn,
+    }
+  }
+})
 </script>
 
 <template>
@@ -99,14 +113,14 @@ const checkLength = (name, value, length) => {
               <div class="pt-[4vh] flex justify-evenly">
                 <button
                   class="btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                  @click="onSubmit(true)"
+                  @click="submitTask(true)"
                   :disabled="newTask.title.trim().length <= 0"
                 >
                   Ok
                 </button>
                 <button
                   class="btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                  @click="onSubmit(false)"
+                  @click="submitTask(false)"
                 >
                   Cancel
                 </button>

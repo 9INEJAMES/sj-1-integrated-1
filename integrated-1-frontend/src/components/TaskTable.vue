@@ -1,12 +1,19 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue'
 import ConfirmDelete from './confirmDelete.vue'
-import router from '@/router/index.js'
+import router from '../router/index.js'
+import { useTasks } from '../stores/task.js'
 
 const deleteModal = ref(false)
+const updateModal = ref(false)
+const myTasks = useTasks()
+
 const props = defineProps({
   taskList: {
     type: Array,
+  },
+  task: {
+    type: Object,
   },
 })
 const emit = defineEmits(['getTask'])
@@ -27,19 +34,19 @@ const colorStatus = (task) => {
 
 const toEditPage = (id) => {
   router.push({ path: `tasks/${id}/edit` })
+  if (selectedTask.value === null) {
+    selectedTask.value = myTasks.getIdOfTask(id)
+  }
+  updateModal.value = true
 }
 
 const selectedTask = ref(null)
 
+
 const deleteTask = (task) => {
   if (selectedTask.value === null) {
-    // Set the selectedTask only if it's null
     selectedTask.value = task
-  } else {
-    // If selectedTask is not null, do nothing
-    return
-  }
-  // Open the delete modal
+  } 
   deleteModal.value = true
 }
 
@@ -115,7 +122,6 @@ const handleDeleteModal = () => {
           </td>
         </tr>
       </tbody>
-      <!-- Close tbody here -->
     </table>
   </div>
 </template>

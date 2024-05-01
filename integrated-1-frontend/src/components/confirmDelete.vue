@@ -16,7 +16,6 @@ const myTasks = useTasks()
 const emit = defineEmits(['closeModal']) 
 
 const submitDelete = async () => {
-  // Call deleteTask function with taskId
   const result = await deleteTask(props.task.id)
   myTasks.removeTask(result.id)
   emit('closeModal')

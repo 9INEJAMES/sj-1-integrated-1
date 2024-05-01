@@ -18,7 +18,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['updatedTask', 'deleteTask', 'notFoundTask'])
+const emit = defineEmits(['updatedTask', 'notFoundTask'])
 
 const localTimeZone = ref('')
 const createdOn = ref('')

@@ -31,8 +31,7 @@ const chosenTask = async (id) => {
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
-const handleUpdatedTask = (editedTask) => {
-  if (editedTask) myTasks.updateTask(editedTask)
+const handleUpdatedTask = () => {
   isSelectTask.value = false // Close the modal
   selectedTask.value = {}
   taskList.value = myTasks.getTasks()
@@ -63,7 +62,6 @@ const handleUpdatedTask = (editedTask) => {
     ><Addicon
       class="fixed bottom-0 right-0 bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
       style="color: #443ad8"
-      @click=""
   /></RouterLink>
 </template>
 
