@@ -1,7 +1,7 @@
 <script setup>
 import { ref, defineProps, defineEmits } from 'vue'
 import ConfirmDelete from './confirmDelete.vue'
-import router from '../router/index.js'
+import router from '@/router/index.js'
 
 const deleteModal = ref(false)
 const props = defineProps({

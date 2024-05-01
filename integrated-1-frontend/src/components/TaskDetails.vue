@@ -1,8 +1,8 @@
 <script setup>
 import { getTaskById, updateTask } from '@/libs/FetchAPI'
 import { ref, onMounted, defineProps, defineEmits } from 'vue'
-import { useTasks } from '../stores/task.js'
-import { useVariables } from '../stores/store.js'
+import { useTasks } from '@/stores/task.js'
+import { useVariables } from '@/stores/store.js'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
