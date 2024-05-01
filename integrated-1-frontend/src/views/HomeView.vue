@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watchEffect, onUpdated } from 'vue'
+import { ref, onMounted, onUpdated } from 'vue'
 import { getAllTasks, getTaskById } from '../libs/FetchAPI.js'
 import TaskTable from '../components/TaskTable.vue'
 import { useTasks } from '../stores/task.js'
@@ -31,10 +31,7 @@ const chosenTask = async (id) => {
   isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
-onUpdated(() => {
-  myTasks.resetTasks()
-  taskList.value = myTasks.getTasks()
-})
+
 
 const handleUpdatedTask = (editedTask) => {
   if (editedTask) myTasks.updateTask(editedTask)
@@ -42,6 +39,7 @@ const handleUpdatedTask = (editedTask) => {
   selectedTask.value = {}
   taskList.value = myTasks.getTasks()
 }
+
 </script>
 
 <template>

@@ -23,12 +23,6 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/tasks/:taskId/edit',
-      name: 'EditTask',
-      component: EditTask,
-      props: true,
-    },
-    {
       path: '/tasks/add',
       name: 'AddTask',
       component: TaskAddPage,
