@@ -60,7 +60,7 @@ onMounted(async () => {
 
 <template>
   <div
-    class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full"
+    class="detailpage py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full"
   >
     <div
       class="w-full rounded-lg flex flex-col justify-between"

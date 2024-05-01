@@ -10,11 +10,11 @@ const route = useRoute()
 const router = useRouter()
 const myTasks = useTasks()
 const newTask = ref({
-      title: '',
-      description: '',
-      assignees: '',
-      status: 'No Status',})
-
+  title: '',
+  description: '',
+  assignees: '',
+  status: 'No Status',
+})
 
 const submitTask = async (isSave) => {
   if (isSave) {
@@ -33,8 +33,8 @@ const checkLength = (name, value, length) => {
   }
 }
 onMounted(() => {
-  if(route.params.taskId) {
-    const task =  myTask.getIdOfTask(route.params.taskId)
+  if (route.params.taskId) {
+    const task = myTasks.getIdOfTask(route.params.taskId)
     newTask.value = {
       title: task.title,
       description: task.description,
@@ -72,7 +72,7 @@ onMounted(() => {
             <div>
               <label for="description">Description</label>
               <textarea
-              rows="15"
+                rows="15"
                 id="description"
                 class="block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
                 placeholder="Write your description"
