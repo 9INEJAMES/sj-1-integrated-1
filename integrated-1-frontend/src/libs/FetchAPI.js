@@ -30,6 +30,7 @@ async function addTask(obj) {
       body: JSON.stringify({ ...obj }),
     })
     const result = await response.json()
+
     return result
   } catch (error) {
     console.error(`Error adding user: ${error}`)

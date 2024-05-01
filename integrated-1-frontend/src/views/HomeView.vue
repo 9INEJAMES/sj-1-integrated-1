@@ -1,31 +1,36 @@
 <script setup>
-import { ref, onMounted, onUpdated } from 'vue'
-import { getAllTasks, getTaskById } from '@/libs/FetchAPI.js'
+import { ref, onMounted, onUpdated, watch } from 'vue'
 import TaskTable from '@/components/TaskTable.vue'
-import { useTasks } from '@/stores/task.js'
+import { useTasksStore } from '@/stores/task.js'
 import TaskDetailsPage from '@/components/TaskDetailsPage.vue'
 import Addicon from '../../public/Addicon.vue'
+import { useToast } from '@/stores/toast.js'
+import { useTaskApi } from '@/composables/task-api.js'
 
-const myTasks = useTasks()
-const isToastOpen = ref(false)
-const responseMsg = ref('test')
+const myTasks = useTasksStore()
+const myToast = useToast()
 const isSelectTask = ref(false)
 const taskList = ref([])
 
-const closeModalAfterTimeout = () => {
-  setTimeout(() => {
-    isToastOpen.value = false // Change the value of isSelectedTask after 3 minutes
-  }, 3000) // 3 minutes in milliseconds
-}
+const taskApi = useTaskApi()
 
 onMounted(async () => {
   // myTasks.resetTasks()
   if (myTasks.getTasks().length <= 0) {
-    const tasksData = await getAllTasks()
+    const tasksData = await taskApi.getAllTasks()
     myTasks.addTasks(tasksData)
   }
   taskList.value = myTasks.getTasks()
-  // closeModalAfterTimeout()
+})
+watch(myToast.currToast, async () => {
+  if (myToast.currToast.style === 'alert-error') {
+    console.log('xd')
+    myTasks.resetTasks()
+    const tasksData = await taskApi.getAllTasks()
+    console.log(tasksData)
+    myTasks.addTasks(tasksData)
+    taskList.value = tasksData
+  }
 })
 const selectedTask = ref({})
 const chosenTask = async (id) => {
@@ -59,17 +64,20 @@ const handleUpdatedTask = () => {
 
   <RouterLink to="/tasks/add"
     ><Addicon
-      class="fixed bottom-0 right-0 bg-white w-14 h-14 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
+      class="fixed bottom-0 right-0 bg-white w-16 h-16 rounded-full p-2 m-5 transition-all ease-in hover:bg-slate-600 hover:cursor-pointer"
       style="color: #443ad8"
   /></RouterLink>
-  <div v-if="!isToastOpen" class="toast toast-start toast-top">
-    <div class="alert alert-success text-white">
-      <span>{{ responseMsg }}</span>
+  <div
+    v-if="myToast.currToast.msg.length > 0"
+    class="toast toast-start toast-top"
+  >
+    <div class="alert text-white" :class="myToast.currToast.style">
+      <span>{{ myToast.currToast.msg }}</span>
       <button
         type="button"
         class="ms-auto -mx-1.5 -my-1.5 text-gray-200 hover:text-gray-900 rounded-lg p-1.5 inline-flex items-center justify-center h-8 w-8"
         aria-label="Close"
-        @click="closeToast"
+        @click="myToast.resetToast()"
       >
         <span class="sr-only">Close</span>
         <svg
