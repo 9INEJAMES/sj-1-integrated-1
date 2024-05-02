@@ -54,7 +54,7 @@ const handleUpdatedTask = () => {
 </script>
 
 <template>
-        <RouterView />
+        <RouterView class="z-50"/>
     <!-- <TaskDetailsPage v-if="isSelectTask" :task="selectedTask" @closeModal="handleUpdatedTask" /> -->
     <div class="px-[5vh] pt-[6vh]">
         <div class="">

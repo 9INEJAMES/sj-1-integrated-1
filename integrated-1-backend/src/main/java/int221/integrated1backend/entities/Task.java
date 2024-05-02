@@ -73,7 +73,6 @@ public class Task {
     public String getUpdatedOn() throws ParseException {
         return getDateString(updatedOn);
     }
-
 //    public void setCreatedOn() {
 //        this.setCreatedOn(new Date());
 //    }
