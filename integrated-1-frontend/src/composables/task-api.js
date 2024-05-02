@@ -22,7 +22,7 @@ export const useTaskApi = () => {
             const result = await data.json()
             if (data.status == 404) {
                 myToast.changeToast(false, 'The requested task does not exist')
-                router.push({ name: 'home' })
+                // router.push({ name: 'home' })
                 return
             }
             return result

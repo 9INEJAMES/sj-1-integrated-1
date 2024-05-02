@@ -10,16 +10,16 @@ const route = useRoute()
 const router = useRouter()
 const myTasks = useTasksStore()
 const taskApi = useTaskApi()
+const isDisibled = ref(false)
+const localTimeZone = ref('')
+const createdOn = ref('')
+const updatedOn = ref('')
 const newTask = ref({
     title: '',
     description: '',
     assignees: '',
     status: 'No Status',
 })
-const isDisibled = ref(false)
-const localTimeZone = ref('')
-const createdOn = ref('')
-const updatedOn = ref('')
 const submitTask = async (isSave) => {
     if (isSave) {
         if (route.params.taskId) {
@@ -62,9 +62,10 @@ onMounted(async () => {
         const id = route.params.taskId
         const task = await taskApi.getTaskById(id)
         if (!task) {
-            setTimeout(() => {
-                router.push({ path: `/` })
-            }, 2000)
+            // setTimeout(() => {
+            //     router.push({ path: `/` })
+            // }, 1000)
+            router.push({ path: `/` })
         } else {
             newTask.value = {
                 id: task.id,
@@ -87,7 +88,8 @@ onMounted(async () => {
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="myTheme.getTheme()">
-            <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
+            <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
+            <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-xl font-semibold">
                     {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
                     Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
@@ -110,7 +112,16 @@ onMounted(async () => {
                     <div class="grid col-span-8">
                         <div>
                             <label for="description">Description</label>
+                            <p
+                                v-if="$route.name == 'taskDetails'"
+                                id="description"
+                                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all h-3/4"
+                                :class="newTask.description ? '' : 'italic text-gray-500'"
+                            >
+                                {{ newTask.description ? newTask.description : 'No Description Provided' }}
+                            </p>
                             <textarea
+                                v-else
                                 rows="15"
                                 id="description"
                                 class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
@@ -127,7 +138,16 @@ onMounted(async () => {
                         <div>
                             <div>
                                 <label for="assignees">Assignees</label>
+                                <p
+                                    v-if="$route.name == 'taskDetails'"
+                                    id="assignees"
+                                    class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all"
+                                    :class="newTask.assignees ? '' : 'italic text-gray-500'"
+                                >
+                                    {{ newTask.assignees ? newTask.assignees : 'Unassigned' }}
+                                </p>
                                 <textarea
+                                    v-else
                                     id="assignees"
                                     rows="1"
                                     class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
@@ -147,7 +167,7 @@ onMounted(async () => {
                                     <option value="Done">Done</option>
                                 </select>
                             </div>
-                            <div v-if="$route.name != 'taskAdd'" class="pt-[4vh]">
+                            <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">
                                 <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
                                 <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
                                 <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
