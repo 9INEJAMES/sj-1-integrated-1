@@ -63,12 +63,6 @@
     --tw-bg-opacity: 1;
     background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
 }
-.myTable tr.active,
-.myTable tr.active:nth-child(even),
-.myTable-zebra tbody tr:nth-child(even) {
-    --tw-bg-opacity: 1;
-    background-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-bg-opacity)));
-}
 .myTable :where(thead tr, tbody tr:not(:last-child), tbody tr:first-child:last-child) {
     border-bottom-width: 1px;
     --tw-border-opacity: 1;
