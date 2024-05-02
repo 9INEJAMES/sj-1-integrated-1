@@ -3,6 +3,9 @@ CREATE DATABASE IF NOT EXISTS integrated CHARACTER SET utf8mb4 COLLATE utf8mb4_u
 
 USE integrated;
 
+SET GLOBAL time_zone = '+00:00';
+SET time_zone = '+00:00';
+
 CREATE TABLE tasks (
     taskId INT AUTO_INCREMENT PRIMARY KEY,
     taskTitle VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -66,6 +69,6 @@ VALUES ('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7T
 ('ดาต้าเบส', 'ສ້າງຖານຂໍ້ມູນ', 'あなた、彼、彼女 (私ではありません)', 'DOING', '2024-04-22 09:10:00+00:00', '2024-04-25 00:00:00+00:00'),
 ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน', 'DONE','2024-04-22 09:15:00+00:00','2024-04-22 10:00:00+00:00');
 
-
+select * from tasks;
 
 
