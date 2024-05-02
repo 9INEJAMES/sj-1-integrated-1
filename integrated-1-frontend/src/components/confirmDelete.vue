@@ -31,8 +31,8 @@ const cancelDelete = () => {
             <hr />
             <p class="itbkk-message py-[3vh]">Do you want to delete the task "{{ task.title }}" ?</p>
             <div class="flex gap-[2vh] justify-end py-[2vh]">
-                <button @click="cancelDelete" class="itbkk-button-cancel bg-blue-500 text-white rounded-md p-2">Cancel</button>
                 <button @click="submitDelete" class="itbkk-button-confirm bg-red-500 text-white rounded-md p-2">Confirm</button>
+                <button @click="cancelDelete" class="itbkk-button-cancel bg-blue-500 text-white rounded-md p-2">Cancel</button>
             </div>
         </div>
     </div>
