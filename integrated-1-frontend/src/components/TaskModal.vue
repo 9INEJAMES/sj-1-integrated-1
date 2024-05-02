@@ -96,7 +96,7 @@ onMounted(async () => {
                 </p>
                 <hr />
                 <div>
-                    <label for="title">Titie</label><br />
+                    <label for="title">Titie</label><span v-if="route.name != 'taskDetails'" class="text-red-600">*</span><br />
                     <input
                         type="text"
                         name="title"
