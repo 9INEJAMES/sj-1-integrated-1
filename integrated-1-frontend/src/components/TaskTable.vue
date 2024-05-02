@@ -74,7 +74,7 @@ const handleDeleteModal = () => {
         <ConfirmDelete v-if="deleteModal" :task="selectedTask" @closeModal="handleDeleteModal" />
         <table class="myTable shadow-lg">
             <thead>
-                <tr class="text-lg" :class="myTheme.getTableTheme()">
+                <tr class="text-lg text-black" :class="myTheme.getTableTheme()">
                     <th></th>
                     <th>Title</th>
                     <th>Assignees</th>
