@@ -22,7 +22,8 @@ const props = defineProps({
 const emit = defineEmits(['getTask'])
 
 const getTask = (id) => {
-    emit('getTask', id)
+    router.push({ path: `/task/${id}` })
+    // emit('getTask', id)
 }
 
 const colorStatus = (task) => {

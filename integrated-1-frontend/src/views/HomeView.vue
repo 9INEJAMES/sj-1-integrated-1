@@ -54,7 +54,8 @@ const handleUpdatedTask = () => {
 </script>
 
 <template>
-    <TaskDetailsPage v-if="isSelectTask" :task="selectedTask" @closeModal="handleUpdatedTask" />
+        <RouterView />
+    <!-- <TaskDetailsPage v-if="isSelectTask" :task="selectedTask" @closeModal="handleUpdatedTask" /> -->
     <div class="px-[5vh] pt-[6vh]">
         <div class="">
             <TaskTable :taskList="taskList" @get-task="chosenTask"></TaskTable>
@@ -62,7 +63,7 @@ const handleUpdatedTask = () => {
         </div>
     </div>
 
-    <RouterLink v-show="!isSelectTask" to="/task/add" class="itbkk-button-add"
+    <RouterLink v-show="$route.name=='home'" to="/task/add" class="itbkk-button-add"
         ><Addicon :class="myTheme.getAlterTheme()" class="fixed bottom-0 right-0 w-16 h-16 rounded-full p-2 m-5 transition-all ease-in hover:cursor-pointer" style="color: #443ad8"
     /></RouterLink>
     <VToast />

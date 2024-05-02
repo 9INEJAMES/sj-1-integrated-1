@@ -18,23 +18,26 @@ const router = createRouter({
             path: '/task',
             name: 'home',
             component: HomeView,
+            children: [
+                {
+                    path: '/task/:taskId',
+                    name: 'TaskDetailsPage',
+                    component: TaskDetailsPage,
+                    props: true,
+                },
+                {
+                    path: '/task/add',
+                    name: 'AddTask',
+                    component: TaskAddPage,
+                },
+                {
+                    path: '/task/:taskId/edit',
+                    name: 'EditTask',
+                    component: TaskAddPage,
+                },
+            ]
         },
-        {
-            path: '/task/:taskId',
-            name: 'TaskDetailsPage',
-            component: TaskDetailsPage,
-            props: true,
-        },
-        {
-            path: '/task/add',
-            name: 'AddTask',
-            component: TaskAddPage,
-        },
-        {
-            path: '/task/:taskId/edit',
-            name: 'EditTask',
-            component: TaskAddPage,
-        },
+       
     ],
 })
 
