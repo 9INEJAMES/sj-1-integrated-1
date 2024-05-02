@@ -22,7 +22,12 @@ const props = defineProps({
 const emit = defineEmits(['getTask'])
 
 const getTask = (id) => {
-    router.push({ name: 'taskDetails', params: { taskId: id } })
+    router.push({
+        name: 'taskDetails',
+        params: {
+            taskId: id,
+        },
+    })
     // emit('getTask', id)
 }
 
@@ -39,7 +44,12 @@ const colorStatus = (task) => {
 }
 
 const toEditPage = (id) => {
-    router.push({ name: 'taskEdit', params: { taskId: id } })
+    router.push({
+        name: 'taskEdit',
+        params: {
+            taskId: id,
+        },
+    })
     if (selectedTask.value === null) {
         selectedTask.value = myTasks.getIdOfTask(id)
     }
