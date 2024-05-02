@@ -8,7 +8,13 @@ export const useTheme = defineStore('theme', () => {
     const darkTheme = 'bg-slate-600 text-amber-50'
 
     function changeTheme(isLight) {
-        !isLight ? ((currTheme.value = darkTheme), (alterTheme.value = ligthTheme)) : ((currTheme.value = ligthTheme), (alterTheme.value = darkTheme))
+        if (isLight) {
+            currTheme.value = ligthTheme
+            alterTheme.value = darkTheme
+        } else {
+            currTheme.value = darkTheme
+            alterTheme.value = ligthTheme
+        }
     }
 
     function getTheme() {

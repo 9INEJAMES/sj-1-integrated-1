@@ -16,7 +16,10 @@ const newTask = ref({
     assignees: '',
     status: 'No Status',
 })
-
+const isDisibled = ref(false)
+const localTimeZone = ref('')
+const createdOn = ref('')
+const updatedOn = ref('')
 const submitTask = async (isSave) => {
     if (isSave) {
         if (route.params.taskId) {
@@ -42,9 +45,6 @@ const checkLength = (name, value, length) => {
         if (name === 'assignees') newTask.value.assignees = value.trim().slice(0, length)
     }
 }
-const localTimeZone = ref('')
-const createdOn = ref('')
-const updatedOn = ref('')
 const switchTimeZone = (task) => {
     localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
     createdOn.value = new Date(task.createdOn).toLocaleString('en-GB', {
@@ -54,19 +54,32 @@ const switchTimeZone = (task) => {
         timeZone: localTimeZone.value,
     })
 }
-onMounted(() => {
-    if (route.params.taskId) {
-        const task = myTasks.getIdOfTask(route.params.taskId)
-        newTask.value = {
-            id: task.id,
-            title: task.title,
-            description: task.description,
-            assignees: task.assignees,
-            status: task.status,
-            createdOn: task.createdOn,
-            updatedOn: task.updatedOn,
+onMounted(async () => {
+    if (route.name === 'taskDetails') {
+        isDisibled.value = true
+    }
+    if (route.name !== 'taskAdd') {
+        const id = route.params.taskId
+        const task = await taskApi.getTaskById(id)
+        if (!task) {
+            setTimeout(() => {
+                router.push({ path: `/` })
+            }, 2000)
+        } else {
+            newTask.value = {
+                id: task.id,
+                title: task.title,
+                description: task.description,
+                assignees: task.assignees,
+                status: task.status
+                    .split('_')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' '),
+                createdOn: task.createdOn,
+                updatedOn: task.updatedOn,
+            }
+            switchTimeZone(task)
         }
-        switchTimeZone(task)
     }
 })
 </script>
@@ -87,6 +100,7 @@ onMounted(() => {
                         id="title"
                         placeholder="Write your task's title"
                         v-model="newTask.title"
+                        :disabled="isDisibled"
                     />
                 </div>
                 <div class="grid grid-cols-12 gap-[3vh]">
@@ -101,6 +115,7 @@ onMounted(() => {
                                 name="description"
                                 @input="checkLength('description', newTask.description, 500)"
                                 v-model="newTask.description"
+                                :disabled="isDisibled"
                             ></textarea>
                         </div>
                     </div>
@@ -117,26 +132,34 @@ onMounted(() => {
                                     name="assignees"
                                     @input="checkLength('assignees', newTask.assignees, 30)"
                                     v-model="newTask.assignees"
+                                    :disabled="isDisibled"
                                 ></textarea>
                             </div>
                             <div class="flex flex-col pt-[3vh]">
                                 <label for="status">Status</label>
-                                <select id="status" class="itbkk-status select select-bordered" :class="myTheme.getTheme()" v-model="newTask.status">
+                                <select id="status" class="itbkk-status select select-bordered disabled:text-white" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
                                     <option selected value="No Status">No Status</option>
                                     <option value="To Do">To Do</option>
                                     <option value="Doing">Doing</option>
                                     <option value="Done">Done</option>
                                 </select>
                             </div>
-                            <div v-if="route.params.taskId" class="pt-[4vh]">
+                            <div v-if="$route.name != 'taskAdd'" class="pt-[4vh]">
                                 <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
                                 <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
                                 <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
                             </div>
                         </div>
-                        <div class="pt-[4vh] flex justify-evenly">
-                            <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">Ok</button>
-                            <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
+                        <div class="pt-[4vh]">
+                            <div v-if="$route.name != 'taskDetails'" class="flex justify-evenly">
+                                <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">
+                                    Ok
+                                </button>
+                                <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
+                            </div>
+                            <div v-else class="flex justify-end items-end">
+                                <button class="itbkk-button-close btn btn-error text-white" @click="submitTask(false)">close</button>
+                            </div>
                         </div>
                     </div>
                 </div>

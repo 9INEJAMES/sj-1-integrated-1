@@ -46,20 +46,13 @@ const chosenTask = async (id) => {
     isSelectTask.value = true // Update isSelectTask when a task is chosen
 }
 
-const handleUpdatedTask = () => {
-    isSelectTask.value = false // Close the modal
-    selectedTask.value = {}
-    taskList.value = myTasks.getTasks()
-}
 </script>
 
 <template>
         <RouterView class="z-50"/>
-    <!-- <TaskDetailsPage v-if="isSelectTask" :task="selectedTask" @closeModal="handleUpdatedTask" /> -->
     <div class="px-[5vh] pt-[6vh]">
         <div class="">
             <TaskTable :taskList="taskList" @get-task="chosenTask"></TaskTable>
-            <!-- <div v-else>No record</div> -->
         </div>
     </div>
 

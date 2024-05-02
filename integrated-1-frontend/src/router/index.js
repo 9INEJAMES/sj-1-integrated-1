@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import TaskDetailsPage from '../components/TaskDetailsPage.vue'
+import HomeView from '@/views/HomeView.vue'
+import Home from '@/components/Home.vue'
 import TaskAddPage from '@/components/TaskAddPage.vue'
 
 const router = createRouter({
@@ -16,28 +16,31 @@ const router = createRouter({
         },
         {
             path: '/task',
-            name: 'home',
+            name: 'homeView',
             component: HomeView,
             children: [
                 {
-                    path: '/task/:taskId',
-                    name: 'TaskDetailsPage',
-                    component: TaskDetailsPage,
-                    props: true,
+                    path: '',
+                    name: 'home',
+                    component: Home,
                 },
                 {
-                    path: '/task/add',
-                    name: 'AddTask',
+                    path: ':taskId',
+                    name: 'taskDetails',
                     component: TaskAddPage,
                 },
                 {
-                    path: '/task/:taskId/edit',
-                    name: 'EditTask',
+                    path: 'add',
+                    name: 'taskAdd',
                     component: TaskAddPage,
                 },
-            ]
+                {
+                    path: ':taskId/edit',
+                    name: 'taskEdit',
+                    component: TaskAddPage,
+                },
+            ],
         },
-       
     ],
 })
 
