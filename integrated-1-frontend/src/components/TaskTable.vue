@@ -62,9 +62,9 @@ const handleDeleteModal = () => {
 <template>
     <div class="">
         <ConfirmDelete v-if="deleteModal" :task="selectedTask" @closeModal="handleDeleteModal" />
-        <table class="myTable">
+        <table class="myTable shadow-lg">
             <thead>
-                <tr class="text-lg bg-black text-amber-50">
+                <tr class="text-lg " :class="myTheme.getTableTheme()">
                     <th></th>
                     <th>Title</th>
                     <th>Assignees</th>
