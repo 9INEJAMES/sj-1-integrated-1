@@ -108,7 +108,7 @@ onMounted(async () => {
             v-model="newTask.title"
             :disabled="isDisibled"
           />
-          <p v-show="newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
+          <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
         </div>
         <div class="grid grid-cols-12 gap-[3vh] pt-4">
           <div class="grid col-span-8">
@@ -134,7 +134,7 @@ onMounted(async () => {
                 v-model="newTask.description"
                 :disabled="isDisibled"
               ></textarea>
-              <p v-show="newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
+              <p v-show="$route.name != 'taskDetails'  && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
             </div>
           </div>
 
@@ -162,7 +162,7 @@ onMounted(async () => {
                   v-model="newTask.assignees"
                   :disabled="isDisibled"
                 ></textarea>
-                <p v-show="newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
+                <p v-show="$route.name != 'taskDetails' && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
