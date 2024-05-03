@@ -110,7 +110,7 @@ onMounted(async () => {
           />
           <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
         </div>
-        <div class="grid grid-cols-12 gap-[3vh] pt-4">
+        <div class="grid grid-cols-12 gap-[3vh] pt-2">
           <div class="grid col-span-8">
             <div>
               <label for="description">Description</label>
