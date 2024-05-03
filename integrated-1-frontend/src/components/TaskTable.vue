@@ -22,7 +22,12 @@ const props = defineProps({
 const emit = defineEmits(['getTask'])
 
 const getTask = (id) => {
-    router.push({ name: 'taskDetails', params: { taskId: id } })
+    router.push({
+        name: 'taskDetails',
+        params: {
+            taskId: id,
+        },
+    })
     // emit('getTask', id)
 }
 
@@ -39,7 +44,12 @@ const colorStatus = (task) => {
 }
 
 const toEditPage = (id) => {
-    router.push({ name: 'taskEdit', params: { taskId: id } })
+    router.push({
+        name: 'taskEdit',
+        params: {
+            taskId: id,
+        },
+    })
     if (selectedTask.value === null) {
         selectedTask.value = myTasks.getIdOfTask(id)
     }
@@ -64,7 +74,7 @@ const handleDeleteModal = () => {
         <ConfirmDelete v-if="deleteModal" :task="selectedTask" @closeModal="handleDeleteModal" />
         <table class="myTable shadow-lg">
             <thead>
-                <tr class="text-lg" :class="myTheme.getTableTheme()">
+                <tr class="text-lg text-black" :class="myTheme.getTableTheme()">
                     <th></th>
                     <th>Title</th>
                     <th>Assignees</th>
