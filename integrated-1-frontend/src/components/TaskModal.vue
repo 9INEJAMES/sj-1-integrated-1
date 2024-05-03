@@ -101,14 +101,16 @@ onMounted(async () => {
             type="text"
             name="title"
             @input="checkLength('title', newTask.title, 100)"
-            class="itbkk-title block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+            class="itbkk-title block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
+            :class="newTask.title.length == 100 ? ' text-gray-500' : ' text-gray-900'"
             id="title"
             placeholder="Write your task's title"
             v-model="newTask.title"
             :disabled="isDisibled"
           />
+          <p v-show="newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
         </div>
-        <div class="grid grid-cols-12 gap-[3vh]">
+        <div class="grid grid-cols-12 gap-[3vh] pt-4">
           <div class="grid col-span-8">
             <div>
               <label for="description">Description</label>
@@ -124,13 +126,15 @@ onMounted(async () => {
                 v-else
                 rows="15"
                 id="description"
-                class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
+                :class="newTask.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
                 placeholder="Write your description"
                 name="description"
                 @input="checkLength('description', newTask.description, 500)"
                 v-model="newTask.description"
                 :disabled="isDisibled"
               ></textarea>
+              <p v-show="newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
             </div>
           </div>
 
@@ -150,13 +154,15 @@ onMounted(async () => {
                   v-else
                   id="assignees"
                   rows="1"
-                  class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
+                  class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
+                  :class="newTask.assignees.length == 30 ? ' text-gray-500' : ' text-gray-900'"
                   placeholder="Enter assignees"
                   name="assignees"
                   @input="checkLength('assignees', newTask.assignees, 30)"
                   v-model="newTask.assignees"
                   :disabled="isDisibled"
                 ></textarea>
+                <p v-show="newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
@@ -182,64 +188,6 @@ onMounted(async () => {
                 <button class="itbkk-button-close btn btn-error text-white" @click="submitTask(false)">close</button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="grid grid-cols-12 gap-[3vh]">
-      <div class="grid col-span-8">
-        <div>
-          <label for="description">Description</label>
-          <textarea
-            rows="15"
-            id="description"
-            class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
-            placeholder="Write your description"
-            name="description"
-            @input="checkLength('description', newTask.description, 500)"
-            v-model="newTask.description"
-            :disabled="isDisibled"
-          ></textarea>
-        </div>
-      </div>
-
-      <div class="flex col-span-4 flex-col justify-between">
-        <div>
-          <div>
-            <label for="assignees">Assignees</label>
-            <textarea
-              id="assignees"
-              rows="1"
-              class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300"
-              placeholder="Enter assignees"
-              name="assignees"
-              @input="checkLength('assignees', newTask.assignees, 30)"
-              v-model="newTask.assignees"
-              :disabled="isDisibled"
-            ></textarea>
-          </div>
-          <div class="flex flex-col pt-[3vh]">
-            <label for="status">Status</label>
-            <select id="status" class="itbkk-status select select-bordered disabled:text-white" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
-              <option selected value="No Status">No Status</option>
-              <option value="To Do">To Do</option>
-              <option value="Doing">Doing</option>
-              <option value="Done">Done</option>
-            </select>
-          </div>
-          <div v-if="$route.name != 'taskAdd'" class="pt-[4vh]">
-            <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
-            <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
-            <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
-          </div>
-        </div>
-        <div class="pt-[4vh]">
-          <div v-if="$route.name != 'taskDetails'" class="flex justify-evenly">
-            <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">Ok</button>
-            <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
-          </div>
-          <div v-else class="flex justify-end items-end">
-            <button class="itbkk-button-close btn btn-error text-white" @click="submitTask(false)">close</button>
           </div>
         </div>
       </div>
