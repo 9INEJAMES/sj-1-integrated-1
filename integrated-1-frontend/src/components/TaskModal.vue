@@ -127,14 +127,14 @@ onMounted(async () => {
                 rows="15"
                 id="description"
                 class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
-                :class="newTask.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
+                :class="newTask.description && newTask.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
                 placeholder="Write your description"
                 name="description"
                 @input="checkLength('description', newTask.description, 500)"
                 v-model="newTask.description"
                 :disabled="isDisibled"
               ></textarea>
-              <p v-show="newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
+              <p v-show="newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
             </div>
           </div>
 
@@ -155,14 +155,14 @@ onMounted(async () => {
                   id="assignees"
                   rows="1"
                   class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
-                  :class="newTask.assignees.length == 30 ? ' text-gray-500' : ' text-gray-900'"
+                  :class="newTask.assignees && newTask.assignees.length == 30 ? ' text-gray-500' : ' text-gray-900'"
                   placeholder="Enter assignees"
                   name="assignees"
                   @input="checkLength('assignees', newTask.assignees, 30)"
                   v-model="newTask.assignees"
                   :disabled="isDisibled"
                 ></textarea>
-                <p v-show="newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
+                <p v-show="newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
               </div>
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
