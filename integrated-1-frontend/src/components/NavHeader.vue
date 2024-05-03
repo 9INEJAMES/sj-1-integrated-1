@@ -1,6 +1,4 @@
-<script setup>
-
-</script>
+<script setup></script>
 
 <template>
     <div class="justify-between pt-[3vh] flex px-[5vh]">
@@ -10,11 +8,9 @@
         </div>
         <div class="pt-[2vh] space-x-[15vh]">
             <RouterLink to="/">Home</RouterLink>
-            <RouterLink to="/aboutUs">About us </RouterLink>
-            <RouterLink to="/ourMember">Member</RouterLink>
-            <div>
-        </div>
-            
+            <!-- <RouterLink to="/aboutUs">About us </RouterLink>
+            <RouterLink to="/ourMember">Member</RouterLink> -->
+            <div></div>
         </div>
     </div>
 </template>

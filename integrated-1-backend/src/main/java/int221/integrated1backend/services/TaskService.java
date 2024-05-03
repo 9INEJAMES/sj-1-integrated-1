@@ -47,24 +47,26 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskWithIdDTO createNewTask(TaskDTO taskDTO) {
+    public Task createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
         tmp.setTitle(isStringNull(tmp.getTitle()));
         tmp.setDescription(isStringNull(tmp.getDescription()));
         tmp.setAssignees(isStringNull(tmp.getAssignees()));
         tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "NO_STATUS" : isStringNull(tmp.getStatus()));
         Task newTask = repository.save(tmp);
-        return modelMapper.map(newTask, TaskWithIdDTO.class);
+        //        return modelMapper.map(newTask, Task.class);
+        return findByID(newTask.getId());
     }
 
     @Transactional
-    public void removeTask(Integer taskId) {
-        Task task = repository.findById(taskId).orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Task Id " + taskId + " DOES NOT EXIST !!!"));
+    public TaskWithIdDTO removeTask(Integer taskId) {
+        Task task = repository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(task);
+        return modelMapper.map(task, TaskWithIdDTO.class);
     }
 
     @Transactional
-    public TaskWithIdDTO updateTask(Integer taskId, TaskDTO taskDTO) {
+    public Task updateTask(Integer taskId, TaskDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
@@ -73,9 +75,9 @@ public class TaskService {
         existingTask.setDescription(isStringNull(task.getDescription()));
         existingTask.setAssignees(isStringNull(task.getAssignees()));
         existingTask.setStatus(isStringNull(task.getStatus(), existingTask.getStatus()));
-//        existingTask.setUpdatedOn(new Date());
+        existingTask.setUpdatedOn(null);
         Task result = repository.save(existingTask);
-        return modelMapper.map(result, TaskWithIdDTO.class);
+        return result;
     }
 
 }

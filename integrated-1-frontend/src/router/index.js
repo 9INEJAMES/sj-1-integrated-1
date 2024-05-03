@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import TaskDetails from '../components/TaskDetails.vue'
-import TaskDetailsPage from '../components/TaskDetailsPage.vue'
+import HomeView from '@/views/HomeView.vue'
+import Home from '@/components/Home.vue'
+import TaskModal from '@/components/TaskModal.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,15 +11,35 @@ const router = createRouter({
             redirect: '/task',
         },
         {
-            path: '/task',
-            name: 'home',
-            component: HomeView,
+            path: '/:pathMatch(.*)*',
+            redirect: '/task',
         },
         {
-            path: '/task/:taskId',
-            name: 'TaskDetailsPage',
-            component: TaskDetailsPage,
-            props: true,
+            path: '/task',
+            name: 'homeView',
+            component: HomeView,
+            children: [
+                {
+                    path: '',
+                    name: 'home',
+                    component: Home,
+                },
+                {
+                    path: ':taskId',
+                    name: 'taskDetails',
+                    component: TaskModal,
+                },
+                {
+                    path: 'add',
+                    name: 'taskAdd',
+                    component: TaskModal,
+                },
+                {
+                    path: ':taskId/edit',
+                    name: 'taskEdit',
+                    component: TaskModal,
+                },
+            ],
         },
     ],
 })
