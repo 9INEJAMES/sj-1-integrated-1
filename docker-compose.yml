@@ -4,8 +4,8 @@ services:
   database:
     build: ./integrated-1-database
     container_name: database
-    ports:
-      - '3306:3306'
+    # ports:
+    #   - '3306:3306'
     networks:
       - backend_net
     healthcheck:
