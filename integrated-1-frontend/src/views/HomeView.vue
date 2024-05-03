@@ -30,7 +30,6 @@ onMounted(async () => {
 })
 
 watch(myToast.currToast, async () => {
-    console.log(myToast.currToast.style)
     if (myToast.currToast.style === 'alert-error') {
         myTasks.resetTasks()
         const tasksData = await taskApi.getAllTasks()
