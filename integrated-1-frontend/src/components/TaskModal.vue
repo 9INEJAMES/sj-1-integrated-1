@@ -146,7 +146,7 @@ onMounted(async () => {
             v-model="newTask.title"
             :disabled="isDisibled"
           />
-          <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
+          <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute">The title have a maximum length of 100 characters.</p>
         </div>
 
         <div class="grid grid-cols-12 gap-[3vh] pt-2">
@@ -173,7 +173,7 @@ onMounted(async () => {
                 v-model="newTask.description"
                 :disabled="isDisibled"
               ></textarea>
-              <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">
+              <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute">
                 The description have a maximum length of 500 characters.
               </p>
             </div>
@@ -202,14 +202,14 @@ onMounted(async () => {
                   v-model="newTask.assignees"
                   :disabled="isDisibled"
                 ></textarea>
-                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">
+                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute">
                   The assignees have a maximum length of 30 characters.
                 </p>
               </div>
 
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" class="itbkk-status select select-bordered disabled:text-white" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
+                <select id="status" class="itbkk-status select select-bordered disabled:text-black" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
                   <option selected value="No Status">No Status</option>
                   <option value="To Do">To Do</option>
                   <option value="Doing">Doing</option>
