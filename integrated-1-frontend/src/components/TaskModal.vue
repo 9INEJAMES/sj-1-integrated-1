@@ -53,7 +53,7 @@ const submitTask = async (isSave) => {
       myTasks.addTasks([task])
     }
   }
-  router.push({ path: `/` })
+  router.back()
 }
 const checkLength = (name, value, length) => {
   if (value.trim().length > length) {
