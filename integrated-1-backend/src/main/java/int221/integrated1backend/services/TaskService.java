@@ -42,20 +42,11 @@ public class TaskService {
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
-    private String isStringNull(String string,String oldString) {
-        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
-    }
 
     @Transactional
     public Task createNewTask(TaskDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
-        tmp.setTitle(isStringNull(tmp.getTitle()));
-        tmp.setDescription(isStringNull(tmp.getDescription()));
-        tmp.setAssignees(isStringNull(tmp.getAssignees()));
-        tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "NO_STATUS" : isStringNull(tmp.getStatus()));
-        Task newTask = repository.save(tmp);
-        //        return modelMapper.map(newTask, Task.class);
-        return findByID(newTask.getId());
+        return repository.save(tmp);
     }
 
     @Transactional
@@ -71,13 +62,12 @@ public class TaskService {
         task.setId(taskId);
 
         Task existingTask = findByID(taskId);
-        existingTask.setTitle(isStringNull(task.getTitle(), existingTask.getTitle()));
-        existingTask.setDescription(isStringNull(task.getDescription()));
-        existingTask.setAssignees(isStringNull(task.getAssignees()));
-        existingTask.setStatus(isStringNull(task.getStatus(), existingTask.getStatus()));
+        existingTask.setTitle(task.getTitle());
+        existingTask.setDescription(task.getDescription());
+        existingTask.setAssignees(task.getAssignees());
+        existingTask.setStatus(task.getStatus());
         existingTask.setUpdatedOn(null);
-        Task result = repository.save(existingTask);
-        return result;
+        return repository.save(existingTask);
     }
 
 }

@@ -33,28 +33,27 @@ public class Task {
     private Date createdOn;
     private Date updatedOn;
 
-//    public void setTitle(String title) {
-//        if (title == null) this.title = null;
-//        else this.title = title.trim().substring(0, 101);
-//    }
-//
-//    public void setDescription(String description) {
-//        if (description == null) this.description = null;
-//        else this.description = description.trim().substring(0, 501);
-//    }
-//
-//    public void setAssignees(String assignees) {
-//        if (assignees == null) this.assignees = null;
-//        else this.assignees = assignees.trim().substring(0, 31);
-//    }
+    private String isStringNull(String string) {
+        return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
+    }
+    private String isStringNull(String string,String oldString) {
+        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
+    }
 
-    public String getStatus() {
-        return this.status.replaceAll("\\s", "_").toUpperCase();
+    public void setTitle(String title) {
+        this.title = isStringNull(title);
+    }
+
+    public void setDescription(String description) {
+        this.description = isStringNull(description);
+    }
+
+    public void setAssignees(String assignees) {
+        this.assignees = isStringNull(assignees);
     }
 
     public void setStatus(String status) {
-        this.status = status.replaceAll("\\s", "_").toUpperCase();
-
+        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
     }
 
     private String getDateString(Date d) throws ParseException {
