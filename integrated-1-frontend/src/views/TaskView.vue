@@ -38,10 +38,9 @@ const addTaskBtn = () => {
   <VToast class="z-50" />
   <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
     <RouterLink to="/status"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
-    <RouterLink v-show="$route.name == 'home'" to="/task/add" class="itbkk-button-add">
-      <Addicon v-show="$route.name == 'home'" :class="myTheme.getAlterTheme()"
-        class=" w-[13vh] h-[3vh]  transition-all  ease-in hover:cursor-pointer" />
-    </RouterLink>
+    <Addicon v-show="$route.name == 'home'" :class="myTheme.getAlterTheme()" @click="addTaskBtn"
+      class=" itbkk-button-add w-[13vh] h-[3vh]  transition-all  ease-in hover:cursor-pointer" />
+
   </div>
   <RouterView class="z-40" />
   <div class="px-[5vh] pt-[1vh]">
@@ -49,8 +48,6 @@ const addTaskBtn = () => {
       <TaskTable @get-task="chosenTask"></TaskTable>
     </div>
   </div>
-
- 
 </template>
 
 <style scoped></style>
