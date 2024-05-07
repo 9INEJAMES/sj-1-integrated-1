@@ -1,7 +1,7 @@
 <script setup>
 import { useStatusApi } from "@/composables/status-api"
 
-const statusApi = useStatusApi()
+// const statusApi = useStatusApi()
 
 </script>
 

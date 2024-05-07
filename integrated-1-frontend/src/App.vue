@@ -8,7 +8,7 @@ const statusApi = useStatusApi()
 
 
 onMounted(() => {
-    statusApi.getAllStatuses()
+    // statusApi.getAllStatuses()
 })
 </script>
 
