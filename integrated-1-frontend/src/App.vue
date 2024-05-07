@@ -1,7 +1,15 @@
 <script setup>
+import { onMounted } from 'vue';
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
+import { useStatusApi } from '@/composables/status-api.js'
 const myTheme = useTheme()
+const statusApi = useStatusApi()
+
+
+onMounted(() => {
+    statusApi.getAllStatuses()
+})
 </script>
 
 <template>

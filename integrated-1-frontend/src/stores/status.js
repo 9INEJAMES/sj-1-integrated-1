@@ -8,31 +8,31 @@ export const useStatusesStore = defineStore('statuses', () => {
         newstatuses.forEach((newTask) => addTask(newTask))
     }
 
-    function addTask(task) {
-        task.status = task.status
+    function addStatus(Status) {
+        Status.status = Status.status
             .split('_')
             .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
             .join(' ')
-        statuses.value.push(task)
+        statuses.value.push(Status)
     }
 
-    function updateTask(updatedTask) {
-        const index = findIndexTask(updatedTask.id)
+    function updateStatus(updatedStatus) {
+        const index = findIndexStatus(updatedStatus.id)
         if (index !== -1) {
-            statuses.value.splice(index, 1, updatedTask)
+            statuses.value.splice(index, 1, updatedStatus)
         }
     }
 
-    function getIdOfTask(searchId) {
-        return statuses.value.find((task) => task.id == searchId)
+    function getIdOfStatus(searchId) {
+        return statuses.value.find((Status) => Status.id == searchId)
     }
 
-    function findIndexTask(searchId) {
-        return statuses.value.findIndex((task) => task.id == searchId)
+    function findIndexStatus(searchId) {
+        return statuses.value.findIndex((Status) => Status.id == searchId)
     }
 
-    function removeTask(removeId) {
-        const index = findIndexTask(removeId)
+    function removeStatus(removeId) {
+        const index = findIndexStatus(removeId)
         if (index !== -1) {
             statuses.value.splice(index, 1)
         }
@@ -47,15 +47,16 @@ export const useStatusesStore = defineStore('statuses', () => {
     }
     return {
         addstatuses,
-        updateTask,
-        getIdOfTask,
-        findIndexTask,
-        removeTask,
+        addStatus,
+        updateStatus,
+        getIdOfStatus,
+        findIndexStatus,
+        removeStatus,
         getstatuses,
         resetstatuses,
     }
 })
 
 if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useTasksStore, import.meta.hot))
+    import.meta.hot.accept(acceptHMRUpdate(useStatusesStore, import.meta.hot))
 }
