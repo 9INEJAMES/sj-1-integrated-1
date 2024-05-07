@@ -53,7 +53,7 @@ public class TaskService {
         existingTask.setTitle(task.getTitle());
         existingTask.setDescription(task.getDescription());
         existingTask.setAssignees(task.getAssignees());
-//        existingTask.setStatus(task.getStatus());
+        existingTask.setStatus(task.getStatus());
         existingTask.setUpdatedOn(null);
         return repository.save(existingTask);
     }
