@@ -49,7 +49,7 @@ public class Task {
     }
 
     public void setAssignees(String assignees) {
-        this.description = isStringNull(assignees);
+        this.assignees = isStringNull(assignees);
     }
 
     public void setStatus(String status) {
