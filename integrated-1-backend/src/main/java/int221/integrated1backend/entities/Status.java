@@ -20,17 +20,22 @@ public class Status {
     private String name;
     @Column(name = "statusDescription")
     private String description;
+    @Column(name = "statusColor")
+    private String color;
 
     @JsonIgnore
     @OneToMany(mappedBy = "status")
     private List<TaskV2> task;
 
+    private String isStringNull(String string) {
+        return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
+    }
     public String getName() {
         return this.name.replaceAll("\\s", "_").toUpperCase();
     }
 
-    public void setName(String status) {
-        this.name = status.replaceAll("\\s", "_").toUpperCase();
+    public void setName(String name) {
+        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
 
     }
 }

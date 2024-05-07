@@ -23,6 +23,7 @@ CREATE TABLE statuses (
     statusId INT AUTO_INCREMENT PRIMARY KEY,
     statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    statusColor VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),
     CONSTRAINT CHK_statusDescription_length CHECK (CHAR_LENGTH(TRIM(statusDescription)) <= 200)
 )ENGINE=InnoDB;
@@ -142,7 +143,7 @@ VALUES ('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7T
 ('ดาต้าเบส', 'ສ້າງຖານຂໍ້ມູນ', 'あなた、彼、彼女 (私ではありません)', 'DOING', '2024-04-22 09:10:00+00:00', '2024-04-25 00:00:00+00:00'),
 ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน', 'DONE','2024-04-22 09:15:00+00:00','2024-04-22 10:00:00+00:00');
 
-INSERT INTO statuses (statusName,statusDescription) VALUES
+INSERT INTO statuses (statusName,statusDescription,statusColor) VALUES
 ('NO_STATUS','This item hasn''t been started'),
 ('TO_DO',null),
 ('DOING',null),

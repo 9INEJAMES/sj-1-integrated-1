@@ -36,9 +36,6 @@ public class Task {
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
-    private String isStringNull(String string,String oldString) {
-        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
-    }
 
     public void setTitle(String title) {
         this.title = isStringNull(title);

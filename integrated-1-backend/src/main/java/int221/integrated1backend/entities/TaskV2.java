@@ -31,8 +31,6 @@ public class TaskV2 {
     private String assignees;
     //    @Column(name = "taskStatus")
 //    private String status;
-//    @Column(name = "statusId")
-//    private Integer statusId;
     private Date createdOn;
     private Date updatedOn;
     //    @JsonIgnore
@@ -40,10 +38,12 @@ public class TaskV2 {
     @JoinColumn(name = "statusId")
     private Status status;
 
+
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
-    private String isStringNull(String string,String oldString) {
+
+    private String isStringNull(String string, String oldString) {
         return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
     }
 
@@ -59,9 +59,9 @@ public class TaskV2 {
         this.assignees = isStringNull(assignees);
     }
 
-//    public void setStatus(String status) {
-//        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
-//    }
+    public String getStatus() {
+        return this.status == null ? "NO_STATUS" : this.status.getName();
+    }
 
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();

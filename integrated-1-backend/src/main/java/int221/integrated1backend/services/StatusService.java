@@ -1,5 +1,6 @@
 package int221.integrated1backend.services;
 
+import int221.integrated1backend.dtos.StatusInputDTO;
 import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.repositories.StatusRepository;
 import org.modelmapper.ModelMapper;
@@ -22,10 +23,15 @@ public class StatusService {
         return repository.findAll();
     }
 
+
     public Status findByID(Integer id) {
         return repository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Status id " + id + " does not exists !!!"));
+    }
+
+    public Status findByName(String name) {
+        return repository.findByName(name);
     }
 
     private String isStringNull(String string) {
@@ -37,9 +43,8 @@ public class StatusService {
     }
 
     @Transactional
-    public Status createNewStatus(Status status) {
-        status.setName(isStringNull(status.getName()));
-        status.setDescription(isStringNull(status.getDescription()));
+    public Status createNewStatus(StatusInputDTO statusInputDTO) {
+        Status status = modelMapper.map(statusInputDTO,Status.class);
         return repository.save(status);
     }
 
