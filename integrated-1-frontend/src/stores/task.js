@@ -1,8 +1,15 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
+import { useTaskApi } from '@/composables/task-api'
 
 export const useTasksStore = defineStore('tasks', () => {
     const tasks = ref([])
+    const taskApi = useTaskApi()
+    const fetchTasks = async () => {
+        const tasksData = await taskApi.getAllTasks()
+        resetTasks()
+        addTasks(tasksData)
+    }
 
     function addTasks(newTasks) {
         newTasks.forEach((newTask) => addTask(newTask))
@@ -41,18 +48,20 @@ export const useTasksStore = defineStore('tasks', () => {
     function getTasks() {
         return tasks.value
     }
-
     function resetTasks() {
         tasks.value = []
     }
+
     return {
+        tasks,
+        getTasks,
         addTasks,
         updateTask,
         getIdOfTask,
         findIndexTask,
         removeTask,
-        getTasks,
         resetTasks,
+        fetchTasks,
     }
 })
 

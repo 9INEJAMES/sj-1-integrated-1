@@ -209,7 +209,7 @@ onMounted(async () => {
 
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" class="itbkk-status select select-bordered disabled:text-black" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
+                <select id="status" class="itbkk-status select select-bordered disabled:text-black " :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
                   <option selected value="No Status">No Status</option>
                   <option value="To Do">To Do</option>
                   <option value="Doing">Doing</option>
