@@ -1,6 +1,6 @@
-const url = import.meta.env.VITE_BASE_STATUS_URL
+const url = import.meta.env.VITE_BASE_URL
 
-async function getAllStatuses() {
+async function getAllTasks() {
   try {
     const data = await fetch(`${url}`)
     const result = await data.json()
@@ -10,7 +10,7 @@ async function getAllStatuses() {
   }
 }
 
-async function getStatusById(id) {
+async function getTaskById(id) {
   try {
     const data = await fetch(`${url}/${id}`)
     const result = await data.json()
@@ -20,7 +20,7 @@ async function getStatusById(id) {
   }
 }
 
-async function addStatus(obj) {
+async function addTask(obj) {
   try {
     const response = await fetch(`${url}`, {
       method: 'POST',
@@ -37,7 +37,7 @@ async function addStatus(obj) {
   }
 }
 
-async function updateStatus(obj) {
+async function updateTask(obj) {
   try {
     const response = await fetch(`${url}/${obj.id}`, {
       method: 'PUT',
@@ -46,14 +46,14 @@ async function updateStatus(obj) {
       },
       body: JSON.stringify({ ...obj }),
     })
-    const updatedStatus = await response.json()
-    return updatedStatus
+    const updatedTask = await response.json()
+    return updatedTask
   } catch (error) {
     console.error(`Error updating user: ${error}`)
   }
 }
 
-async function deleteStatus(id) {
+async function deleteTask(id) {
   try {
     const response = await fetch(`${url}/${id}`, {
       method: 'DELETE',
@@ -65,4 +65,4 @@ async function deleteStatus(id) {
   }
 }
 
-export { getAllStatuses, getStatusById, addStatus, updateStatus, deleteStatus }
+export { getAllTasks, getTaskById, addTask, updateTask, deleteTask }

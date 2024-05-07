@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import TaskView from '@/views/TaskView.vue'
 import Home from '@/components/Home.vue'
 import TaskModal from '@/components/TaskModal.vue'
+import StatusView from '@/views/StatusView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -13,6 +14,13 @@ const router = createRouter({
         {
             path: '/:pathMatch(.*)*',
             redirect: '/task',
+        },
+        {
+            path: '/status',
+            name: 'StatusView',
+            component: StatusView,
+            children: [
+            ]
         },
         {
             path: '/task',

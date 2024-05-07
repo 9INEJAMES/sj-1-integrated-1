@@ -7,6 +7,9 @@ const myTheme = useTheme()
 <template>
     <div class="roboto-light min-h-screen max-h-fit pb-24" :class="myTheme.getTheme()">
         <NavHeader />
+        <!-- <div>
+        <RouterLink to="/status"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
+        </div> -->
         <div>
             <RouterView />
         </div>
