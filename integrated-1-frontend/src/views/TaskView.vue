@@ -1,4 +1,4 @@
-<!-- <script setup>
+<script setup>
 import { ref, onMounted, onUpdated, watch } from 'vue'
 import TaskTable from '@/components/TaskTable.vue'
 import { useTasksStore } from '@/stores/task.js'
@@ -12,41 +12,50 @@ import router from '@/router'
 const taskApi = useTaskApi()
 const myTasks = useTasksStore()
 const myToast = useToast()
+const isSelectTask = ref(false)
 const taskList = ref([])
 const myTheme = useTheme()
-const selectedTask = ref({})
-const isSelectTask = ref(false)
-const chosenTask = async (id) => {
-  selectedTask.value = await taskApi.getTaskById(id)
-  isSelectTask.value = true // Update isSelectTask when a task is chosen
-}
 
 onMounted(async () => {
-  if (myTasks.getTasks().length <= 0) {
-    const tasksData = await taskApi.getAllTasks()
-    myTasks.addTasks(tasksData)
-  }
-  if (myToast.currToast.style === 'alert-error') {
-    myTasks.resetTasks()
-    const tasksData = await taskApi.getAllTasks()
-    myTasks.addTasks(tasksData)
-    isSelectTask.value = false
-  }
-  taskList.value = myTasks.getTasks()
+    if (myTasks.getTasks().length <= 0) {
+        const tasksData = await taskApi.getAllTasks()
+        myTasks.addTasks(tasksData)
+    }
+    if (myToast.currToast.style === 'alert-error') {
+        myTasks.resetTasks()
+        const tasksData = await taskApi.getAllTasks()
+        myTasks.addTasks(tasksData)
+        isSelectTask.value = false
+    }
+    taskList.value = myTasks.getTasks()
 })
 
 watch(myToast.currToast, async () => {
-  if (myToast.currToast.style === 'alert-error') {
-    myTasks.resetTasks()
-    const tasksData = await taskApi.getAllTasks()
-    myTasks.addTasks(tasksData)
-    taskList.value = tasksData
-    isSelectTask.value = false
-  }
+    console.log('change')
+    if (myToast.currToast.style === 'alert-error') {
+        console.log('error')
+        myTasks.resetTasks()
+        const tasksData = await taskApi.getAllTasks()
+        myTasks.addTasks(tasksData)
+        taskList.value = tasksData
+        isSelectTask.value = false
+    }
 })
+const selectedTask = ref({})
+const chosenTask = async (id) => {
+    selectedTask.value = await taskApi.getTaskById(id)
+    isSelectTask.value = true // Update isSelectTask when a task is chosen
+}
+const addTaskBtn = () => {
+    router.push({
+        name: 'taskAdd',
+    })
+}
 </script>
 
 <template>
+    <VToast class="z-50" />
+    <RouterView class="z-40" />
     <div class="px-[5vh] pt-[6vh]">
         <div class="">
             <TaskTable :taskList="taskList" @get-task="chosenTask"></TaskTable>
@@ -62,18 +71,4 @@ watch(myToast.currToast, async () => {
     /></RouterLink>
 </template>
 
-<style scoped></style> -->
-
-<script setup>
-
-</script>
- 
-<template>
-<div>
-
-</div>
-</template>
- 
-<style scoped>
-
-</style>
+<style scoped></style>

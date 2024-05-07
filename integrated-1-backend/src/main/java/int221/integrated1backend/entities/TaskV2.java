@@ -56,7 +56,7 @@ public class TaskV2 {
     }
 
     public void setAssignees(String assignees) {
-        this.description = isStringNull(description);
+        this.assignees = isStringNull(assignees);
     }
 
 //    public void setStatus(String status) {

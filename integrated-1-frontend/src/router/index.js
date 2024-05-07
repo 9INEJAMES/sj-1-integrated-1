@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '@/views/HomeView.vue'
+import TaskView from '@/views/TaskView.vue'
 import Home from '@/components/Home.vue'
 import TaskModal from '@/components/TaskModal.vue'
 
@@ -16,8 +16,8 @@ const router = createRouter({
         },
         {
             path: '/task',
-            name: 'homeView',
-            component: HomeView,
+            name: 'TaskView',
+            component: TaskView,
             children: [
                 {
                     path: '',
