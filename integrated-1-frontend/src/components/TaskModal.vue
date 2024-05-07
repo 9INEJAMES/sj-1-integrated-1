@@ -82,7 +82,7 @@ onMounted(async () => {
       // setTimeout(() => {
       //     router.push({ path: `/` })
       // }, 1000)
-      router.push({ path: `/` })
+      router.back()
     } else {
       newTask.value = {
         id: task.id,
