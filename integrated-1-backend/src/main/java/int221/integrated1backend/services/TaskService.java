@@ -48,10 +48,13 @@ public class TaskService {
 
     @Transactional
     public Task createNewTask(TaskDTO taskDTO) {
+        taskDTO.setTitle(isStringNull(taskDTO.getTitle()));
+        taskDTO.setDescription(isStringNull(taskDTO.getDescription()));
+        taskDTO.setAssignees(isStringNull(taskDTO.getAssignees()));
         Task tmp = modelMapper.map(taskDTO, Task.class);
-        tmp.setTitle(isStringNull(tmp.getTitle()));
-        tmp.setDescription(isStringNull(tmp.getDescription()));
-        tmp.setAssignees(isStringNull(tmp.getAssignees()));
+//        tmp.setTitle(isStringNull(tmp.getTitle()));
+//        tmp.setDescription(isStringNull(tmp.getDescription()));
+//        tmp.setAssignees(isStringNull(tmp.getAssignees()));
         tmp.setStatus(isStringNull(tmp.getStatus()) == null ? "NO_STATUS" : isStringNull(tmp.getStatus()));
         Task newTask = repository.save(tmp);
         //        return modelMapper.map(newTask, Task.class);

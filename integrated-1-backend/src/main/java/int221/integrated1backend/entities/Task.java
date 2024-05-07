@@ -49,12 +49,11 @@ public class Task {
 //    }
 
     public String getStatus() {
-        return this.status.replaceAll("\\s", "_").toUpperCase();
+        return this.status != null ? this.status.replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
     }
 
     public void setStatus(String status) {
-        this.status = status.replaceAll("\\s", "_").toUpperCase();
-
+        this.status = this.status != null ? status.replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
     }
 
     private String getDateString(Date d) throws ParseException {
