@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 import { useTaskApi } from '@/composables/task-api'
@@ -14,12 +14,29 @@ const isDisibled = ref(false)
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
+const isChanged = ref(false)
+let task
 const newTask = ref({
   title: '',
   description: '',
   assignees: '',
   status: 'No Status',
 })
+const oldTask = ref({
+  title: '',
+  description: '',
+  assignees: '',
+  status: 'No Status',
+})
+
+watch(
+  newTask,
+  (newVal, oldVal) => {
+    if (JSON.stringify(newTask.value) === JSON.stringify(oldTask.value)) isChanged.value = false
+    else isChanged.value = true
+  },
+  { deep: true }
+)
 const submitTask = async (isSave) => {
   if (isSave) {
     if (route.params.taskId) {
@@ -60,7 +77,7 @@ onMounted(async () => {
   }
   if (route.name !== 'taskAdd') {
     const id = route.params.taskId
-    const task = await taskApi.getTaskById(id)
+    task = await taskApi.getTaskById(id)
     if (!task) {
       // setTimeout(() => {
       //     router.push({ path: `/` })
@@ -70,8 +87,20 @@ onMounted(async () => {
       newTask.value = {
         id: task.id,
         title: task.title,
-        description: task.description,
-        assignees: task.assignees,
+        description: task.description == null ? '' : task.description,
+        assignees: task.assignees == null ? '' : task.assignees,
+        status: task.status
+          .split('_')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+          .join(' '),
+        createdOn: task.createdOn,
+        updatedOn: task.updatedOn,
+      }
+      oldTask.value = {
+        id: task.id,
+        title: task.title,
+        description: task.description == null ? '' : task.description,
+        assignees: task.assignees == null ? '' : task.assignees,
         status: task.status
           .split('_')
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -96,8 +125,17 @@ onMounted(async () => {
         </p>
         <hr />
         <div>
-          <label for="title">Titie</label><span v-if="route.name != 'taskDetails'" class="text-red-600">*</span><br />
+          <label for="title">Title</label><span v-if="route.name != 'taskDetails'" class="text-red-600">*</span><br />
+          <p
+            v-if="$route.name == 'taskDetails'"
+            id="title"
+            class="itbkk-title block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
+            :class="newTask.title.length == 100 ? ' text-gray-500' : ' text-gray-900'"
+          >
+            {{ newTask.title }}
+          </p>
           <input
+            v-else
             type="text"
             name="title"
             @input="checkLength('title', newTask.title, 100)"
@@ -108,8 +146,9 @@ onMounted(async () => {
             v-model="newTask.title"
             :disabled="isDisibled"
           />
-          <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute text-gray-500">The title have a maximum length of 100 characters.</p>
+          <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute">The title have a maximum length of 100 characters.</p>
         </div>
+
         <div class="grid grid-cols-12 gap-[3vh] pt-2">
           <div class="grid col-span-8">
             <div>
@@ -134,7 +173,9 @@ onMounted(async () => {
                 v-model="newTask.description"
                 :disabled="isDisibled"
               ></textarea>
-              <p v-show="$route.name != 'taskDetails'  && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute text-gray-500">The description have a maximum length of 500 characters.</p>
+              <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute">
+                The description have a maximum length of 500 characters.
+              </p>
             </div>
           </div>
 
@@ -144,9 +185,8 @@ onMounted(async () => {
                 <label for="assignees">Assignees</label>
                 <p
                   v-if="$route.name == 'taskDetails'"
-                  id="assignees"
-                  class="itbkk-assignees block p-[2vh] w-full resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all"
-                  :class="newTask.assignees ? '' : 'italic text-gray-500'"
+                  class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 break-all"
+                  :class="newTask.assignees ? 'text-gray-900' : 'italic text-gray-500'"
                 >
                   {{ newTask.assignees ? newTask.assignees : 'Unassigned' }}
                 </p>
@@ -162,17 +202,21 @@ onMounted(async () => {
                   v-model="newTask.assignees"
                   :disabled="isDisibled"
                 ></textarea>
-                <p v-show="$route.name != 'taskDetails' && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute text-gray-500">The assignees have a maximum length of 30 characters.</p>
+                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute">
+                  The assignees have a maximum length of 30 characters.
+                </p>
               </div>
+
               <div class="flex flex-col pt-[3vh]">
                 <label for="status">Status</label>
-                <select id="status" class="itbkk-status select select-bordered disabled:text-white" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
+                <select id="status" class="itbkk-status select select-bordered disabled:text-black" :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
                   <option selected value="No Status">No Status</option>
                   <option value="To Do">To Do</option>
                   <option value="Doing">Doing</option>
                   <option value="Done">Done</option>
                 </select>
               </div>
+
               <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">
                 <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
                 <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
@@ -181,8 +225,15 @@ onMounted(async () => {
             </div>
             <div class="pt-[4vh]">
               <div v-if="$route.name != 'taskDetails'" class="flex justify-evenly">
-                <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(true)" :disabled="newTask.title.trim().length <= 0">Ok</button>
-                <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">Cancel</button>
+                <button
+                  class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                  @click="submitTask(true)"
+                  :class="newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') ? 'disabled' : ''"
+                  :disabled="newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd')"
+                >
+                  save
+                </button>
+                <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">cancel</button>
               </div>
               <div v-else class="flex justify-end items-end">
                 <button class="itbkk-button-close btn btn-error text-white" @click="submitTask(false)">close</button>
