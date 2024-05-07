@@ -7,6 +7,7 @@ import int221.integrated1backend.services.ListMapper;
 import int221.integrated1backend.services.TaskService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +37,11 @@ public class TaskControllerV1 {
         return ResponseEntity.ok(task);
     }
 
+//    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/tasks")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskDTO taskDTO) {
         Task task = service.createNewTask(taskDTO);
-        return ResponseEntity.ok(task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @PutMapping("/tasks/{taskId}")
