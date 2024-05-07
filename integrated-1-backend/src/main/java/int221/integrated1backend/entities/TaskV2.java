@@ -1,5 +1,6 @@
 package int221.integrated1backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +17,8 @@ import java.util.TimeZone;
 @Getter
 @Setter
 @Entity
-@Table(name = "tasks")
-public class Task {
+@Table(name = "tasksV2")
+public class TaskV2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
@@ -28,10 +29,16 @@ public class Task {
     private String description;
     @Column(name = "taskAssignees")
     private String assignees;
-    @Column(name = "taskStatus")
-    private String status;
+    //    @Column(name = "taskStatus")
+//    private String status;
+//    @Column(name = "statusId")
+//    private Integer statusId;
     private Date createdOn;
     private Date updatedOn;
+    //    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "statusId")
+    private Status status;
 
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
@@ -52,9 +59,9 @@ public class Task {
         this.description = isStringNull(description);
     }
 
-    public void setStatus(String status) {
-        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
-    }
+//    public void setStatus(String status) {
+//        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
+//    }
 
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();

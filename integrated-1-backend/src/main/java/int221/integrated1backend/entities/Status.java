@@ -1,8 +1,11 @@
 package int221.integrated1backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,6 +21,9 @@ public class Status {
     @Column(name = "statusDescription")
     private String description;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "status")
+    private List<TaskV2> task;
 
     public String getName() {
         return this.name.replaceAll("\\s", "_").toUpperCase();
