@@ -6,8 +6,8 @@ export const useTasksStore = defineStore('tasks', () => {
     const tasks = ref([])
     const taskApi = useTaskApi()
     const fetchTasks = async () => {
-        resetTasks()
         const tasksData = await taskApi.getAllTasks()
+        resetTasks()
         addTasks(tasksData)
     }
 
@@ -45,12 +45,16 @@ export const useTasksStore = defineStore('tasks', () => {
         }
     }
 
+    function getTasks() {
+        return tasks.value
+    }
     function resetTasks() {
         tasks.value = []
     }
 
     return {
         tasks,
+        getTasks,
         addTasks,
         updateTask,
         getIdOfTask,

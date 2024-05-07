@@ -80,8 +80,7 @@ export const useTaskApi = () => {
             })
             if (response.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the task does not exist.')
-                tasksStore.fetchTasks()
-                console.log(tasksStore.tasks)
+                await tasksStore.fetchTasks()
                 return
             }
             const deleted = await response.json()
@@ -89,7 +88,6 @@ export const useTaskApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the task does not exist.')
-            tasksStore.fetchTasks()
             console.error(`Error deleting user: ${error}`)
         }
     }
