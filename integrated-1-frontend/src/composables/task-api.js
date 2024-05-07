@@ -1,9 +1,11 @@
 import { useToast } from '@/stores/toast'
 import { useRouter } from 'vue-router'
+import { useTasksStore } from '@/stores/task'
 
 export const useTaskApi = () => {
     const myToast = useToast()
     const router = useRouter()
+    const tasksStore = useTasksStore()
     const url = import.meta.env.VITE_BASE_URL
 
     async function getAllTasks() {
@@ -78,6 +80,8 @@ export const useTaskApi = () => {
             })
             if (response.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the task does not exist.')
+                tasksStore.fetchTasks()
+                console.log(tasksStore.tasks)
                 return
             }
             const deleted = await response.json()
@@ -85,6 +89,7 @@ export const useTaskApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the task does not exist.')
+            tasksStore.fetchTasks()
             console.error(`Error deleting user: ${error}`)
         }
     }

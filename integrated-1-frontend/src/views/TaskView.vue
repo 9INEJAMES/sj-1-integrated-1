@@ -13,38 +13,25 @@ const taskApi = useTaskApi()
 const myTasks = useTasksStore()
 const myToast = useToast()
 const isSelectTask = ref(false)
-const taskList = ref([])
 const myTheme = useTheme()
+const selectedTask = ref({})
 
 onMounted(async () => {
-    if (myTasks.getTasks().length <= 0) {
-        const tasksData = await taskApi.getAllTasks()
-        myTasks.addTasks(tasksData)
+    if (myTasks.tasks.length <= 0) {
+        myTasks.fetchTasks()
     }
-    if (myToast.currToast.style === 'alert-error') {
-        myTasks.resetTasks()
-        const tasksData = await taskApi.getAllTasks()
-        myTasks.addTasks(tasksData)
-        isSelectTask.value = false
-    }
-    taskList.value = myTasks.getTasks()
 })
 
 watch(myToast.currToast, async () => {
-    console.log('change')
     if (myToast.currToast.style === 'alert-error') {
-        console.log('error')
-        myTasks.resetTasks()
-        const tasksData = await taskApi.getAllTasks()
-        myTasks.addTasks(tasksData)
-        taskList.value = tasksData
+        myTasks.fetchTasks()
         isSelectTask.value = false
     }
 })
-const selectedTask = ref({})
+
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
-    isSelectTask.value = true // Update isSelectTask when a task is chosen
+    isSelectTask.value = true
 }
 const addTaskBtn = () => {
     router.push({
@@ -58,7 +45,7 @@ const addTaskBtn = () => {
     <RouterView class="z-40" />
     <div class="px-[5vh] pt-[6vh]">
         <div class="">
-            <TaskTable :taskList="taskList" @get-task="chosenTask"></TaskTable>
+            <TaskTable :taskList="myTasks.tasks" @get-task="chosenTask"></TaskTable>
         </div>
     </div>
 

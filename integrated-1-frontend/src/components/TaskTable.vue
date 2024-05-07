@@ -88,8 +88,8 @@ const handleDeleteModal = () => {
                     <td>
                         <div class="flex">
                             {{ index + 1 }}
-                            <div class="itbkk-button-action dropdown dropdown-hover flex items-center">
-                                <div tabindex="0" role="button">
+                            <div class="itbkk-button-action dropdown dropdown-hover">
+                                <div tabindex="0" role="button" class="">
                                     <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
                                 </div>
                                 <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="myTheme.getAlterTheme()">
