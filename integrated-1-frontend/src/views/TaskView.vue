@@ -16,12 +16,6 @@ const isSelectTask = ref(false)
 const myTheme = useTheme()
 const selectedTask = ref({})
 
-onMounted(async () => {
-    if (myTasks.tasks.length <= 0) {
-        myTasks.fetchTasks()
-    }
-})
-
 watch(myToast.currToast, async () => {
     if (myToast.currToast.style === 'alert-error') {
         myTasks.fetchTasks()
@@ -45,7 +39,7 @@ const addTaskBtn = () => {
     <RouterView class="z-40" />
     <div class="px-[5vh] pt-[6vh]">
         <div class="">
-            <TaskTable :taskList="myTasks.tasks" @get-task="chosenTask"></TaskTable>
+            <TaskTable @get-task="chosenTask"></TaskTable>
         </div>
     </div>
 

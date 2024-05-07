@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, onMounted } from 'vue'
 import ConfirmDelete from './confirmDelete.vue'
 import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
@@ -11,14 +11,6 @@ const updateModal = ref(false)
 const myTasks = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
-const props = defineProps({
-    taskList: {
-        type: Array,
-    },
-    task: {
-        type: Object,
-    },
-})
 const emit = defineEmits(['getTask'])
 
 const getTask = (id) => {
@@ -30,6 +22,12 @@ const getTask = (id) => {
     })
     // emit('getTask', id)
 }
+
+onMounted(async () => {
+    if (myTasks.tasks.length <= 0) {
+        await myTasks.fetchTasks()
+    }
+})
 
 const colorStatus = (task) => {
     if (task == 'Done') {
@@ -84,7 +82,7 @@ const handleDeleteModal = () => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(task, index) in taskList" :key="task.id" class="itbkk-item">
+                <tr v-for="(task, index) in myTasks.tasks" :key="task.id" class="itbkk-item">
                     <td>
                         <div class="flex">
                             {{ index + 1 }}
