@@ -1,6 +1,7 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
+import int221.integrated1backend.dtos.StatusOutputDTO;
 import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.entities.TaskV2;
 import int221.integrated1backend.services.ListMapper;
@@ -32,19 +33,22 @@ public class StatusControllerV2 {
     @GetMapping("")
     public ResponseEntity<Object> getAllStatus() {
         List<Status> statusList = service.getAllStatus();
-        return ResponseEntity.ok(statusList);
+        List<StatusOutputDTO> outputDTOList = listMapper.mapList(statusList, StatusOutputDTO.class, modelMapper);
+        return ResponseEntity.ok(outputDTOList);
     }
 
     @PostMapping("")
     public ResponseEntity<Object> addNewStatus(@RequestBody StatusInputDTO statusInputDTO) {
-        Status task = service.createNewStatus(statusInputDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        Status status = service.createNewStatus(statusInputDTO);
+        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateStatus(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {
         Status status = service.updateStatus(id, statusDTO);
-        return ResponseEntity.ok(status);
+        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        return ResponseEntity.ok(statusOutputDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -53,11 +57,18 @@ public class StatusControllerV2 {
         Map<String, Object> responseBody = new HashMap<>();
         return ResponseEntity.ok().body(responseBody);
     }
+
     @DeleteMapping("/{id}/{newId}")
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id, @PathVariable Integer newId) {
-        List<TaskV2> taskV2List = taskService.updateStatusOfTask(id,newId);
+        List<TaskV2> taskV2List = taskService.updateStatusOfTask(id, newId);
         Status status = service.removeStatus(id);
         Map<String, Object> responseBody = new HashMap<>();
         return ResponseEntity.ok().body(responseBody);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getStatusById(@PathVariable Integer id) {
+         Status status = service.findByID(id);
+        return ResponseEntity.ok(status);
     }
 }

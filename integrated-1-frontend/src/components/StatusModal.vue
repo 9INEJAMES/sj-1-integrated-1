@@ -1,7 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref, watch } from 'vue'
-import { useStatusesStore } from '../stores/task.js'
+import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
 
