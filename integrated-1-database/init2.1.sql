@@ -21,9 +21,9 @@ CREATE TABLE tasks (
 
 CREATE TABLE statuses (
     statusId INT AUTO_INCREMENT PRIMARY KEY,
-    statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci UNIQUE,
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    statusColor VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    statusColor VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '#CBD5E1',
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),
     CONSTRAINT CHK_statusDescription_length CHECK (CHAR_LENGTH(TRIM(statusDescription)) <= 200)
 )ENGINE=InnoDB;
@@ -40,7 +40,7 @@ CREATE TABLE tasksV2 (
     CONSTRAINT CHK_taskTitle2_not_empty CHECK (taskTitle <> ''),
     CONSTRAINT CHK_taskDescription2_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees2_not_empty CHECK (taskAssignees <> ''),
-    CONSTRAINT FK_status FOREIGN KEY (statusId) REFERENCES statuses(statusId) ON DELETE CASCADE
+    CONSTRAINT FK_status FOREIGN KEY (statusId) REFERENCES statuses(statusId) ON DELETE RESTRICT
 )ENGINE=InnoDB;
 
 DELIMITER $$
@@ -84,6 +84,10 @@ FOR EACH ROW
 BEGIN
     SET NEW.statusName = UPPER(REPLACE(TRIM(NEW.statusName), ' ', '_'));
 	SET NEW.statusDescription = TRIM(NEW.statusDescription);
+    SET NEW.statusColor = TRIM(NEW.statusColor);
+    IF NEW.statusColor IS NULL THEN
+        SET NEW.statusColor = '#CBD5E1';
+    END IF;
 END$$
 
 CREATE TRIGGER before_update_statuses
@@ -144,10 +148,10 @@ VALUES ('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7T
 ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน', 'DONE','2024-04-22 09:15:00+00:00','2024-04-22 10:00:00+00:00');
 
 INSERT INTO statuses (statusName,statusDescription,statusColor) VALUES
-('NO_STATUS','This item hasn''t been started'),
-('TO_DO',null),
-('DOING',null),
-('DONE','This item has been finished');
+('NO_STATUS','This item hasn''t been started','#CBD5E1'),
+('TO_DO',null,'#FCD34D'),
+('DOING',null,'#7DD3FC'),
+('DONE','This item has been finished','#10B981');
 
 INSERT INTO tasksV2 (taskTitle, taskDescription, taskAssignees, statusId, createdOn, updatedOn) 
 VALUES ('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0', 'Descripti1Descripti2Descripti3Descripti4Descripti5Descripti6Descripti7Descripti8Descripti9Descripti1Descripti1Descripti2Descripti3Descripti4Descripti5Descripti6Descripti7Descripti8Descripti9Descripti2Descripti1Descripti2Descripti3Descripti4Descripti5Descripti6Descripti7Descripti8Descripti9Descripti3Descripti1Descripti2Descripti3Descripti4Descripti5Descripti6Descripti7Descripti8Descripti9Descripti4Descripti1Descripti2Descripti3Descripti4Descripti5Descripti6Descripti7Descripti8Descripti9Descripti5', 'Assignees1Assignees2Assignees3', 1,'2024-04-22 09:00:00+00:00','2024-04-22 09:00:00+00:00'),
