@@ -2,7 +2,7 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 import { useTaskApi } from '@/composables/task-api'
 
-export const useTasksStore = defineStore('tasks', () => {
+export const useTasksStore = defineStore('taswks', () => {
     const tasks = ref([])
     const taskApi = useTaskApi()
     const fetchTasks = async () => {

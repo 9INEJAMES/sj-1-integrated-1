@@ -72,13 +72,14 @@ const handleDeleteModal = () => {
 <template>
     <div class="">
         <ConfirmDelete v-if="deleteModal" :task="selectedTask" :number="selectedIndex" @closeModal="handleDeleteModal" />
-        <table class="myTable shadow-lg">
-            <thead>
+        <table class="myTable shadow-lg ">
+            <thead class="w-full">
                 <tr class="text-lg text-black" :class="myTheme.getTableTheme()">
-                    <th></th>
-                    <th>Title</th>
-                    <th>Assignees</th>
-                    <th>Status</th>
+                    <th style="width: 1%"></th> <!-- Adjusted column span -->
+                    <th style="width: 55%">Title</th> <!-- Adjusted column span -->
+                    <th style="width: 25%">Assignees</th>
+                    <th style="width: 10%" class=" text-center">Status</th>
+                    <th style="width: 9%" class=" text-center">Action</th> <!-- Adjusted column span -->
                 </tr>
             </thead>
             <tbody>
@@ -86,34 +87,41 @@ const handleDeleteModal = () => {
                     <td>
                         <div class="flex">
                             {{ index + 1 }}
-                            <div class="itbkk-button-action dropdown dropdown-hover">
-                                <div tabindex="0" role="button" class="">
-                                    <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
-                                </div>
-                                <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="myTheme.getAlterTheme()">
-                                    <li>
-                                        <p class="itbkk-button-edit" @click="toEditPage(task.id)">Edit</p>
-                                    </li>
-
-                                    <li>
-                                        <p class="itbkk-button-delete" @click="deleteTask(task, index + 1)">Delete</p>
-                                    </li>
-                                </ul>
-                            </div>
+                            
                         </div>
                     </td>
-                    <td :class="$route.name != 'home' ? '' : 'itbkk-title'" class="font-bold h-[30px] text-[2vh] hover:text-blue-500 break-all hover:cursor-pointer" @click="getTask(task.id)">
+                    <td :class="$route.name != 'home' ? '' : 'itbkk-title'"
+                        class="font-bold h-[30px] text-[2vh] hover:text-blue-500 break-all hover:cursor-pointer"
+                        @click="getTask(task.id)">
                         {{ task.title }}
                     </td>
-                    <td :class="[$route.name !== 'home' ? '' : 'itbkk-assignees', task.assignees ? '' : 'italic text-gray-500']">
+                    <td
+                        :class="[$route.name !== 'home' ? '' : 'itbkk-assignees', task.assignees ? '' : 'italic text-gray-500']">
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                     </td>
-
                     <td :class="$route.name != 'home' ? '' : 'itbkk-status'">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :class="colorStatus(task.status)">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default"
+                            :class="colorStatus(task.status)">
                             {{ task.status }}
                         </button>
                     </td>
+                    <td class="flex justify-center">
+                        <div class="itbkk-button-action dropdown dropdown-hover">
+                                    <div tabindex="0" role="button" class="">
+                                        <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
+                                    </div>
+                                    <ul tabindex="0"
+                                        class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box"
+                                        :class="myTheme.getAlterTheme()">
+                                        <li>
+                                            <p class="itbkk-button-edit" @click="toEditPage(task.id)">Edit</p>
+                                        </li>
+                                        <li>
+                                            <p class="itbkk-button-delete" @click="deleteTask(task, index + 1)">Delete</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td> <!-- Adjusted column span -->
                 </tr>
             </tbody>
         </table>

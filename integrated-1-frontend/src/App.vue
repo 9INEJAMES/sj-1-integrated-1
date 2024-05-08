@@ -1,14 +1,14 @@
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
-import { useStatusApi } from '@/composables/status-api.js'
 const myTheme = useTheme()
-const statusApi = useStatusApi()
+const statuses = ref([])
 
 
-onMounted(() => {
-    // statusApi.getAllStatuses()
+
+onMounted(async () => {
+    
 })
 </script>
 
@@ -21,11 +21,13 @@ onMounted(() => {
         <div>
             <RouterView />
         </div>
+
     </div>
 </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 .roboto-light {
     font-family: 'Roboto', sans-serif;
     font-weight: 300;

@@ -39,7 +39,7 @@ const addTaskBtn = () => {
   <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
     <RouterLink to="/status"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
     <Addicon v-show="$route.name == 'home'" :class="myTheme.getAlterTheme()" @click="addTaskBtn"
-      class=" itbkk-button-add w-[13vh] h-[3vh]  transition-all  ease-in hover:cursor-pointer" />
+      class="  itbkk-button-add w-[15vh] h-[3vh]  transition-all  ease-in hover:cursor-pointer" />
 
   </div>
   <RouterView class="z-40" />

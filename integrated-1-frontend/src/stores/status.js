@@ -1,19 +1,26 @@
+import { useStatusApi } from '@/composables/status-api'
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
 export const useStatusesStore = defineStore('statuses', () => {
     const statuses = ref([])
-
-    function addstatuses(newstatuses) {
-        newstatuses.forEach((newTask) => addTask(newTask))
+    const statusApi = useStatusApi()
+    const fetchStatuses = async () => {
+        const statusesData = await statusApi.getAllStatuses()
+        resetstatuses()
+        addStatuses(statusesData)
     }
 
-    function addStatus(Status) {
-        Status.status = Status.status
-            .split('_')
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ')
-        statuses.value.push(Status)
+    function addStatuses(newStatuses) {
+        newStatuses.forEach((newStatus) => addStatus(newStatus))
+    }
+
+    function addStatus(status) {
+        status.name = status.name
+                    .split('_')
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                    .join(' ')
+        statuses.value.push(status)
     }
 
     function updateStatus(updatedStatus) {
@@ -46,7 +53,9 @@ export const useStatusesStore = defineStore('statuses', () => {
         statuses.value = []
     }
     return {
-        addstatuses,
+        statuses,
+        fetchStatuses,
+        addStatuses,
         addStatus,
         updateStatus,
         getIdOfStatus,
