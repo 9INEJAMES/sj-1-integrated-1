@@ -1,19 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue'
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
-const myTheme = useTheme()
-const statuses = ref([])
-
-
-
+import VToast from '@/ui/VToast.vue'
+import { useToast } from '@/stores/toast.js'
+import { useTasksStore } from '@/stores/task.js'
+import { useStatusesStore } from './stores/status'
+const themeStore = useTheme()
+const myToast = useToast()
+const taskStore = useTasksStore()
+const statusStore = useStatusesStore()
+watch(myToast.currToast, async () => {
+    if (myToast.currToast.style === 'alert-error') {
+        await taskStore.fetchTasks()
+        await statusStore.fetchStatuses()
+    }
+})
 onMounted(async () => {
-    
+    if (taskStore.tasks.length <= 0) {
+        await taskStore.fetchTasks()
+    }
+    if (statusStore.statuses.length <= 0) {
+        await statusStore.fetchStatuses()
+    }
 })
 </script>
 
 <template>
-    <div class="roboto-light min-h-screen max-h-fit pb-24" :class="myTheme.getTheme()">
+    <VToast class="z-50" />
+    <div class="roboto-light min-h-screen max-h-fit pb-24" :class="themeStore.getTheme()">
         <NavHeader />
         <!-- <div>
         <RouterLink to="/status"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
@@ -21,7 +36,6 @@ onMounted(async () => {
         <div>
             <RouterView />
         </div>
-
     </div>
 </template>
 

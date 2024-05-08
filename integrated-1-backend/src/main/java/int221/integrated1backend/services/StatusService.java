@@ -61,6 +61,7 @@ public class StatusService {
 
     @Transactional
     public Status removeStatus(Integer id) {
+        if (id==1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T DELETE DEFAULT STATUS");
         Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(status);
         return status;

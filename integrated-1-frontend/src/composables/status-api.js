@@ -73,23 +73,24 @@ export const useStatusApi = () => {
         }
     }
 
-    async function deleteStatus(id) {
+    async function deleteStatus(id, newId) {
         try {
-            const response = await fetch(`${url}/${id}`, {
+            const path = newId ? `${url}/${id}/${newId}` : `${url}/${id}`
+            const response = await fetch(path, {
                 method: 'DELETE',
             })
             if (response.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-                statusesStore.fetchTasks()
+                statusesStore.fetchStatuses()
                 console.log(statusesStore.tasks)
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, 'The task has been deleted')
+            myToast.changeToast(true, 'The status has been deleted')
             return deleted
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the task does not exist.')
-            statusesStore.fetchTasks()
+            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            statusesStore.fetchStatuses()
             console.error(`Error deleting user: ${error}`)
         }
     }

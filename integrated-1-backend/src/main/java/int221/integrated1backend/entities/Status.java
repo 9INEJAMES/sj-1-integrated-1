@@ -23,9 +23,8 @@ public class Status {
     @Column(name = "statusColor")
     private String color;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "status")
-    private List<TaskV2> task;
+    private List<TaskV2> tasks;
 
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;

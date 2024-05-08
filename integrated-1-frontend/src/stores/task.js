@@ -51,7 +51,6 @@ export const useTasksStore = defineStore('taswks', () => {
     function resetTasks() {
         tasks.value = []
     }
-
     return {
         tasks,
         getTasks,
