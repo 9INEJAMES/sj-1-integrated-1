@@ -13,12 +13,86 @@ const statusApi = useStatusApi()
 const isDisibled = ref(false)
 
 const isChanged = ref(false)
+let status
+const newStatus = ref({
+    name: '',
+    description: '',
+    color: '',
+})
+const oldStatus = ref({
+    name: '',
+    description: '',
+    color: '',
+})
+
+watch(
+    newTask,
+    () => {
+        if (JSON.stringify(newStatus.value) === JSON.stringify(oldStatus.value)) isChanged.value = false
+        else isChanged.value = true
+    },
+    { deep: true }
+)
+const submitStatus = async (isSave) => {
+    if (isSave) {
+        if (route.params.id) {
+            const updated = await statusApi.updateStatus(newStatus.value)
+            myStatuses.updateStatus({
+                ...updated,
+                name: newStatus.value.name,
+                description: !newStatus.value.description ? (newStatus.value.description = '') : newStatus.value.description,
+                color: newStatus.value.color,
+            })
+        } else {
+            const status = await statusApi.addTask(newStatus.value)
+            myTasks.addStatus([status])
+        }
+    }
+    router.back()
+}
+const checkLength = (name, value, length) => {
+    if (value.trim().length > length) {
+        if (name === 'title') newStatus.value.title = value.trim().slice(0, length)
+        if (name === 'description') newStatus.value.description = value.trim().slice(0, length)
+        if (name === 'assignees') newStatus.value.assignees = value.trim().slice(0, length)
+    }
+}
+
+onMounted(async () => {
+    if (route.name !== 'statusAdd') {
+        const id = route.params.id
+        status = await statusApiApi.getTaskById(id)
+        if (!status) {
+            // setTimeout(() => {
+            //     router.push({ path: `/` })
+            // }, 1000)
+            router.back()
+        } else {
+            newStatus.value = {
+                id: status.id,
+                name: status.name,
+                description: status.description == null ? '' : status.description,
+                color: status.color == null ? '' : status.color,
+            }
+            oldTask.value = {
+                id: status.id,
+                title: status.name,
+                description: status.description == null ? '' : status.description,
+                color: status.color == null ? '' : status.color,
+            }
+        }
+    }
+})
 </script>
 
 <template>
-  <div>
-    
-  </div>
+    <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
+        <div class="w-full rounded-lg" :class="myTheme.getTheme()">
+            <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
+            <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
+                <p class="text-xl font-semibold">
+                    {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
+                    Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
                 </p>
                 <hr />
                 <div>
