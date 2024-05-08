@@ -1,5 +1,6 @@
 package int221.integrated1backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,8 +17,8 @@ import java.util.TimeZone;
 @Getter
 @Setter
 @Entity
-@Table(name = "tasks")
-public class Task {
+@Table(name = "tasksV2")
+public class TaskV2 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
@@ -28,13 +29,22 @@ public class Task {
     private String description;
     @Column(name = "taskAssignees")
     private String assignees;
-    @Column(name = "taskStatus")
-    private String status;
+    //    @Column(name = "taskStatus")
+//    private String status;
     private Date createdOn;
     private Date updatedOn;
+    //    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "statusId")
+    private Status status;
+
 
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
+    }
+
+    private String isStringNull(String string, String oldString) {
+        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
     }
 
     public void setTitle(String title) {
@@ -49,8 +59,13 @@ public class Task {
         this.assignees = isStringNull(assignees);
     }
 
-    public void setStatus(String status) {
-        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
+    public String getStatus() {
+        return this.status == null ? "NO_STATUS" : this.status.getName();
+    }
+
+    public Status setStatus(Status status) {
+        this.status = status;
+        return this.status;
     }
 
     private String getDateString(Date d) throws ParseException {

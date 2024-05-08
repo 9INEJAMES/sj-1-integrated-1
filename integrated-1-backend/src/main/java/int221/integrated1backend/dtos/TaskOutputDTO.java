@@ -3,9 +3,9 @@ package int221.integrated1backend.dtos;
 import lombok.Data;
 
 @Data
-public class TaskDTO {
+public class TaskOutputDTO {
+    private Integer id;
     private String title;
-    private String description;
     private String assignees;
     private String status;
 }

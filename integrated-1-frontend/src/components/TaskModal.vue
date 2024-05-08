@@ -8,13 +8,13 @@ import { useTaskApi } from '@/composables/task-api'
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
+const isChanged = ref(false)
 const myTasks = useTasksStore()
 const taskApi = useTaskApi()
 const isDisibled = ref(false)
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
-const isChanged = ref(false)
 let task
 const newTask = ref({
   title: '',
@@ -53,7 +53,7 @@ const submitTask = async (isSave) => {
       myTasks.addTasks([task])
     }
   }
-  router.push({ path: `/` })
+  router.back()
 }
 const checkLength = (name, value, length) => {
   if (value.trim().length > length) {
@@ -82,7 +82,7 @@ onMounted(async () => {
       // setTimeout(() => {
       //     router.push({ path: `/` })
       // }, 1000)
-      router.push({ path: `/` })
+      router.back()
     } else {
       newTask.value = {
         id: task.id,

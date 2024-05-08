@@ -1,7 +1,7 @@
 package int221.integrated1backend.services;
 
-import int221.integrated1backend.dtos.TaskDTO;
-import int221.integrated1backend.dtos.TaskWithIdDTO;
+import int221.integrated1backend.dtos.TaskInputDTO;
+import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Task;
 import int221.integrated1backend.repositories.TaskRepository;
 import org.modelmapper.ModelMapper;
@@ -9,15 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -25,7 +18,6 @@ public class TaskService {
     @Autowired
     private TaskRepository repository;
     @Autowired
-
     private ModelMapper modelMapper;
 
 
@@ -39,25 +31,21 @@ public class TaskService {
                         "Task id " + id + " does not exists !!!"));
     }
 
-    private String isStringNull(String string) {
-        return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
-    }
-
     @Transactional
-    public Task createNewTask(TaskDTO taskDTO) {
+    public Task createNewTask(TaskInputDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
         return repository.save(tmp);
     }
 
     @Transactional
-    public TaskWithIdDTO removeTask(Integer taskId) {
+    public TaskOutputDTO removeTask(Integer taskId) {
         Task task = repository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(task);
-        return modelMapper.map(task, TaskWithIdDTO.class);
+        return modelMapper.map(task, TaskOutputDTO.class);
     }
 
     @Transactional
-    public Task updateTask(Integer taskId, TaskDTO taskDTO) {
+    public Task updateTask(Integer taskId, TaskInputDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);
 
