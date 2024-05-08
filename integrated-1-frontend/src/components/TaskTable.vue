@@ -118,7 +118,6 @@ const handleDeleteModal = () => {
               </ul>
             </div>
           </td>
-          <!-- Adjusted column span -->
         </tr>
       </tbody>
     </table>

@@ -32,7 +32,7 @@ const router = createRouter({
           component: StatusModal,
         },
         {
-          path: ':taskId/edit',
+          path: ':id/edit',
           name: 'statusEdit',
           component: StatusModal,
         },

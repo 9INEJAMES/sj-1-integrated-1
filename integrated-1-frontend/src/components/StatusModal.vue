@@ -1,14 +1,15 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { onMounted, ref, watch } from 'vue'
-import { useStatusesStore } from '../stores/task.js'
+import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
+
 
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
-const myStatuses = useStatusesStore()
+const statusesStore = useStatusesStore()
 const statusApi = useStatusApi()
 const isDisibled = ref(false)
 
@@ -26,7 +27,7 @@ const oldStatus = ref({
 })
 
 watch(
-    newTask,
+    newStatus.value,
     () => {
         if (JSON.stringify(newStatus.value) === JSON.stringify(oldStatus.value)) isChanged.value = false
         else isChanged.value = true
@@ -36,8 +37,8 @@ watch(
 const submitStatus = async (isSave) => {
     if (isSave) {
         if (route.params.id) {
-            const updated = await statusApi.updateStatus(newStatus.value)
-            myStatuses.updateStatus({
+            const updated = await statusesStore.updateStatus(newStatus.value)
+            mstatusesStore.updateStatus({
                 ...updated,
                 name: newStatus.value.name,
                 description: !newStatus.value.description ? (newStatus.value.description = '') : newStatus.value.description,
@@ -52,16 +53,16 @@ const submitStatus = async (isSave) => {
 }
 const checkLength = (name, value, length) => {
     if (value.trim().length > length) {
-        if (name === 'title') newStatus.value.title = value.trim().slice(0, length)
+        if (name === 'name') newStatus.value.title = value.trim().slice(0, length)
         if (name === 'description') newStatus.value.description = value.trim().slice(0, length)
-        if (name === 'assignees') newStatus.value.assignees = value.trim().slice(0, length)
+        if (name === 'color') newStatus.value.assignees = value.trim().slice(0, length)
     }
 }
-
 onMounted(async () => {
+    console.log(route.params.id)
     if (route.name !== 'statusAdd') {
         const id = route.params.id
-        status = await statusApiApi.getTaskById(id)
+        status = await statusesStore.getIdOfStatus(id)
         if (!status) {
             // setTimeout(() => {
             //     router.push({ path: `/` })
@@ -74,7 +75,7 @@ onMounted(async () => {
                 description: status.description == null ? '' : status.description,
                 color: status.color == null ? '' : status.color,
             }
-            oldTask.value = {
+            oldStatus.value = {
                 id: status.id,
                 title: status.name,
                 description: status.description == null ? '' : status.description,
@@ -82,109 +83,63 @@ onMounted(async () => {
             }
         }
     }
+
 })
 </script>
 
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="myTheme.getTheme()">
-            <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
-            <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
+            <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-xl font-semibold">
-                    {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
-                    Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
+                    {{ route.name == 'statusAdd' ? 'Add Status' : 'Edit Status' }}
                 </p>
                 <hr />
                 <div>
-                    <label for="title">Title</label><span v-if="route.name != 'taskDetails'"
-                        class="text-red-600">*</span><br />
-                    <p v-if="$route.name == 'taskDetails'" id="title"
-                        class="itbkk-title block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
-                        :class="newTask.title.length == 100 ? ' text-gray-500' : ' text-gray-900'">
-                        {{ newTask.title }}
-                    </p>
-                    <input v-else type="text" name="title" @input="checkLength('title', newTask.title, 100)"
-                        class="itbkk-title block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
-                        :class="newTask.title.length == 100 ? ' text-gray-500' : ' text-gray-900'" id="title"
-                        placeholder="Write your task's title" v-model="newTask.title" :disabled="isDisibled" />
-                    <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100"
-                        class="text-xs pl-3 pt-1 absolute">The title have a maximum length of 100 characters.</p>
+                    <label for="name">Name</label><span class="text-red-600">*</span><br />
+                    <input type="text" name="name" id="name" @input="checkLength('name', newStatus.name, 100)"
+                        class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
+                        :class="newStatus.name.length == 100 ? ' text-gray-500' : ' text-gray-900'"
+                        placeholder="Write your status's name" v-model="newStatus.name" :disabled="isDisibled" />
+                    <p v-show="newStatus.name.length == 100" class="text-xs pl-3 pt-1 absolute">The name has a maximum
+                        length of 100 characters.</p>
                 </div>
 
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
                     <div class="grid col-span-8">
                         <div>
                             <label for="description">Description</label>
-                            <p v-if="$route.name == 'taskDetails'" id="description"
-                                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all h-3/4"
-                                :class="newTask.description ? '' : 'italic text-gray-500'">
-                                {{ newTask.description ? newTask.description : 'No Description Provided' }}
-                            </p>
-                            <textarea v-else rows="15" id="description"
+                            <textarea rows="15" id="description"
                                 class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
-                                :class="newTask.description && newTask.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
+                                :class="newStatus.description && newStatus.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
                                 placeholder="Write your description" name="description"
-                                @input="checkLength('description', newTask.description, 500)" v-model="newTask.description"
-                                :disabled="isDisibled"></textarea>
-                            <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500"
+                                @input="checkLength('description', newStatus.description, 500)"
+                                v-model="newStatus.description" :disabled="isDisibled"></textarea>
+                            <p v-show="newStatus.description && newStatus.description.length == 500"
                                 class="text-xs pl-3 pt-1 absolute">
-                                The description have a maximum length of 500 characters.
+                                The description has a maximum length of 500 characters.
                             </p>
                         </div>
                     </div>
 
+
                     <div class="flex col-span-4 flex-col justify-between">
                         <div>
                             <div>
-                                <label for="assignees">Assignees</label>
-                                <p v-if="$route.name == 'taskDetails'"
-                                    class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 break-all"
-                                    :class="newTask.assignees ? 'text-gray-900' : 'italic text-gray-500'">
-                                    {{ newTask.assignees ? newTask.assignees : 'Unassigned' }}
-                                </p>
-                                <textarea v-else id="assignees" rows="1"
-                                    class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
-                                    :class="newTask.assignees && newTask.assignees.length == 30 ? ' text-gray-500' : ' text-gray-900'"
-                                    placeholder="Enter assignees" name="assignees"
-                                    @input="checkLength('assignees', newTask.assignees, 30)" v-model="newTask.assignees"
-                                    :disabled="isDisibled"></textarea>
-                                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30"
-                                    class="text-xs pl-3 pt-1 absolute">
-                                    The assignees have a maximum length of 30 characters.
-                                </p>
-                            </div>
-
-                            <div class="flex flex-col pt-[3vh]">
-                                <label for="status">Status</label>
-                                <select id="status" class="itbkk-status select select-bordered disabled:text-black"
-                                    :class="myTheme.getTheme()" :disabled="isDisibled" v-model="newTask.status">
-                                    <option selected value="No Status">No Status</option>
-                                    <option value="To Do">To Do</option>
-                                    <option value="Doing">Doing</option>
-                                    <option value="Done">Done</option>
-                                </select>
-                            </div>
-
-                            <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">
-                                <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
-                                <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
-                                <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
+                                <label for="color">Color</label>
+                                <input type="color" class="p-1 h-10 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg " id="color" title="Choose your color" v-model="newStatus.color">
                             </div>
                         </div>
                         <div class="pt-[4vh]">
-                            <div v-if="$route.name != 'taskDetails'" class="flex justify-evenly">
+                            <div class="flex justify-evenly">
                                 <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                                    @click="submitTask(true)"
-                                    :class="newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') ? 'disabled' : ''"
-                                    :disabled="newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd')">
+                                    @click="submitStatus(true)"
+                                    :class="newStatus.name.trim().length <= 0 || ($route.name == 'statusEdit' && !isChanged) || (newStatus.name.trim().length <= 0 && $route.name == 'statusAdd') ? 'disabled' : ''"
+                                    :disabled="newStatus.name.trim().length <= 0 || ($route.name == 'statusEdit' && !isChanged) || (newStatus.name.trim().length <= 0 && $route.name == 'statusAdd')">
                                     save
                                 </button>
                                 <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                                    @click="submitTask(false)">cancel</button>
-                            </div>
-                            <div v-else class="flex justify-end items-end">
-                                <button class="itbkk-button-close btn btn-error text-white"
-                                    @click="submitTask(false)">close</button>
+                                    @click="submitStatus(false)">cancel</button>
                             </div>
                         </div>
                     </div>

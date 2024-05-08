@@ -3,13 +3,26 @@ import { ref, onMounted } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme'
 import ConfirmDelete from './ConfirmDelete.vue'
+import router from '../router/index.js'
 
 const myStatuses = useStatusesStore()
 const myTheme = useTheme()
 const deleteModal = ref(false)
 const selectedIndex = ref(null)
 const selectStatus = ref(null)
+const updateModal = ref(false)
 const emit = defineEmits(['getStatus'])
+
+const getStatus = (id) => {
+  router.push({
+    name: 'taskDetails',
+    params: {
+      taskId: id,
+    },
+  })
+  // emit('getTask', id)
+}
+
 onMounted(async () => {
   if (myStatuses.statuses.length <= 0) {
     await myStatuses.fetchStatuses()
@@ -23,7 +36,7 @@ const toEditPage = (id) => {
     },
   })
   if (selectStatus.value === null) {
-    selectStatus.value = myTasks.getIdOfTask(id)
+    selectStatus.value = myStatuses.getIdOfStatus(id)
   }
   updateModal.value = true
 }
@@ -62,7 +75,7 @@ const handleDeleteModal = () => {
               {{ index + 1 }}
             </div>
           </td>
-          <td :class="$route.name != 'home' ? '' : 'itbkk-title'" class="font-bold h-[30px] text-[2vh] hover:text-blue-500 break-all hover:cursor-pointer" @click="getStatus(status.id)">
+          <td :class="$route.name != 'home' ? '' : 'itbkk-title'" class="font-bold h-[30px] text-[2vh] break-all" >
             {{ status.name }}
           </td>
           <td :class="[$route.name !== 'home' ? '' : 'itbkk-assignees', status.assignees ? '' : 'italic text-gray-500']">
