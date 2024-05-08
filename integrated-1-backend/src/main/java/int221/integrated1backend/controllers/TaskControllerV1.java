@@ -27,8 +27,8 @@ public class TaskControllerV1 {
     @GetMapping("/tasks")
     public ResponseEntity<Object> getAllSupplier() {
         List<Task> taskList = service.getAllTask();
-//        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class, modelMapper);
-        return ResponseEntity.ok(taskList);
+        List<TaskWithIdDTO> taskWithIdDTOList = listMapper.mapList(taskList, TaskWithIdDTO.class, modelMapper);
+        return ResponseEntity.ok(taskWithIdDTOList);
     }
 
     @GetMapping("/tasks/{taskId}")
