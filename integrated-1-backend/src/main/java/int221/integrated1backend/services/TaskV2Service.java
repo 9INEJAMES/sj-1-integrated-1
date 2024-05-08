@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -65,4 +66,11 @@ public class TaskV2Service {
         return repository.save(existingTask);
     }
 
+    public List<TaskV2> updateStatusOfTask(Integer statusId,Integer newId){
+        Status status = statusService.findByID(statusId);
+        List<TaskV2> taskV2List = repository.findAllByStatus(status);
+        Status newStatus = statusService.findByID(newId);
+        taskV2List.stream().map(task -> task.setStatus(newStatus)).collect(Collectors.toList());
+        return taskV2List;
+    }
 }

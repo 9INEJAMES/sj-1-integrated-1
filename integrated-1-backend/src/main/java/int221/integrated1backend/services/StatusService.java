@@ -63,6 +63,7 @@ public class StatusService {
     public Status removeStatus(Integer id) {
         Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(status);
-        return modelMapper.map(status, Status.class);
+        return status;
     }
+
 }

@@ -30,6 +30,7 @@ public class Status {
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
+
     public String getName() {
         return this.name.replaceAll("\\s", "_").toUpperCase();
     }
@@ -43,6 +44,6 @@ public class Status {
     }
 
     public void setColor(String color) {
-        this.color = isStringNull(color);
+        this.color = color == null ? "#CBD5E1" : isStringNull(color);
     }
 }

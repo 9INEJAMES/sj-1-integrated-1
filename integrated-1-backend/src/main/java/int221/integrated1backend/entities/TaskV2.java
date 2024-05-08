@@ -63,6 +63,11 @@ public class TaskV2 {
         return this.status == null ? "NO_STATUS" : this.status.getName();
     }
 
+    public Status setStatus(Status status) {
+        this.status = status;
+        return this.status;
+    }
+
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();
         SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");
