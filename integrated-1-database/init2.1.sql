@@ -21,7 +21,7 @@ CREATE TABLE tasks (
 
 CREATE TABLE statuses (
     statusId INT AUTO_INCREMENT PRIMARY KEY,
-    statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci UNIQUE,
+    statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     statusColor VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '#CBD5E1',
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),

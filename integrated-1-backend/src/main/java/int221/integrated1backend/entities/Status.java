@@ -35,7 +35,7 @@ public class Status {
     }
 
     public void setName(String name) {
-        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
+        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : null;
     }
 
     public void setDescription(String description) {
