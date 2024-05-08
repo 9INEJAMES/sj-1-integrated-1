@@ -13,7 +13,7 @@ const chosenStatus = async (id) => {
 
 <template>
   <div class="flex justify-start pt-[5vh] pl-[5vh]">
-    <RouterLink to="/"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
+    <RouterLink to="/"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Task</button></RouterLink>
 
   </div>
   <div class="px-[5vh] pt-[1vh]">
