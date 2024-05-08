@@ -14,7 +14,7 @@ const chosenStatus = async (id) => {
 <template>
   <div class="flex justify-start pt-[5vh] pl-[5vh]">
     <RouterLink to="/"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Task</button></RouterLink>
-
+    <p class=" font-bold text-3xl"> </p>
   </div>
   <div class="px-[5vh] pt-[1vh]">
     <StatusTable @get-Status="chosenStatus"></StatusTable>
