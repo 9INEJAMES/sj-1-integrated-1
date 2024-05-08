@@ -8,13 +8,13 @@ import { useTaskApi } from '@/composables/task-api'
 const myTheme = useTheme()
 const route = useRoute()
 const router = useRouter()
+const isChanged = ref(false)
 const myTasks = useTasksStore()
 const taskApi = useTaskApi()
 const isDisibled = ref(false)
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
-const isChanged = ref(false)
 let task
 const newTask = ref({
   title: '',
