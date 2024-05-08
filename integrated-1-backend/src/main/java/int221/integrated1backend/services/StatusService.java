@@ -1,7 +1,9 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
+import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Status;
+import int221.integrated1backend.entities.TaskV2;
 import int221.integrated1backend.repositories.StatusRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +46,23 @@ public class StatusService {
 
     @Transactional
     public Status createNewStatus(StatusInputDTO statusInputDTO) {
-        Status status = modelMapper.map(statusInputDTO,Status.class);
+        Status status = modelMapper.map(statusInputDTO, Status.class);
         return repository.save(status);
     }
 
     @Transactional
-    public Status updateStatus(Integer id, Status status) {
+    public Status updateStatus(Integer id, StatusInputDTO status) {
         Status existStatus = findByID(id);
 
-        existStatus.setName(isStringNull(status.getName(), existStatus.getName()));
-        existStatus.setDescription(isStringNull(status.getDescription(), existStatus.getDescription()));
+        existStatus.setName(isStringNull(status.getName()));
+        existStatus.setDescription(isStringNull(status.getDescription()));
         return repository.save(existStatus);
+    }
+
+    @Transactional
+    public Status removeStatus(Integer id) {
+        Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
+        repository.delete(status);
+        return modelMapper.map(status, Status.class);
     }
 }

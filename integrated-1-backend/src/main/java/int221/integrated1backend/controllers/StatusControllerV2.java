@@ -1,10 +1,7 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
-import int221.integrated1backend.dtos.TaskInputDTO;
-import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Status;
-import int221.integrated1backend.entities.Task;
 import int221.integrated1backend.services.ListMapper;
 import int221.integrated1backend.services.StatusService;
 import org.modelmapper.ModelMapper;
@@ -39,4 +36,15 @@ public class StatusControllerV2 {
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateStatus(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {
+        Status status = service.updateStatus(id, statusDTO);
+        return ResponseEntity.ok(status);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteStatus(@PathVariable Integer id) {
+        Status status = service.removeStatus(id);
+        return ResponseEntity.ok(status);
+    }
 }
