@@ -83,7 +83,7 @@ watch(newStatusId, () => {
             </p>
             <p v-else-if="object.id == 1 && mode == 'status'">You can't delete default status</p>
             <div v-else>
-                <p>There is some task associated with the {{ object.name }} status</p>
+                <p>There {{ object.tasks.length == 1 ? 'is' : 'are' }} {{ object.tasks.length }} {{ object.tasks.length == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
                 <div class="flex">
                     <p class="w-1/3">Transfer to</p>
                     <select v-model="newStatusId" id="status" class="itbkk-status select select-bordered disabled:text-black w-2/3" :class="themeStore.getTheme()">
