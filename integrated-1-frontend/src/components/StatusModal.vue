@@ -37,7 +37,9 @@ watch(
 const submitStatus = async (isSave) => {
     if (isSave) {
         if (route.params.id) {
+            console.log(newStatus.value)
             const updated = await statusApi.updateStatus(newStatus.value)
+            
             statusesStore.updateStatus({
                 ...updated,
                 name: newStatus.value.name,
@@ -83,6 +85,7 @@ onMounted(async () => {
         }
     }
 })
+
 </script>
 
 <template>
@@ -95,36 +98,27 @@ onMounted(async () => {
                 <hr />
                 <div>
                     <label for="name">Status Name</label><span class="text-red-600">*</span><br />
-                    <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        @input="checkLength('name', newStatus.name, 50)"
+                    <input type="text" name="name" id="name" @input="checkLength('name', newStatus.name, 50)"
                         class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
                         :class="newStatus.name.length == 50 ? ' text-gray-500' : ' text-gray-900'"
-                        placeholder="Write your status's name"
-                        v-model="newStatus.name"
-                        :disabled="isDisibled"
-                    />
-                    <p v-show="newStatus.name.length == 50" class="text-xs pl-3 pt-1 absolute">The name has a maximum length of 50 characters.</p>
+                        placeholder="Write your status's name" v-model="newStatus.name" :disabled="isDisibled" />
+                    <p v-show="newStatus.name.length == 50" class="text-xs pl-3 pt-1 absolute">The name has a maximum length
+                        of 50 characters.</p>
                 </div>
 
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
                     <div class="grid col-span-8">
                         <div>
                             <label for="description">Description</label>
-                            <textarea
-                                rows="15"
-                                id="description"
+                            <textarea rows="15" id="description"
                                 class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
                                 :class="newStatus.description && newStatus.description.length == 200 ? ' text-gray-500' : ' text-gray-900'"
-                                placeholder="Write your description"
-                                name="description"
+                                placeholder="Write your description" name="description"
                                 @input="checkLength('description', newStatus.description, 200)"
-                                v-model="newStatus.description"
-                                :disabled="isDisibled"
-                            ></textarea>
-                            <p v-show="newStatus.description && newStatus.description.length == 200" class="text-xs pl-3 pt-1 absolute">The description has a maximum length of 200 characters.</p>
+                                v-model="newStatus.description" :disabled="isDisibled"></textarea>
+                            <p v-show="newStatus.description && newStatus.description.length == 200"
+                                class="text-xs pl-3 pt-1 absolute">The description has a maximum length of 200 characters.
+                            </p>
                         </div>
                     </div>
 
@@ -132,26 +126,32 @@ onMounted(async () => {
                         <div class="flex justify-center">
                             <div>
                                 <label for="color">Color</label>
-                                <input
-                                    type="color"
-                                    class="p-1 h-20 w-20 sm:h-32 md:h-36 lg:h-64 sm:w-32 md:w-36 lg:w-64 block bg-white border border-gray-200 cursor-pointer rounded-lg"
-                                    id="color"
-                                    title="Choose your color"
-                                    v-model="newStatus.color"
-                                />
+                                <input type="color"
+                                    class="p-1  w-20 h-20  sm:w-32 md:w-36 lg:w-64 block bg-white border border-gray-200 cursor-pointer rounded-lg"
+                                    id="color" title="Choose your color" v-model="newStatus.color" />
+                            </div>
+                        </div>
+                        <div>
+                            <p>Preview</p>
+                            <div class=" border h-20 w-30 flex justify-center items-center border-slate-300  font-bold">
+                                <button :style="{ backgroundColor: newStatus.color }"
+                                    class="w-[100px] h-[30px] rounded-2xl  ">
+                                    {{ newStatus.name }}
+                                </button>
+
                             </div>
                         </div>
                         <div class="pt-[4vh]">
                             <div class="flex justify-evenly">
-                                <button
-                                    class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                                <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
                                     @click="submitStatus(true)"
                                     :class="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 ? 'disabled' : ''"
-                                    :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1"
-                                >
+                                    :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1">
                                     save
                                 </button>
-                                <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitStatus(false)">cancel</button>
+
+                                <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                                    @click="submitStatus(false)">cancel</button>
                             </div>
                         </div>
                     </div>
