@@ -44,7 +44,7 @@ const submitStatus = async (isSave) => {
             taskStore.fetchTasks()
         } else {
             const status = await statusApi.addStatus(newStatus.value)
-            statusesStore.addStatus(status)
+            if (status) statusesStore.addStatus(status)
         }
     }
     router.back()

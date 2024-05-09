@@ -22,7 +22,7 @@ export const useTaskApi = () => {
         try {
             const data = await fetch(`${url}/${id}`)
             const result = await data.json()
-            if (data.status == 404) {
+            if (data.status / 400 >= 1) {
                 myToast.changeToast(false, 'The requested task does not exist')
                 // router.push({ name: 'home' })
                 return
@@ -60,7 +60,7 @@ export const useTaskApi = () => {
                 },
                 body: JSON.stringify({ ...obj }),
             })
-            if (response.status == 404) {
+            if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'The update was unsuccesful')
                 return
             }
@@ -78,7 +78,7 @@ export const useTaskApi = () => {
             const response = await fetch(`${url}/${id}`, {
                 method: 'DELETE',
             })
-            if (response.status == 404) {
+            if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the task does not exist.')
                 await tasksStore.fetchTasks()
                 return

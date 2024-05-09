@@ -47,13 +47,13 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...obj }),
             })
 
-            if (data.status >= 400 && data.status < 600) {
+            if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status could not be added.')
                 await statusesStore.fetchStatuses()
                 return
             }
             const result = await response.json()
-            myToast.changeToast(true, 'The status has been added')
+            myToast.changeToast(true, 'The status has been added.')
             return result
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status could not be added.')
@@ -71,32 +71,54 @@ export const useStatusApi = () => {
                 },
                 body: JSON.stringify({ ...obj }),
             })
-            if (response.status == 404) {
-                myToast.changeToast(false, 'The update was unsuccesful')
+            if (response.status == 406) {
+                myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
+                return
+            } else if (response.status / 400 >= 1) {
+                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
             const updatedStatus = await response.json()
-            myToast.changeToast(true, 'The stuatus has been updated')
+            myToast.changeToast(true, 'The stuatus has been updated.')
             return updatedStatus
         } catch (error) {
-            myToast.changeToast(false, 'The update was unsuccesful')
+            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error updating user: ${error}`)
         }
     }
 
-    async function deleteStatus(id, newId) {
+    async function deleteStatus(id) {
         try {
-            const path = newId ? `${url}/${id}/${newId}` : `${url}/${id}`
-            const response = await fetch(path, {
+            const response = await fetch(`${url}/${id}`, {
                 method: 'DELETE',
             })
-            if (response.status == 404) {
+            if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
                 await statusesStore.fetchStatuses()
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, 'The status has been deleted')
+            myToast.changeToast(true, 'The status has been deleted.')
+            return deleted
+        } catch (error) {
+            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            await statusesStore.fetchStatuses()
+            console.error(`Error deleting user: ${error}`)
+        }
+    }
+    async function deleteStatusAndTransfer(id, newId, isMany) {
+        try {
+            const path = newId ? `${url}/${id}/${newId}` : `${url}/${id}`
+            const response = await fetch(path, {
+                method: 'DELETE',
+            })
+            if (response.status / 400 >= 1) {
+                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                await statusesStore.fetchStatuses()
+                return
+            }
+            const deleted = await response.json()
+            myToast.changeToast(true, `The task${isMany ? 's' : ''} have been tranferred and the status has been deleted.`)
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
@@ -105,5 +127,5 @@ export const useStatusApi = () => {
         }
     }
 
-    return { getAllStatuses, getStatusById, addStatus, updateStatus, deleteStatus }
+    return { getAllStatuses, getStatusById, addStatus, updateStatus, deleteStatus, deleteStatusAndTransfer }
 }

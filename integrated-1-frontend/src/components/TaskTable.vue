@@ -45,10 +45,8 @@ const toEditPage = (id) => {
 }
 
 const deleteTask = (task, index) => {
-    if (selectedTask.value === null) {
-        selectedTask.value = task
-        selectedIndex.value = index
-    }
+    selectedTask.value = task
+    selectedIndex.value = index
     deleteModal.value = true
 }
 

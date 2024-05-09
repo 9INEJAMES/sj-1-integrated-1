@@ -46,10 +46,8 @@ const toEditPage = (id) => {
 const deleteStatus = async (status, index) => {
     const status_1 = await statusApi.getStatusById(status.id)
     if (status_1) {
-        if (selectStatus.value === null) {
-            selectStatus.value = status_1
-            selectedIndex.value = index
-        }
+        selectStatus.value = status_1
+        selectedIndex.value = index
         deleteModal.value = true
     }
 }
