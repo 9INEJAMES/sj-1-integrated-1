@@ -6,7 +6,7 @@ import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useStatusApi } from '@/composables/status-api'
 
-const StatusesStore = useStatusesStore()
+const statusesStore = useStatusesStore()
 const themeStore = useTheme()
 const deleteModal = ref(false)
 const selectedIndex = ref(null)
@@ -26,8 +26,8 @@ const getStatus = (id) => {
 }
 
 onMounted(async () => {
-    if (StatusesStore.statuses.length <= 0) {
-        await StatusesStore.fetchStatuses()
+    if (statusesStore.statuses.length <= 0) {
+        await statusesStore.fetchStatuses()
     }
 })
 const toEditPage = (id) => {
@@ -38,18 +38,20 @@ const toEditPage = (id) => {
         },
     })
     if (selectStatus.value === null) {
-        selectStatus.value = StatusesStore.getIdOfStatus(id)
+        selectStatus.value = statusesStore.getIdOfStatus(id)
     }
     updateModal.value = true
 }
 
 const deleteStatus = async (status, index) => {
     const status_1 = await statusApi.getStatusById(status.id)
-    if (selectStatus.value === null) {
-        selectStatus.value = status_1
-        selectedIndex.value = index
+    if (status_1) {
+        if (selectStatus.value === null) {
+            selectStatus.value = status_1
+            selectedIndex.value = index
+        }
+        deleteModal.value = true
     }
-    deleteModal.value = true
 }
 
 const handleDeleteModal = () => {
@@ -72,7 +74,7 @@ const handleDeleteModal = () => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(status, index) in StatusesStore.statuses" :key="status.id" class="itbkk-item">
+                <tr v-for="(status, index) in statusesStore.statuses" :key="status.id" class="itbkk-item">
                     <td>
                         <div class="flex">
                             {{ index + 1 }}

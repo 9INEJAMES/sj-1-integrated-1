@@ -7,7 +7,7 @@ export const useStatusesStore = defineStore('statuses', () => {
     const statusApi = useStatusApi()
     const fetchStatuses = async () => {
         const statusesData = await statusApi.getAllStatuses()
-        resetstatuses()
+        resetStatuses()
         addStatuses(statusesData)
     }
 
@@ -17,9 +17,9 @@ export const useStatusesStore = defineStore('statuses', () => {
 
     function addStatus(status) {
         status.name = status.name
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(' ')
+            .split('_')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ')
         statuses.value.push(status)
     }
 
@@ -45,11 +45,11 @@ export const useStatusesStore = defineStore('statuses', () => {
         }
     }
 
-    function getstatuses() {
+    function getStatuses() {
         return statuses.value
     }
 
-    function resetstatuses() {
+    function resetStatuses() {
         statuses.value = []
     }
     return {
@@ -61,8 +61,8 @@ export const useStatusesStore = defineStore('statuses', () => {
         getIdOfStatus,
         findIndexStatus,
         removeStatus,
-        getstatuses,
-        resetstatuses,
+        getStatuses,
+        resetStatuses,
     }
 })
 

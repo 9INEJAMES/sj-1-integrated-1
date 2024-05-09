@@ -21,15 +21,18 @@ export const useStatusApi = () => {
     async function getStatusById(id) {
         try {
             const data = await fetch(`${url}/${id}`)
-            const result = await data.json()
             if (data.status == 404) {
-                myToast.changeToast(false, 'The requested status does not exist')
-                // router.push({ name: 'home' })
+                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                await statusesStore.fetchStatuses()
                 return
             }
+            const result = await data.json()
             return result
         } catch (error) {
-            myToast.changeToast(false, 'The requested status does not exist')
+            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            await statusesStore.fetchStatuses()
+            console.log(statusesStore.statuses)
+
             console.log(`error: ${error}`)
         }
     }
@@ -81,8 +84,7 @@ export const useStatusApi = () => {
             })
             if (response.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-                statusesStore.fetchStatuses()
-                console.log(statusesStore.tasks)
+                await statusesStore.fetchStatuses()
                 return
             }
             const deleted = await response.json()
@@ -90,7 +92,7 @@ export const useStatusApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-            statusesStore.fetchStatuses()
+            await statusesStore.fetchStatuses()
             console.error(`Error deleting user: ${error}`)
         }
     }

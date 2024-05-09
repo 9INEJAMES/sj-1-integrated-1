@@ -25,7 +25,7 @@ const getTask = (id) => {
 }
 
 const colorStatus = (taskstatus) => {
-    const status = statusesStore.getstatuses().find((s) => {
+    const status = statusesStore.getStatuses().find((s) => {
         return s.name.toUpperCase() == taskstatus.toUpperCase()
     })
     return status ? status.color : ''
