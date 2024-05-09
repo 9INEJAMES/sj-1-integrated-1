@@ -4,6 +4,8 @@ import { onMounted, ref, watch } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
+import { useTasksStore } from '@/stores/task.js'
+
 const themeStore = useTheme()
 const route = useRoute()
 const router = useRouter()
@@ -11,7 +13,7 @@ const statusesStore = useStatusesStore()
 const statusApi = useStatusApi()
 const isDisibled = ref(false)
 const isChanged = ref(false)
-
+const taskStore = useTasksStore()
 let status
 const newStatus = ref({
     name: '',
@@ -42,6 +44,7 @@ const submitStatus = async (isSave) => {
                 description: !newStatus.value.description ? (newStatus.value.description = '') : newStatus.value.description,
                 color: newStatus.value.color,
             })
+            taskStore.fetchTasks()
         } else {
             const status = await statusApi.addStatus(newStatus.value)
             statusesStore.addStatus(status)

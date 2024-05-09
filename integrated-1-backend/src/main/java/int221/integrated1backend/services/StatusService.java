@@ -56,6 +56,7 @@ public class StatusService {
 
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));
+        existStatus.setColor(isStringNull(status.getColor()));
         return repository.save(existStatus);
     }
 
