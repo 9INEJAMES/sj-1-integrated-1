@@ -48,10 +48,6 @@ const submitTask = async (isSave) => {
             const updated = await taskApi.updateTask(newTask.value)
             taskStore.updateTask({
                 ...updated,
-                title: newTask.value.title,
-                description: !newTask.value.description ? (newTask.value.description = '') : newTask.value.description,
-                assignees: !newTask.value.assignees ? (newTask.value.assignees = '') : newTask.value.assignees,
-                status: newTask.value.status,
             })
         } else {
             const task = await taskApi.addTask(newTask.value)

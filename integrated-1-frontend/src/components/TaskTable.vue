@@ -86,7 +86,7 @@ const handleDeleteModal = () => {
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                     </td>
                     <td :class="$route.name != 'home' ? '' : 'itbkk-status'">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="`background-color: ${colorStatus(task.status)}`">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="{ backgroundColor: colorStatus(task.status) }">
                             {{ task.status }}
                         </button>
                     </td>

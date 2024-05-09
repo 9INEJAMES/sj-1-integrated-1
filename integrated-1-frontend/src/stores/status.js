@@ -26,6 +26,10 @@ export const useStatusesStore = defineStore('statuses', () => {
     function updateStatus(updatedStatus) {
         const index = findIndexStatus(updatedStatus.id)
         if (index !== -1) {
+            updatedStatus.name = updatedStatus.name
+                .split('_')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ')
             statuses.value.splice(index, 1, updatedStatus)
         }
     }

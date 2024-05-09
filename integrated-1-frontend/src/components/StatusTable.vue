@@ -81,7 +81,7 @@ const handleDeleteModal = () => {
                         </div>
                     </td>
                     <td :class="$route.name != 'home' ? '' : 'itbkk-name'" class="font-bold h-[30px] text-[2vh] break-all">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="`background-color: ${status.color}`">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="{ backgroundColor: status.color }">
                             {{ status.name }}
                         </button>
                     </td>
