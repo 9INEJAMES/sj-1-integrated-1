@@ -30,6 +30,7 @@ onMounted(async () => {
     <VToast class="z-50" />
     <div class="roboto-light min-h-screen max-h-fit pb-24" :class="themeStore.getTheme()">
         <NavHeader />
+        <hr class="mt-[3vh] mx-[3vh] shadow-lg bg-gray-100  rounded">
         <!-- <div>
         <RouterLink to="/status"><button class="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg">Manage Status</button></RouterLink>
         </div> -->
