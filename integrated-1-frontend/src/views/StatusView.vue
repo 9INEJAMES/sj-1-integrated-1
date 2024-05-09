@@ -21,8 +21,8 @@ const addTaskBtn = () => {
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/"><VButton msg="Manage Task" /></RouterLink>
-        <VButton msg="Add Status" :class="themeStore.getAlterTheme()" @click="addTaskBtn" />
+        <RouterLink to="/" ><VButton msg="Manage Task" class="itbkk-button-home"/></RouterLink>
+        <VButton class="itbkk-button-add" msg="Add Status" :class="themeStore.getAlterTheme()" @click="addTaskBtn" />
     </div>
 
     <RouterView class="z-40" />

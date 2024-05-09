@@ -85,7 +85,7 @@ onMounted(async () => {
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="themeStore.getTheme()">
-            <div class="grid gap-[2vh] rounded-md border-none p-[2vh]">
+            <div class="grid gap-[2vh] rounded-md border-none p-[2vh] itbkk-modal-status">
                 <p class="text-xl font-semibold">
                     {{ route.name == 'statusAdd' ? 'Add Status' : 'Edit Status' }}
                 </p>
@@ -97,7 +97,7 @@ onMounted(async () => {
                         name="name"
                         id="name"
                         @input="checkLength('name', newStatus.name, 50)"
-                        class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
+                        class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 itbkk-status-name"
                         :class="newStatus.name.length == 50 ? ' text-gray-500' : ' text-gray-900'"
                         placeholder="Write your status's name"
                         v-model="newStatus.name"
@@ -113,7 +113,7 @@ onMounted(async () => {
                             <textarea
                                 rows="15"
                                 id="description"
-                                class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
+                                class="itbkk-status-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
                                 :class="newStatus.description && newStatus.description.length == 200 ? ' text-gray-500' : ' text-gray-900'"
                                 placeholder="Write your description"
                                 name="description"

@@ -10,8 +10,9 @@ const themeStore = useTheme()
         <div class=" flex gap-3 items-center">
             <img src="/pig.png" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce">
             <div class="flex-col">
-                <p class="font-bold text-[3vh] text-pink-300">SJ-1</p>
-                <p class="text-green-600 text-[3vh]">Integrated Project I</p>
+                <p class="font-bold text-[4vh] text-pink-400">SJ-1</p>
+                <p class="text-pink-300 text-[3vh]">Integrated Project I</p>
+                
             </div>
         </div>
         <div class="flex items-center">
