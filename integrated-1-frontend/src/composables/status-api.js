@@ -46,10 +46,18 @@ export const useStatusApi = () => {
                 },
                 body: JSON.stringify({ ...obj }),
             })
+
+            if (data.status >= 400 && data.status < 600) {
+                myToast.changeToast(false, 'An error has occurred, the status could not be added.')
+                await statusesStore.fetchStatuses()
+                return
+            }
             const result = await response.json()
-            myToast.changeToast(true, 'The status has been successfully added')
+            myToast.changeToast(true, 'The status has been added')
             return result
         } catch (error) {
+            myToast.changeToast(false, 'An error has occurred, the status could not be added.')
+            await statusesStore.fetchStatuses()
             console.error(`Error adding user: ${error}`)
         }
     }
