@@ -60,9 +60,6 @@ onMounted(async () => {
         const id = route.params.id
         status = await statusesStore.getIdOfStatus(id)
         if (!status) {
-            // setTimeout(() => {
-            //     router.push({ path: `/` })
-            // }, 1000)
             router.back()
         } else {
             newStatus.value = {

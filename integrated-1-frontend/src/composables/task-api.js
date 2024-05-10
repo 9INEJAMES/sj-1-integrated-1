@@ -10,7 +10,7 @@ export const useTaskApi = () => {
 
     async function getAllTasks() {
         try {
-            const data = await fetch(`${url}`)
+            const data = await fetch(`${url}/tasks`)
             const result = await data.json()
             return result
         } catch (error) {
@@ -20,7 +20,7 @@ export const useTaskApi = () => {
 
     async function getTaskById(id) {
         try {
-            const data = await fetch(`${url}/${id}`)
+            const data = await fetch(`${url}/tasks/${id}`)
             const result = await data.json()
             if (data.status / 400 >= 1) {
                 myToast.changeToast(false, 'The requested task does not exist')
@@ -36,7 +36,7 @@ export const useTaskApi = () => {
 
     async function addTask(obj) {
         try {
-            const response = await fetch(`${url}`, {
+            const response = await fetch(`${url}/tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ export const useTaskApi = () => {
 
     async function updateTask(obj) {
         try {
-            const response = await fetch(`${url}/${obj.id}`, {
+            const response = await fetch(`${url}/tasks/${obj.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ export const useTaskApi = () => {
 
     async function deleteTask(id) {
         try {
-            const response = await fetch(`${url}/${id}`, {
+            const response = await fetch(`${url}/tasks/${id}`, {
                 method: 'DELETE',
             })
             if (response.status / 400 >= 1) {

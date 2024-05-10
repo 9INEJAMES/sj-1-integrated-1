@@ -80,9 +80,6 @@ onMounted(async () => {
         const id = route.params.taskId
         task = await taskApi.getTaskById(id)
         if (!task) {
-            // setTimeout(() => {
-            //     router.push({ path: `/` })
-            // }, 1000)
             router.back()
         } else {
             newTask.value = {

@@ -6,11 +6,11 @@ export const useStatusApi = () => {
     const myToast = useToast()
     const router = useRouter()
     const statusesStore = useStatusesStore()
-    const url = import.meta.env.VITE_BASE_STATUS_URL
+    const url = import.meta.env.VITE_BASE_URL
 
     async function getAllStatuses() {
         try {
-            const data = await fetch(`${url}`)
+            const data = await fetch(`${url}/statuses`)
             const result = await data.json()
             return result
         } catch (error) {
@@ -20,7 +20,7 @@ export const useStatusApi = () => {
 
     async function getStatusById(id) {
         try {
-            const data = await fetch(`${url}/${id}`)
+            const data = await fetch(`${url}/statuses/${id}`)
             if (data.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
                 await statusesStore.fetchStatuses()
@@ -39,7 +39,7 @@ export const useStatusApi = () => {
 
     async function addStatus(obj) {
         try {
-            const response = await fetch(`${url}`, {
+            const response = await fetch(`${url}/statuses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export const useStatusApi = () => {
 
     async function updateStatus(obj) {
         try {
-            const response = await fetch(`${url}/${obj.id}`, {
+            const response = await fetch(`${url}/statuses/${obj.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ export const useStatusApi = () => {
 
     async function deleteStatus(id) {
         try {
-            const response = await fetch(`${url}/${id}`, {
+            const response = await fetch(`${url}/statuses/${id}`, {
                 method: 'DELETE',
             })
             if (response.status / 400 >= 1) {
@@ -108,8 +108,7 @@ export const useStatusApi = () => {
     }
     async function deleteStatusAndTransfer(id, newId, isMany) {
         try {
-            const path = newId ? `${url}/${id}/${newId}` : `${url}/${id}`
-            const response = await fetch(path, {
+            const response = await fetch(`${url}/statuses/${id}/${newId}`, {
                 method: 'DELETE',
             })
             if (response.status / 400 >= 1) {
