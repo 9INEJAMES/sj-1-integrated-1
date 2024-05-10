@@ -53,7 +53,7 @@ public class StatusService {
     @Transactional
     public Status updateStatus(Integer id, StatusInputDTO status) {
         Status existStatus = findByID(id);
-        Boolean isDup = findByName(status.getName()) != null; //check duplicate name
+        boolean isDup = findByName(status.getName()) != null; //check duplicate name
         if(isDup) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T USE DUPLICATED NAME");
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));
