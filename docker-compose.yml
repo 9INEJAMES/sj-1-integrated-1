@@ -7,7 +7,7 @@ services:
     # ports:
     #   - '3306:3306'
     networks:
-      - backend_net
+      - integrated_net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
@@ -18,11 +18,10 @@ services:
     build: ./integrated-1-backend
     container_name: backend
     restart: always
-    ports:
-      - '8080:8080'
+    # ports:
+    #   - '8080:8080'
     networks:
-      - backend_net
-      - frontend_net
+      - integrated_net
     depends_on:
       - database
     environment:
@@ -35,13 +34,24 @@ services:
   frontend:
     build: ./integrated-1-frontend
     container_name: frontend
+    # ports:
+    #   - 80:80
+    networks:
+      - integrated_net
+    depends_on:
+      - backend
+  
+  proxy:
+    build: ./integrated-1-proxy
+    container_name: proxy
     ports:
       - 80:80
     networks:
-      - frontend_net
+      - integrated_net
     depends_on:
+      - frontend
       - backend
+      - database
 
 networks:
-  backend_net:
-  frontend_net:
+  integrated_net:
