@@ -30,8 +30,6 @@
     position: sticky;
     top: 0px;
     z-index: 1;
-    --tw-bg-opacity: 1;
-    background-color: var(--fallback-b1, oklch(var(--b1) / var(--tw-bg-opacity)));
 }
 .myTable :where(.table-pin-rows tfoot tr) {
     position: sticky;
@@ -80,3 +78,7 @@
     --tw-border-opacity: 1;
     border-top-color: var(--fallback-b2, oklch(var(--b2) / var(--tw-border-opacity)));
 }
+/* .myTable tbody tr:hover{
+    transition: transform 0.2s;
+    transform: scale(1.02);
+} */
