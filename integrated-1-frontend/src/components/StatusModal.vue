@@ -87,7 +87,7 @@ onMounted(async () => {
                 </p>
                 <hr />
                 <div>
-                    <label for="statusName" :class="themeStore.getTextHeaderTheme()">Status Name</label><span class="text-red-600">*</span><br />
+                    <label for="statusName" :class="themeStore.getTextHeaderTheme()">Status Name<span class="text-red-600">*</span></label><br />
                     <input
                         type="text"
                         name="statusName"
