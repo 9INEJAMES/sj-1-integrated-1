@@ -2,31 +2,41 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 
 export const useTheme = defineStore('theme', () => {
-    const currTheme = ref('bg-white text-black')
-    const alterTheme = ref('bg-slate-600 text-amber-50')
-    const ligthTheme = 'bg-white text-black'
-    const darkTheme = 'bg-slate-600 text-amber-50'
-    const tableTheme = ref('bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500')
+    const isLight = ref(true)
 
-    function changeTheme(isLight) {
-        !isLight ? ((currTheme.value = darkTheme), (alterTheme.value = ligthTheme), (tableTheme.value = 'bg-gradient-to-r from-amber-500 via-yellow-500 to-lime-500')) : ((currTheme.value = ligthTheme), (alterTheme.value = darkTheme), (tableTheme.value = 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'))
+    function changeTheme(tf) {
+        isLight.value = tf
     }
 
     function getTheme() {
-        return currTheme.value
-    }
-    function resetTheme() {
-        currTheme.value = ligthTheme
-        alterTheme.value = darkTheme
-    }
-    function getAlterTheme() {
-        return alterTheme.value
-    }
-    function getTableTheme() {
-        return tableTheme.value
+        return isLight.value ? 'bg-white text-black' : 'bg-slate-600 text-amber-50'
     }
 
-    return { changeTheme, getTheme, resetTheme, getAlterTheme, getTableTheme }
+    function getAlterTheme() {
+        return isLight.value ? 'bg-slate-600 text-amber-50' : 'bg-white text-black'
+    }
+    function getTableTheme() {
+        return isLight.value ? 'bg-pink-300 text-black' : 'bg-cyan-400 text-white'
+    }
+    function getTextTheme() {
+        return isLight.value ? 'text-black' : 'text-white'
+    }
+    function getButtonTheme() {
+        return isLight.value ? 'bg-white text-black hover:bg-pink-100 hover:text-pink-400' : 'bg-black text-white hover:text-cyan-400 hover:bg-slate-800'
+    }
+    function getTextHeaderTheme() {
+        return isLight.value ? 'font-semibold text-pink-400 disabled:text-pink-400' : 'font-semibold text-cyan-400 disabled:text-cyan-400'
+    }
+    return {
+        isLight,
+        changeTheme,
+        getTheme,
+        getAlterTheme,
+        getTableTheme,
+        getTextTheme,
+        getButtonTheme,
+        getTextHeaderTheme,
+    }
 })
 
 if (import.meta.hot) {

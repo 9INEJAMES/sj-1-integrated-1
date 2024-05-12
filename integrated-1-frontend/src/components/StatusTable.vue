@@ -64,7 +64,7 @@ const handleDeleteModal = () => {
         <ConfirmDelete v-if="deleteModal" mode="status" :object="selectStatus" :number="selectedIndex" @closeModal="handleDeleteModal" />
         <table class="myTable shadow-lg">
             <thead>
-                <tr class="text-lg text-black" :class="themeStore.getTableTheme()">
+                <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 5%"></th>
                     <th style="width: 25%">Name</th>
                     <th style="width: 45%">Description</th>
@@ -78,7 +78,7 @@ const handleDeleteModal = () => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="$route.name != 'home' ? '' : 'itbkk-status-name'" class="font-bold h-[30px] text-[2vh] break-all">
+                    <td :class="$route.name != 'home' ? '' : 'itbkk-status-name'" class="font-bold h-[30px] text-[2vh] break-all text-black">
                         <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="{ backgroundColor: status.color }">
                             {{ status.name }}
                         </button>
@@ -88,8 +88,12 @@ const handleDeleteModal = () => {
                     </td>
                     <td>
                         <div class="flex justify-center gap-1 overflow-scroll">
-                            <div class="btn btn-sm itbkk-button-edit" @click="toEditPage(status.id)">Edit <img src="/edit.png" alt="edit picture" class="w-4 h-4" /></div>
-                            <div class="btn btn-sm itbkk-button-delete" @click="deleteStatus(status, index + 1)">Delete <img src="/delete.png" alt="delete picture" class="w-4 h-4" /></div>
+                            <div class="btn btn-sm itbkk-button-edit" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
+                                Edit <img :src="`/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
+                            </div>
+                            <div class="btn btn-sm itbkk-button-delete" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
+                                Delete <img :src="`/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
+                            </div>
                         </div>
                     </td>
                 </tr>

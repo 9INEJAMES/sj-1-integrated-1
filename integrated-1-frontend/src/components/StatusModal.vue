@@ -18,12 +18,12 @@ let status
 const newStatus = ref({
     name: '',
     description: '',
-    color: '#000000',
+    color: '#cbd5e1',
 })
 const oldStatus = ref({
     name: '',
     description: '',
-    color: '#000000',
+    color: '#cbd5e1',
 })
 
 watch(
@@ -41,7 +41,6 @@ const submitStatus = async (isSave) => {
             statusesStore.updateStatus({
                 ...updated,
             })
-            taskStore.fetchTasks()
         } else {
             const status = await statusApi.addStatus(newStatus.value)
             if (status) statusesStore.addStatus(status)
@@ -83,16 +82,16 @@ onMounted(async () => {
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="grid gap-[2vh] rounded-md border-none p-[2vh] itbkk-modal-status">
-                <p class="text-xl font-semibold">
+                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                     {{ route.name == 'statusAdd' ? 'Add Status' : 'Edit Status' }}
                 </p>
                 <hr />
                 <div>
-                    <label for="name">Status Name</label><span class="text-red-600">*</span><br />
+                    <label for="statusName" :class="themeStore.getTextHeaderTheme()">Status Name</label><span class="text-red-600">*</span><br />
                     <input
                         type="text"
-                        name="name"
-                        id="name"
+                        name="statusName"
+                        id="statusName"
                         @input="checkLength('name', newStatus.name, 50)"
                         class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 itbkk-status-name"
                         :class="newStatus.name.length == 50 ? ' text-gray-500' : ' text-gray-900'"
@@ -106,7 +105,7 @@ onMounted(async () => {
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
                     <div class="grid col-span-8">
                         <div>
-                            <label for="description">Description</label>
+                            <label for="description" :class="themeStore.getTextHeaderTheme()">Description</label>
                             <textarea
                                 rows="15"
                                 id="description"
@@ -125,7 +124,7 @@ onMounted(async () => {
                     <div class="flex col-span-4 flex-col justify-between">
                         <div class="flex justify-center">
                             <div>
-                                <label for="color">Color</label>
+                                <label for="color" :class="themeStore.getTextHeaderTheme()">Color</label>
                                 <input
                                     type="color"
                                     class="p-1 w-20 h-20 sm:w-32 md:w-36 lg:w-64 block bg-white border border-gray-200 cursor-pointer rounded-lg"
@@ -136,8 +135,8 @@ onMounted(async () => {
                             </div>
                         </div>
                         <div>
-                            <p>Preview</p>
-                            <div class="border h-20 w-30 flex justify-center items-center border-slate-300 font-bold">
+                            <p :class="themeStore.getTextHeaderTheme()">Preview</p>
+                            <div class="border h-20 w-30 flex justify-center items-center border-slate-300 font-bold text-black rounded-md">
                                 <button :style="{ backgroundColor: newStatus.color }" class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default">
                                     {{
                                         newStatus.name

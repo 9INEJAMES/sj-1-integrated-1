@@ -117,13 +117,13 @@ onMounted(async () => {
         <div class="w-full rounded-lg" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-xl font-semibold">
+                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                     {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
                     Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
                 </p>
                 <hr />
                 <div>
-                    <label for="title">Title</label><span v-if="route.name != 'taskDetails'" class="text-red-600">*</span><br />
+                    <p :class="themeStore.getTextHeaderTheme()">Title</p><span v-if="route.name != 'taskDetails'" class="text-red-600">*</span><br />
                     <p
                         v-if="$route.name == 'taskDetails'"
                         id="title"
@@ -150,18 +150,18 @@ onMounted(async () => {
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
                     <div class="grid col-span-8">
                         <div>
-                            <label for="description">Description</label>
+                            <p :class="themeStore.getTextHeaderTheme()">Description</p>
                             <p
                                 v-if="$route.name == 'taskDetails'"
                                 id="description"
-                                class="itbkk-description block w-full p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all h-3/4"
+                                class="itbkk-description block min-w-full max-h-fit p-[2vh] resize-none text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 break-all h-5/6"
                                 :class="newTask.description ? '' : 'italic text-gray-500'"
                             >
                                 {{ newTask.description ? newTask.description : 'No Description Provided' }}
                             </p>
                             <textarea
                                 v-else
-                                rows="15"
+                                rows="14"
                                 id="description"
                                 class="itbkk-description block w-full p-[2vh] resize-none overflow-auto text-sm bg-gray-50 rounded-lg border border-gray-300"
                                 :class="newTask.description && newTask.description.length == 500 ? ' text-gray-500' : ' text-gray-900'"
@@ -180,9 +180,10 @@ onMounted(async () => {
                     <div class="flex col-span-4 flex-col justify-between">
                         <div>
                             <div>
-                                <label for="assignees">Assignees</label>
+                                <p :class="themeStore.getTextHeaderTheme()">Assignees</p>
                                 <p
                                     v-if="$route.name == 'taskDetails'"
+                                    id="assignees"
                                     class="itbkk-assignees block p-[2vh] w-full resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 break-all"
                                     :class="newTask.assignees ? 'text-gray-900' : 'italic text-gray-500'"
                                 >
@@ -206,15 +207,15 @@ onMounted(async () => {
                             </div>
 
                             <div class="flex flex-col pt-[3vh]">
-                                <select v-model="newTask.status" id="status" class="itbkk-status select select-bordered disabled:text-black" :class="themeStore.getTheme()" :disabled="isDisibled">
+                                <select v-model="newTask.status" id="status" class="itbkk-status select select-bordered" :class="themeStore.getTextHeaderTheme()" :disabled="isDisibled">
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.name">{{ status.name }}</option>
                                 </select>
                             </div>
 
                             <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">
-                                <p class="itbkk-timezone">Local Time Zone: {{ localTimeZone }}</p>
-                                <p class="itbkk-created-on">Created On: {{ createdOn }}</p>
-                                <p class="itbkk-updated-on">Last Updated On: {{ updatedOn }}</p>
+                                <p class="itbkk-timezone"><span :class="themeStore.getTextHeaderTheme()" class="">Local Time Zone: </span> {{ localTimeZone }}</p>
+                                <p class="itbkk-created-on"><span :class="themeStore.getTextHeaderTheme()">Created On: </span>{{ createdOn }}</p>
+                                <p class="itbkk-updated-on"><span :class="themeStore.getTextHeaderTheme()">Last Updated On: </span>{{ updatedOn }}</p>
                             </div>
                         </div>
                         <div class="pt-[4vh]">

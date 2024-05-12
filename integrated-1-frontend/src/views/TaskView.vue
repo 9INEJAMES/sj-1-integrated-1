@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import TaskTable from '@/components/TaskTable.vue'
 import { useTasksStore } from '@/stores/task.js'
-import VButton from '@/components/VButton.vue'
+import VButton from '@/ui/VButton.vue'
 import { useTaskApi } from '@/composables/task-api.js'
 import { useTheme } from '@/stores/theme'
 import router from '@/router'
@@ -26,8 +26,8 @@ const addTaskBtn = () => {
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/status" > <VButton msg="Manage Status"  class="itbkk-manage-status"/> </RouterLink>
-        <VButton msg="Add task" class="itbkk-button-add" :class="themeStore.getAlterTheme()" @click="addTaskBtn" />
+        <RouterLink to="/status"> <VButton msg="Manage Status" class="itbkk-manage-status" /> </RouterLink>
+        <VButton msg="Add task" class="itbkk-button-add" @click="addTaskBtn" />
     </div>
     <RouterView class="z-40" />
     <div class="px-[5vh] pt-[1vh]">

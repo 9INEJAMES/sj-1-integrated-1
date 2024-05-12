@@ -10,12 +10,6 @@ const themeStore = useTheme()
 const myToast = useToast()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
-watch(myToast.currToast, async () => {
-    if (myToast.currToast.style === 'alert-error') {
-        await taskStore.fetchTasks()
-        await statusStore.fetchStatuses()
-    }
-})
 onMounted(async () => {
     if (taskStore.tasks.length <= 0) {
         await taskStore.fetchTasks()

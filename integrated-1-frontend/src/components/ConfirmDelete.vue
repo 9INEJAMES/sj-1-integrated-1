@@ -38,11 +38,9 @@ const submitDelete = async () => {
         const result = await taskApi.deleteTask(props.object.id)
         if (result) taskStore.removeTask(result.id)
     } else {
-        if (isInUsed) {
+        console.log(isInUsed.value)
+        if (isInUsed.value) {
             const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatusId.value, props.object.tasks.length > 1)
-            if (result) {
-                taskStore.fetchTasks()
-            }
         } else await statusApi.deleteStatus(props.object.id)
         statusStore.removeStatus(props.object.id)
     }

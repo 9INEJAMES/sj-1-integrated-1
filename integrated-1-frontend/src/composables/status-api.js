@@ -1,11 +1,7 @@
 import { useToast } from '@/stores/toast'
-import { useRouter } from 'vue-router'
-import { useStatusesStore } from '@/stores/status'
 
 export const useStatusApi = () => {
     const myToast = useToast()
-    const router = useRouter()
-    const statusesStore = useStatusesStore()
     const url = import.meta.env.VITE_BASE_URL
 
     async function getAllStatuses() {
@@ -23,16 +19,12 @@ export const useStatusApi = () => {
             const data = await fetch(`${url}/statuses/${id}`)
             if (data.status == 404) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-                await statusesStore.fetchStatuses()
                 return
             }
             const result = await data.json()
             return result
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-            await statusesStore.fetchStatuses()
-            console.log(statusesStore.statuses)
-
             console.log(`error: ${error}`)
         }
     }
@@ -49,7 +41,7 @@ export const useStatusApi = () => {
 
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status could not be added.')
-                await statusesStore.fetchStatuses()
+
                 return
             }
             const result = await response.json()
@@ -57,8 +49,8 @@ export const useStatusApi = () => {
             return result
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status could not be added.')
-            await statusesStore.fetchStatuses()
-            console.error(`Error adding user: ${error}`)
+
+            console.error(`Error adding status: ${error}`)
         }
     }
 
@@ -71,7 +63,7 @@ export const useStatusApi = () => {
                 },
                 body: JSON.stringify({ ...obj }),
             })
-            if (response.status == 406) {
+            if (response.status == 500) {
                 myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
                 return
             } else if (response.status / 400 >= 1) {
@@ -79,11 +71,11 @@ export const useStatusApi = () => {
                 return
             }
             const updatedStatus = await response.json()
-            myToast.changeToast(true, 'The stuatus has been updated.')
+            myToast.changeToast(true, 'The status has been updated.')
             return updatedStatus
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-            console.error(`Error updating user: ${error}`)
+            console.error(`Error updating status: ${error}`)
         }
     }
 
@@ -94,7 +86,6 @@ export const useStatusApi = () => {
             })
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-                await statusesStore.fetchStatuses()
                 return
             }
             const deleted = await response.json()
@@ -102,8 +93,8 @@ export const useStatusApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-            await statusesStore.fetchStatuses()
-            console.error(`Error deleting user: ${error}`)
+
+            console.error(`Error deleting status: ${error}`)
         }
     }
     async function deleteStatusAndTransfer(id, newId, isMany) {
@@ -113,7 +104,6 @@ export const useStatusApi = () => {
             })
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-                await statusesStore.fetchStatuses()
                 return
             }
             const deleted = await response.json()
@@ -121,8 +111,7 @@ export const useStatusApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')
-            await statusesStore.fetchStatuses()
-            console.error(`Error deleting user: ${error}`)
+            console.error(`Error deleting status: ${error}`)
         }
     }
 

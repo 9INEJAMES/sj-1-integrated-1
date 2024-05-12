@@ -54,8 +54,6 @@ public class StatusService {
     @Transactional
     public Status updateStatus(Integer id, StatusInputDTO status) {
         Status existStatus = findByID(id);
-        Status isDup = findByName(status.getName()); //check duplicate name
-        if(!Objects.equals(isDup.getId(), existStatus.getId())) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T USE DUPLICATED NAME");
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));
         existStatus.setColor(isStringNull(status.getColor()));
@@ -64,7 +62,7 @@ public class StatusService {
 
     @Transactional
     public Status removeStatus(Integer id) {
-        if (id==1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T DELETE DEFAULT STATUS");
+        if (id == 1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "CAN'T DELETE DEFAULT STATUS");
         Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(status);
         return status;

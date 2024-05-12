@@ -2,7 +2,7 @@
 import { useStatusApi } from '@/composables/status-api'
 import StatusTable from '@/components/StatusTable.vue'
 import { useTheme } from '@/stores/theme'
-import VButton from '@/components/VButton.vue'
+import VButton from '@/ui/VButton.vue'
 import router from '@/router'
 
 const themeStore = useTheme()
@@ -21,8 +21,8 @@ const addTaskBtn = () => {
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/" ><VButton msg="Manage Task" class="itbkk-button-home"/></RouterLink>
-        <VButton class="itbkk-button-add" msg="Add Status" :class="themeStore.getAlterTheme()" @click="addTaskBtn" />
+        <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home"/></RouterLink>
+        <VButton class="itbkk-button-add" msg="Add Status" @click="addTaskBtn" />
     </div>
 
     <RouterView class="z-40" />

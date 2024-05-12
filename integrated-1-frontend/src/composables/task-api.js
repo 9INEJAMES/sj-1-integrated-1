@@ -1,11 +1,7 @@
 import { useToast } from '@/stores/toast'
-import { useRouter } from 'vue-router'
-import { useTasksStore } from '@/stores/task'
 
 export const useTaskApi = () => {
     const myToast = useToast()
-    const router = useRouter()
-    const tasksStore = useTasksStore()
     const url = import.meta.env.VITE_BASE_URL
 
     async function getAllTasks() {
@@ -47,7 +43,7 @@ export const useTaskApi = () => {
             myToast.changeToast(true, 'The task has been successfully added')
             return result
         } catch (error) {
-            console.error(`Error adding user: ${error}`)
+            console.error(`Error adding task: ${error}`)
         }
     }
 
@@ -69,7 +65,7 @@ export const useTaskApi = () => {
             return updatedTask
         } catch (error) {
             myToast.changeToast(false, 'The update was unsuccesful')
-            console.error(`Error updating user: ${error}`)
+            console.error(`Error updating task: ${error}`)
         }
     }
 
@@ -80,7 +76,6 @@ export const useTaskApi = () => {
             })
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the task does not exist.')
-                await tasksStore.fetchTasks()
                 return
             }
             const deleted = await response.json()
@@ -88,7 +83,7 @@ export const useTaskApi = () => {
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the task does not exist.')
-            console.error(`Error deleting user: ${error}`)
+            console.error(`Error deleting task: ${error}`)
         }
     }
 
