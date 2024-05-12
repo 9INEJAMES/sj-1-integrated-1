@@ -64,9 +64,10 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...obj }),
             })
             if (response.status == 500) {
-                myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
-                return
-            } else if (response.status / 400 >= 1) {
+                // myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
+                // return
+            }
+            if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
@@ -97,7 +98,7 @@ export const useStatusApi = () => {
             console.error(`Error deleting status: ${error}`)
         }
     }
-    async function deleteStatusAndTransfer(id, newId, isMany) {
+    async function deleteStatusAndTransfer(id, newId, tasks) {
         try {
             const response = await fetch(`${url}/statuses/${id}/${newId}`, {
                 method: 'DELETE',
@@ -107,7 +108,7 @@ export const useStatusApi = () => {
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, `The task${isMany ? 's' : ''} have been tranferred and the status has been deleted.`)
+            myToast.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been tranferred and the status has been deleted.`)
             return deleted
         } catch (error) {
             myToast.changeToast(false, 'An error has occurred, the status does not exist.')

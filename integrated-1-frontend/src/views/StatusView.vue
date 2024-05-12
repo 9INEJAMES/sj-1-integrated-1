@@ -11,18 +11,12 @@ const chosenStatus = async (id) => {
     selectedStatus.value = await statusApi.getStatusById(id)
     isSelectStatus.value = true
 }
-
-const addTaskBtn = () => {
-    router.push({
-        name: 'statusAdd',
-    })
-}
 </script>
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home"/></RouterLink>
-        <VButton class="itbkk-button-add" msg="Add Status" @click="addTaskBtn" />
+        <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
+        <RouterLink :to="{ name: 'statusAdd' }"><VButton class="itbkk-button-add" msg="Add Status" /></RouterLink>
     </div>
 
     <RouterView class="z-40" />

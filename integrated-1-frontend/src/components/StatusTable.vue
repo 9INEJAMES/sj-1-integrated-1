@@ -71,7 +71,7 @@ const handleDeleteModal = () => {
                         </button>
                     </td>
                     <td :class="[$route.name !== 'home' ? '' : 'itbkk-status-description', status.description ? '' : 'italic text-gray-500']" class="break-all">
-                        {{ status.description ? status.description : 'no description provide' }}
+                        {{ status.description ? status.description : 'No Description Provided' }}
                     </td>
                     <td>
                         <div class="flex justify-center gap-1 overflow-scroll">

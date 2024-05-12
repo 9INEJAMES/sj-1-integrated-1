@@ -40,7 +40,7 @@ const submitDelete = async () => {
     } else {
         console.log(isInUsed.value)
         if (isInUsed.value) {
-            const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatusId.value, props.object.tasks.length > 1)
+            const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatusId.value, props.object.tasks.length)
         } else await statusApi.deleteStatus(props.object.id)
         statusStore.removeStatus(props.object.id)
     }
@@ -75,7 +75,7 @@ watch(newStatusId, () => {
             <p class="font-bold text-[4vh] py-[2vh]" :class="themeStore.getTextHeaderTheme()">Delete a {{ mode == 'task' ? 'Task' : 'Status' }}</p>
             <hr />
             <p v-if="!isInUsed" class="itbkk-message py-[3vh]">
-                Do you want to delete the <span v-if="mode == 'task'">Task number {{ number }} "{{ object.title }}"</span>
+                Do you want to delete <span v-if="mode == 'task'">the Task number {{ number }} "{{ object.title }}"</span>
                 <span v-else>{{ object.name }} status</span>
             </p>
             <p v-else-if="object.id == 1 && mode == 'status'">You can't delete default status</p>

@@ -42,8 +42,16 @@ watch(
     },
     { deep: true }
 )
+
+const isNullStr = (str) => {
+    if (str == null || str.trim().length == 0) {
+        return null
+    } else return str
+}
 const submitTask = async (isSave) => {
     if (isSave) {
+        newTask.value.description = isNullStr(newTask.value.description)
+        newTask.value.assignees = isNullStr(newTask.value.assignees)
         if (route.params.taskId) {
             const updated = await taskApi.updateTask(newTask.value)
             taskStore.updateTask({
@@ -123,7 +131,8 @@ onMounted(async () => {
                 </p>
                 <hr />
                 <div>
-                    <p :class="themeStore.getTextHeaderTheme()">Title<span v-if="route.name != 'taskDetails'" class="text-red-600">*</span></p><br />
+                    <p :class="themeStore.getTextHeaderTheme()">Title<span v-if="route.name != 'taskDetails'" class="text-red-600">*</span></p>
+                    <br />
                     <p
                         v-if="$route.name == 'taskDetails'"
                         id="title"

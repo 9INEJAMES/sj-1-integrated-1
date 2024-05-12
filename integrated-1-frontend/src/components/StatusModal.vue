@@ -25,6 +25,11 @@ const oldStatus = ref({
     description: '',
     color: '#cbd5e1',
 })
+const isNullStr = (str) => {
+    if (str == null || str.trim().length == 0) {
+        return null
+    } else return str
+}
 
 watch(
     newStatus,
@@ -36,6 +41,7 @@ watch(
 )
 const submitStatus = async (isSave) => {
     if (isSave) {
+        newStatus.value.description = isNullStr(newStatus.value.description)
         if (route.params.id) {
             const updated = await statusApi.updateStatus(newStatus.value)
             statusesStore.updateStatus({
@@ -87,7 +93,8 @@ onMounted(async () => {
                 </p>
                 <hr />
                 <div>
-                    <label for="statusName" :class="themeStore.getTextHeaderTheme()">Status Name<span class="text-red-600">*</span></label><br />
+                    <label for="statusName" :class="themeStore.getTextHeaderTheme()">Status Name<span class="text-red-600">*</span></label
+                    ><br />
                     <input
                         type="text"
                         name="statusName"
