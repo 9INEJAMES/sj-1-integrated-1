@@ -3,12 +3,13 @@ import { ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 const isChecked = ref(false)
 const themeStore = useTheme()
+const base = import.meta.env.VITE_BASE
 </script>
 
 <template>
     <div class="poetsen-one-regular justify-between pt-[3vh] flex px-[5vh]">
         <div class="flex gap-3 items-center">
-            <img :src="`/pig${themeStore.isLight ? '' : '2'}.png`" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce" />
+            <img :src="`${base ? base : ''}/pig${themeStore.isLight ? '' : '2'}.png`" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce" />
             <div class="flex-col">
                 <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
                 <p class="text-[3vh]" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'">Integrated Project I</p>

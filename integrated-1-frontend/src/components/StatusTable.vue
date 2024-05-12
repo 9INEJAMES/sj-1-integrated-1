@@ -11,19 +11,10 @@ const themeStore = useTheme()
 const deleteModal = ref(false)
 const selectedIndex = ref(null)
 const selectStatus = ref(null)
-const updateModal = ref(false)
 const statusApi = useStatusApi()
-const emit = defineEmits(['getStatus'])
+const base = import.meta.env.VITE_BASE
 
-const getStatus = (id) => {
-    router.push({
-        name: 'taskDetails',
-        params: {
-            taskId: id,
-        },
-    })
-    // emit('getTask', id)
-}
+const emit = defineEmits(['getStatus'])
 
 onMounted(async () => {
     if (statusesStore.statuses.length <= 0) {
@@ -37,10 +28,6 @@ const toEditPage = (id) => {
             id: id,
         },
     })
-    if (selectStatus.value === null) {
-        selectStatus.value = statusesStore.getIdOfStatus(id)
-    }
-    updateModal.value = true
 }
 
 const deleteStatus = async (status, index) => {
@@ -89,10 +76,10 @@ const handleDeleteModal = () => {
                     <td>
                         <div class="flex justify-center gap-1 overflow-scroll">
                             <div class="btn btn-sm itbkk-button-edit" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
-                                Edit <img :src="`/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
+                                Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
                             </div>
                             <div class="btn btn-sm itbkk-button-delete" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
-                                Delete <img :src="`/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
+                                Delete <img :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
                             </div>
                         </div>
                     </td>

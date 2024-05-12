@@ -7,7 +7,6 @@ import { useTheme } from '@/stores/theme.js'
 import { useStatusesStore } from '@/stores/status'
 const themeStore = useTheme()
 const deleteModal = ref(false)
-const updateModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
@@ -38,10 +37,6 @@ const toEditPage = (id) => {
             taskId: id,
         },
     })
-    if (selectedTask.value === null) {
-        selectedTask.value = taskStore.getIdOfTask(id)
-    }
-    updateModal.value = true
 }
 
 const deleteTask = (task, index) => {
