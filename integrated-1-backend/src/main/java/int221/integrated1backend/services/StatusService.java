@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class StatusService {
@@ -53,8 +54,8 @@ public class StatusService {
     @Transactional
     public Status updateStatus(Integer id, StatusInputDTO status) {
         Status existStatus = findByID(id);
-        boolean isDup = findByName(status.getName()) != null; //check duplicate name
-        if(isDup) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T USE DUPLICATED NAME");
+        Status isDup = findByName(status.getName()); //check duplicate name
+        if(!Objects.equals(isDup.getId(), existStatus.getId())) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,"CAN'T USE DUPLICATED NAME");
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));
         existStatus.setColor(isStringNull(status.getColor()));
