@@ -87,7 +87,7 @@ onMounted(async () => {
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="w-full rounded-lg" :class="themeStore.getTheme()">
-            <div class="grid gap-[2vh] rounded-md border-none p-[2vh] itbkk-modal-status">
+            <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                     {{ route.name == 'statusAdd' ? 'Add Status' : 'Edit Status' }}
                 </p>
@@ -100,13 +100,13 @@ onMounted(async () => {
                         name="statusName"
                         id="statusName"
                         @input="checkLength('name', newStatus.name, 50)"
-                        class="itbkk-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300 itbkk-status-name"
+                        class="itbkk-status-name block w-full p-[2vh] resize-none text-sm bg-gray-50 rounded-lg border border-gray-300"
                         :class="newStatus.name.length == 50 ? ' text-gray-500' : ' text-gray-900'"
                         placeholder="Write your status's name"
                         v-model="newStatus.name"
                         :disabled="isDisibled"
                     />
-                    <p v-show="newStatus.name.length == 50" class="text-xs pl-3 pt-1 absolute">The name has a maximum length of 50 characters.</p>
+                    <p v-show="newStatus.name.length == 50" class="text-xs pl-3 pt-1 absolute overflow-auto">The name has a maximum length of 50 characters.</p>
                 </div>
 
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
@@ -124,7 +124,9 @@ onMounted(async () => {
                                 v-model="newStatus.description"
                                 :disabled="isDisibled"
                             ></textarea>
-                            <p v-show="newStatus.description && newStatus.description.length == 200" class="text-xs pl-3 pt-1 absolute">The description has a maximum length of 200 characters.</p>
+                            <p v-show="newStatus.description && newStatus.description.length == 200" class="text-xs pl-3 pt-1 absolute overflow-auto">
+                                The description has a maximum length of 200 characters.
+                            </p>
                         </div>
                     </div>
 

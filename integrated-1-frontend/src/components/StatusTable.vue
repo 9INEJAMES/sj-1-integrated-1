@@ -65,20 +65,20 @@ const handleDeleteModal = () => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="$route.name != 'home' ? '' : 'itbkk-status-name'" class="font-bold h-[30px] text-[2vh] break-all text-black">
+                    <td class="itbkk-status-name font-bold h-[30px] text-[2vh] break-all text-black">
                         <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="{ backgroundColor: status.color }">
                             {{ status.name }}
                         </button>
                     </td>
-                    <td :class="[$route.name !== 'home' ? '' : 'itbkk-status-description', status.description ? '' : 'italic text-gray-500']" class="break-all">
+                    <td :class="status.description ? '' : 'italic text-gray-500'" class="itbkk-status-description break-all">
                         {{ status.description ? status.description : 'No Description Provided' }}
                     </td>
                     <td>
                         <div class="flex justify-center gap-1 overflow-scroll">
-                            <div class="btn btn-sm itbkk-button-edit" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
+                            <div class="itbkk-button-edit btn btn-sm" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
                                 Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
                             </div>
-                            <div class="btn btn-sm itbkk-button-delete" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
+                            <div class="itbkk-button-delete btn btn-sm" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
                                 Delete <img :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
                             </div>
                         </div>

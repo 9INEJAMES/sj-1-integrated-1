@@ -118,7 +118,7 @@ onMounted(async () => {
 
 <template>
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="itbkk-modal-task w-full rounded-lg" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
@@ -128,7 +128,6 @@ onMounted(async () => {
                 <hr />
                 <div>
                     <p :class="themeStore.getTextHeaderTheme()">Title<span v-if="route.name != 'taskDetails'" class="text-red-600">*</span></p>
-                    <br />
                     <p
                         v-if="$route.name == 'taskDetails'"
                         id="title"
@@ -149,7 +148,7 @@ onMounted(async () => {
                         v-model="newTask.title"
                         :disabled="isDisibled"
                     />
-                    <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute">The title have a maximum length of 100 characters.</p>
+                    <p v-show="$route.name != 'taskDetails' && newTask.title.length == 100" class="text-xs pl-3 pt-1 absolute overflow-auto">The title have a maximum length of 100 characters.</p>
                 </div>
 
                 <div class="grid grid-cols-12 gap-[3vh] pt-2">
@@ -176,7 +175,7 @@ onMounted(async () => {
                                 v-model="newTask.description"
                                 :disabled="isDisibled"
                             ></textarea>
-                            <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute">
+                            <p v-show="$route.name != 'taskDetails' && newTask.description && newTask.description.length == 500" class="text-xs pl-3 pt-1 absolute overflow-auto">
                                 The description have a maximum length of 500 characters.
                             </p>
                         </div>
@@ -206,7 +205,7 @@ onMounted(async () => {
                                     v-model="newTask.assignees"
                                     :disabled="isDisibled"
                                 ></textarea>
-                                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 absolute">
+                                <p v-show="$route.name != 'taskDetails' && newTask.assignees && newTask.assignees.length == 30" class="text-xs pl-3 pt-1 overflow-auto break-all">
                                     The assignees have a maximum length of 30 characters.
                                 </p>
                             </div>
