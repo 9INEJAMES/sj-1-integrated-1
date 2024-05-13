@@ -34,9 +34,9 @@ public class Status {
 //        return this.name.replaceAll("\\s", "_").toUpperCase();
 //    }
 //
-//    public void setName(String name) {
-//        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : null;
-//    }
+    public void setName(String name) {
+        this.name = name != null ? isStringNull(name): null;
+    }
 
     public void setDescription(String description) {
         this.description = isStringNull(description);

@@ -95,10 +95,7 @@ onMounted(async () => {
                 title: task.title,
                 description: task.description == null ? '' : task.description,
                 assignees: task.assignees == null ? '' : task.assignees,
-                status: task.status
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(' '),
+                status: task.status,
                 createdOn: task.createdOn,
                 updatedOn: task.updatedOn,
             }
@@ -107,10 +104,7 @@ onMounted(async () => {
                 title: task.title,
                 description: task.description == null ? '' : task.description,
                 assignees: task.assignees == null ? '' : task.assignees,
-                status: task.status
-                    .split('_')
-                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                    .join(' '),
+                status: task.status,
                 createdOn: task.createdOn,
                 updatedOn: task.updatedOn,
             }

@@ -16,20 +16,12 @@ export const useTasksStore = defineStore('tasks', () => {
     }
 
     function addTask(task) {
-        task.status = task.status
-            .split('_')
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ')
         tasks.value.push(task)
     }
 
     function updateTask(updatedTask) {
         const index = findIndexTask(updatedTask.id)
         if (index !== -1) {
-            updatedTask.status = updatedTask.status
-                .split('_')
-                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                .join(' ')
             tasks.value.splice(index, 1, updatedTask)
         }
     }

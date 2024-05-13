@@ -51,10 +51,6 @@ const cancelDelete = () => {
 }
 onMounted(async () => {
     if (props.mode == 'status') {
-        props.object.name = props.object.name
-            .split('_')
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-            .join(' ')
         if (props.object.tasks.length > 0) {
             isInUsed.value = true
         }

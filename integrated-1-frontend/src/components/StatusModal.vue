@@ -145,12 +145,7 @@ onMounted(async () => {
                             <p :class="themeStore.getTextHeaderTheme()">Preview</p>
                             <div class="border h-20 w-30 flex justify-center items-center border-slate-300 font-bold text-black rounded-md">
                                 <button :style="{ backgroundColor: newStatus.color }" class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default">
-                                    {{
-                                        newStatus.name
-                                            .split('_')
-                                            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                                            .join(' ')
-                                    }}
+                                    {{ newStatus.name }}
                                 </button>
                             </div>
                         </div>
