@@ -14,6 +14,6 @@ public class TaskInputDTO {
     }
 
     public void setStatus(String status) {
-        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : "NO_STATUS";
+        this.status = isStringNull(status);
     }
 }

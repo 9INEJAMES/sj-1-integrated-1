@@ -43,6 +43,6 @@ public class Status {
     }
 
     public void setColor(String color) {
-        this.color = color == null ? "#cbd5e1" : isStringNull(color);
+        this.color = isStringNull(color);
     }
 }
