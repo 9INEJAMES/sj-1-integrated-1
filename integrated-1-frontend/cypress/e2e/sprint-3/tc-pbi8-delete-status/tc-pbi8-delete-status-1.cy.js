@@ -1,8 +1,8 @@
-describe(`TC-PBI7-EDIT-STATUS-1-1\n 
-          Test Scenario : normal - cannot edit 'No Status', enable Save on edit, cancel edit`, () => {
+describe(`TC-PBI8-DELETE-STATUS-1\n 
+          Test Scenario : normal - cannot delete No Status, cancel delete status`, () => {
   
     beforeEach(()=> {
-        cy.viewport(1024, 768) ;
+        cy.viewport(1024, 768)
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;
@@ -23,23 +23,27 @@ describe(`TC-PBI7-EDIT-STATUS-1-1\n
         cy.contains('Action') ;
     })
 
-    it('"No Status" should not have any button to edit or delete', ()=>{
+    it('"No Status" should not have any button to delete', ()=>{
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 
         cy.get('.itbkk-status-name').contains('No Status').parents('.itbkk-item').as('item')
-        cy.get('@item').contains('.itbkk-button-edit').should('not.exist')
         cy.get('@item').contains('.itbkk-button-delete').should('not.exist')
     })
 
-    it('The route "/status/1/edit" should returns to the status list page', ()=>{
+    it('The "Max.." status should have a button to delete and click the delete button and press the cancel', ()=>{
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 
-        cy.visit('/status/1/edit') ;
-        cy.wait(100) ;
+        cy.get('.itbkk-status-name').contains('Maximum001Maximum002Maximum003Maximum004Maximum005').parents('.itbkk-item').as('item')
+        cy.get('@item').contains('.itbkk-button-delete','Delete').click()
+
+        cy.get('.itbkk-message').contains('Do you want to delete ')
+        cy.get('.itbkk-message').contains('Maximum001Maximum002Maximum003Maximum004Maximum005')
+        cy.get('.itbkk-button-confirm').contains('Confirm')
+        cy.get('.itbkk-button-cancel').contains('Cancel').click()
+        cy.wait(100)
 
         cy.url().should('contain','/status')
     })
-
 })

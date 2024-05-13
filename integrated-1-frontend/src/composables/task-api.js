@@ -17,12 +17,11 @@ export const useTaskApi = () => {
     async function getTaskById(id) {
         try {
             const data = await fetch(`${url}/tasks/${id}`)
-            const result = await data.json()
             if (data.status / 400 >= 1) {
                 myToast.changeToast(false, 'The requested task does not exist')
-                // router.push({ name: 'home' })
                 return
             }
+            const result = await data.json()
             return result
         } catch (error) {
             myToast.changeToast(false, 'The requested task does not exist')

@@ -88,11 +88,12 @@ onMounted(async () => {
     if (route.name === 'taskDetails') {
         isDisibled.value = true
     }
-    if (route.name !== 'taskAdd') {
+    if (route.name != 'taskAdd') {
         const id = route.params.taskId
         task = await taskApi.getTaskById(id)
         if (!task) {
-            router.back()
+            router.push({ name: 'taskView' })
+            // router.back()
         } else {
             newTask.value = {
                 id: task.id,

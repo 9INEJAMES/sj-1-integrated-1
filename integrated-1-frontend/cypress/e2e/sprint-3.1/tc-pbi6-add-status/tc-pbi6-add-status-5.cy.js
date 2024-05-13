@@ -2,7 +2,6 @@ describe(`TC-PBI6-ADD-STATUS-5\n
           Test Scenario : normal - add 3 tasks with No Status and To Do status`, () => {
   
   beforeEach(()=> {
-    cy.viewport(1024, 768) ;
     cy.visit('/task') ;
     cy.wait(100) ;
   }) ;
@@ -16,9 +15,9 @@ describe(`TC-PBI6-ADD-STATUS-5\n
     cy.contains('Status') ;
   })
 
-  // it('Task table shoud not be empty.',()=>{
-  //   cy.get('.itbkk-item').should('have.length.greaterThan',0) ;
-  // })
+  it('Task table shoud not be empty.',()=>{
+    cy.get('.itbkk-item').should('have.length.greaterThan',0) ;
+  })
 
   it('should have add button and click to open modal',()=>{
     cy.get('.itbkk-button-add').should('exist').click() ;

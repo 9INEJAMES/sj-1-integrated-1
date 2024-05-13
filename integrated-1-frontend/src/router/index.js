@@ -40,7 +40,7 @@ const router = createRouter({
     },
     {
       path: '/task',
-      name: 'TaskView',
+      name: 'taskView',
       component: TaskView,
       children: [
         {
