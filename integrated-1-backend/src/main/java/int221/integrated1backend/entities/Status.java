@@ -30,19 +30,19 @@ public class Status {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
 
-    public String getName() {
-        return this.name.replaceAll("\\s", "_").toUpperCase();
-    }
-
-    public void setName(String name) {
-        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : null;
-    }
+//    public String getName() {
+//        return this.name.replaceAll("\\s", "_").toUpperCase();
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name != null ? isStringNull(name).replaceAll("\\s", "_").toUpperCase() : null;
+//    }
 
     public void setDescription(String description) {
         this.description = isStringNull(description);
     }
 
     public void setColor(String color) {
-        this.color = color == null ? "#CBD5E1" : isStringNull(color);
+        this.color = color == null ? "#cbd5e1" : isStringNull(color);
     }
 }

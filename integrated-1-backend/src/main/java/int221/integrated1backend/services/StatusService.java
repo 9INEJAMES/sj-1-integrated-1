@@ -53,6 +53,7 @@ public class StatusService {
 
     @Transactional
     public Status updateStatus(Integer id, StatusInputDTO status) {
+        if (id == 1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "CAN'T CHANGE DEFAULT STATUS");
         Status existStatus = findByID(id);
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));

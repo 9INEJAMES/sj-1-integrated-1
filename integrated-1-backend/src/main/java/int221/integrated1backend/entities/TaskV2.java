@@ -60,7 +60,7 @@ public class TaskV2 {
     }
 
     public String getStatus() {
-        return this.status == null ? "NO_STATUS" : this.status.getName();
+        return this.status == null ? "No status" : this.status.getName();
     }
 
     public Status setStatus(Status status) {
