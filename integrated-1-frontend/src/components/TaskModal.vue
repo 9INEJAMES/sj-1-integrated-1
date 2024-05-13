@@ -7,7 +7,7 @@ import { useTaskApi } from '@/composables/task-api'
 import { useStatusesStore } from '../stores/status.js'
 
 const statusStore = useStatusesStore()
-const statusList = statusStore.statuses
+const statusList = ref([])
 const themeStore = useTheme()
 const taskStore = useTasksStore()
 const taskApi = useTaskApi()
@@ -83,6 +83,8 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
+    await statusStore.fetchStatuses()
+    statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
         isDisibled.value = true
     }

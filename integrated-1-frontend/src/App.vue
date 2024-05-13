@@ -11,12 +11,8 @@ const myToast = useToast()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
 onMounted(async () => {
-    if (taskStore.tasks.length <= 0) {
-        await taskStore.fetchTasks()
-    }
-    if (statusStore.statuses.length <= 0) {
-        await statusStore.fetchStatuses()
-    }
+    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
 })
 </script>
 

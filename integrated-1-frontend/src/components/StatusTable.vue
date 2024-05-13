@@ -17,9 +17,6 @@ const base = import.meta.env.VITE_BASE
 const emit = defineEmits(['getStatus'])
 
 onMounted(async () => {
-    if (statusesStore.statuses.length <= 0) {
-        await statusesStore.fetchStatuses()
-    }
 })
 const toEditPage = (id) => {
     router.push({
