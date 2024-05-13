@@ -1,7 +1,9 @@
 import { useToast } from '@/stores/toast'
-
+import { useRouter } from 'vue-router'
 export const useStatusApi = () => {
     const myToast = useToast()
+    const router = useRouter()
+
     const url = import.meta.env.VITE_BASE_URL
 
     async function getAllStatuses() {

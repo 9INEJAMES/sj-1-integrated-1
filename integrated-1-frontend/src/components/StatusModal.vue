@@ -5,7 +5,7 @@ import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
 import { useTasksStore } from '@/stores/task.js'
-
+import { useToast } from '@/stores/toast'
 const themeStore = useTheme()
 const route = useRoute()
 const router = useRouter()
@@ -14,6 +14,7 @@ const statusApi = useStatusApi()
 const isDisibled = ref(false)
 const isChanged = ref(false)
 const taskStore = useTasksStore()
+const myToast = useToast()
 let status
 const newStatus = ref({
     name: '',
@@ -63,9 +64,10 @@ const checkLength = (name, value, length) => {
 onMounted(async () => {
     if (route.name !== 'statusAdd') {
         const id = route.params.id
-        status = await statusesStore.getIdOfStatus(id)
+        status = await statusApi.getStatusById(id)
         if (!status) {
-            router.back()
+            router.push({ name: 'statusView' })
+            // router.back()
         } else {
             newStatus.value = {
                 id: status.id,
