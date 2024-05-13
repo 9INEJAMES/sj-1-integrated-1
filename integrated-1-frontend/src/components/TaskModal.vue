@@ -83,7 +83,7 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    await statusStore.fetchStatuses()
+    if (statusStore.statuses.length == 0) await statusStore.fetchStatuses()
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
         isDisibled.value = true
