@@ -38,9 +38,8 @@ const submitDelete = async () => {
         const result = await taskApi.deleteTask(props.object.id)
         if (result) taskStore.removeTask(result.id)
     } else {
-        console.log(isInUsed.value)
         if (isInUsed.value) {
-            const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatusId.value, props.object.tasks.length)
+            const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatusId.value, props.object.tasks)
         } else await statusApi.deleteStatus(props.object.id)
         statusStore.removeStatus(props.object.id)
     }
@@ -51,7 +50,7 @@ const cancelDelete = () => {
 }
 onMounted(async () => {
     if (props.mode == 'status') {
-        if (props.object.tasks.length > 0) {
+        if (props.object.tasks > 0) {
             isInUsed.value = true
         }
     }
@@ -76,7 +75,7 @@ watch(newStatusId, () => {
             </p>
             <p v-else-if="object.id == 1 && mode == 'status'">You can't delete default status</p>
             <div v-else>
-                <p>There {{ object.tasks.length == 1 ? 'is' : 'are' }} {{ object.tasks.length }} {{ object.tasks.length == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
+                <p>There {{ object.tasks == 1 ? 'is' : 'are' }} {{ object.tasks }} {{ object.tasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
                 <div class="flex">
                     <p class="w-1/3">Transfer to</p>
                     <select v-model="newStatusId" id="status" class="itbkk-status select select-bordered disabled:text-black w-2/3" :class="themeStore.getTheme()">

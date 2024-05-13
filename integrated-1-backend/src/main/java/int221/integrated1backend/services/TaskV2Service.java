@@ -37,7 +37,7 @@ public class TaskV2Service {
 
     @Transactional
     public TaskV2 createNewTask(TaskInputDTO taskDTO) {
-        Status status = statusService.findByName(taskDTO.getStatus());
+        Status status = statusService.findByID(Integer.valueOf(taskDTO.getStatus()));
         TaskV2 tmp = modelMapper.map(taskDTO, TaskV2.class);
         tmp.setStatus(status);
         return repository.save(tmp);
@@ -54,8 +54,7 @@ public class TaskV2Service {
     public TaskV2 updateTask(Integer taskId, TaskInputDTO taskDTO) {
         TaskV2 task = modelMapper.map(taskDTO, TaskV2.class);
         task.setId(taskId);
-
-        Status status = statusService.findByName(taskDTO.getStatus());
+        Status status = statusService.findByID(Integer.valueOf(taskDTO.getStatus()));
 
         TaskV2 existingTask = findByID(taskId);
         existingTask.setTitle(task.getTitle());

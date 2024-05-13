@@ -53,7 +53,7 @@ public class StatusService {
 
     @Transactional
     public Status updateStatus(Integer id, StatusInputDTO status) {
-        if (id == 1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "CAN'T CHANGE DEFAULT STATUS");
+        if (id == 1) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN'T CHANGE DEFAULT STATUS");
         Status existStatus = findByID(id);
         existStatus.setName(isStringNull(status.getName()));
         existStatus.setDescription(isStringNull(status.getDescription()));
@@ -63,7 +63,7 @@ public class StatusService {
 
     @Transactional
     public Status removeStatus(Integer id) {
-        if (id == 1) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "CAN'T DELETE DEFAULT STATUS");
+        if (id == 1) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN'T DELETE DEFAULT STATUS");
         Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(status);
         return status;

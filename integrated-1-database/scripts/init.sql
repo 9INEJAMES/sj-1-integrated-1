@@ -148,8 +148,8 @@ VALUES ('TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7T
 ('_Infrastructure_', '_Setup containers_', 'ไก่งวง กับ เพนกวิน', 'DONE','2024-04-22 09:15:00+00:00','2024-04-22 10:00:00+00:00');
 
 INSERT INTO statuses (statusName,statusDescription,statusColor) VALUES
-('No status','The default status','#cbd5e1'),
-('To do',null,'#fcd34d'),
+('No Status','The default status','#cbd5e1'),
+('To Do',null,'#fcd34d'),
 ('Doing','Being worked on','#7dd3fc'),
 ('Done','Finished','#10b981');
 

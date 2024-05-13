@@ -32,7 +32,7 @@ public class TaskControllerV2 {
     public ResponseEntity<Object> getAllTask() {
         List<TaskV2> taskList = service.getAllTask();
         List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
-        return ResponseEntity.ok(taskDTO);
+        return ResponseEntity.ok(taskList);
     }
 
     @GetMapping("/{taskId}")

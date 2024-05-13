@@ -23,13 +23,6 @@ const getTask = (id) => {
     // emit('getTask', id)
 }
 
-const colorStatus = (taskstatus) => {
-    const status = statusesStore.getStatuses().find((s) => {
-        return s.name.toUpperCase() == taskstatus.toUpperCase()
-    })
-    return status ? status.color : ''
-}
-
 const toEditPage = (id) => {
     router.push({
         name: 'taskEdit',
@@ -83,8 +76,8 @@ const handleDeleteModal = () => {
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                     </td>
                     <td :class="$route.name != 'home' ? '' : 'itbkk-status'">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black" :style="{ backgroundColor: colorStatus(task.status) }">
-                            {{ task.status }}
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black" :style="{ backgroundColor: task.status.color }">
+                            {{ task.status.name }}
                         </button>
                     </td>
                     <td>

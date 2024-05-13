@@ -16,24 +16,25 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusId")
     private Integer id;
+    @Getter
     @Column(name = "statusName")
     private String name;
     @Column(name = "statusDescription")
     private String description;
     @Column(name = "statusColor")
     private String color;
-
+//    @JsonIgnore
     @OneToMany(mappedBy = "status")
     private List<TaskV2> tasks;
+
+    public Integer getTasks() {
+        return this.tasks.size();
+    }
 
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
 
-//    public String getName() {
-//        return this.name.replaceAll("\\s", "_").toUpperCase();
-//    }
-//
     public void setName(String name) {
         this.name = name != null ? isStringNull(name): null;
     }

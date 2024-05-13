@@ -6,10 +6,6 @@ import lombok.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -57,10 +53,6 @@ public class TaskV2 {
 
     public void setAssignees(String assignees) {
         this.assignees = isStringNull(assignees);
-    }
-
-    public String getStatus() {
-        return this.status == null ? "No status" : this.status.getName();
     }
 
     public Status setStatus(Status status) {

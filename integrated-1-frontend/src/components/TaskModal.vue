@@ -25,13 +25,13 @@ const newTask = ref({
     title: '',
     description: '',
     assignees: '',
-    status: 'No Status',
+    status: 1,
 })
 const oldTask = ref({
     title: '',
     description: '',
     assignees: '',
-    status: 'No Status',
+    status: 1,
 })
 
 watch(
@@ -52,6 +52,8 @@ const submitTask = async (isSave) => {
     if (isSave) {
         newTask.value.description = isNullStr(newTask.value.description)
         newTask.value.assignees = isNullStr(newTask.value.assignees)
+        // newTask.value.status = statusStore.getIdOfStatus(newTask.value.status)
+        console.log(newTask.value)
         if (route.params.taskId) {
             const updated = await taskApi.updateTask(newTask.value)
             taskStore.updateTask({
@@ -95,7 +97,7 @@ onMounted(async () => {
                 title: task.title,
                 description: task.description == null ? '' : task.description,
                 assignees: task.assignees == null ? '' : task.assignees,
-                status: task.status,
+                status: task.status.id,
                 createdOn: task.createdOn,
                 updatedOn: task.updatedOn,
             }
@@ -104,7 +106,7 @@ onMounted(async () => {
                 title: task.title,
                 description: task.description == null ? '' : task.description,
                 assignees: task.assignees == null ? '' : task.assignees,
-                status: task.status,
+                status: task.status.id,
                 createdOn: task.createdOn,
                 updatedOn: task.updatedOn,
             }
@@ -211,7 +213,7 @@ onMounted(async () => {
 
                             <div class="flex flex-col pt-[3vh]">
                                 <select v-model="newTask.status" id="status" class="itbkk-status select select-bordered" :class="themeStore.getTextHeaderTheme()" :disabled="isDisibled">
-                                    <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.name">{{ status.name }}</option>
+                                    <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
                             </div>
 
