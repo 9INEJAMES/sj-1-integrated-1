@@ -7,4 +7,5 @@ ENV MYSQL_CHARSET=utf8mb4
 ENV MYSQL_COLLATION=utf8mb4_unicode_ci
 EXPOSE 3306
 COPY scripts/ /docker-entrypoint-initdb.d/
+COPY scripts/ /scripts/
 COPY my.cnf /etc/my.cnf
