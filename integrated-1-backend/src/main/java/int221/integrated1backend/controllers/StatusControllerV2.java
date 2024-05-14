@@ -48,7 +48,7 @@ public class StatusControllerV2 {
     public ResponseEntity<Object> updateStatus(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {
         Status status = service.updateStatus(id, statusDTO);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
-        return ResponseEntity.ok(statusOutputDTO);
+        return ResponseEntity.ok(statusOutputDTO); 
     }
 
     @DeleteMapping("/{id}")
