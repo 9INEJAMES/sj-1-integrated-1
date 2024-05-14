@@ -29,10 +29,16 @@ public class TaskControllerV2 {
     private ListMapper listMapper;
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllTask() {
-        List<TaskV2> taskList = service.getAllTask();
-        List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
-        return ResponseEntity.ok(taskList);
+    public ResponseEntity<Object> getAllTask(
+            @RequestParam(defaultValue = "") String[] statuses,
+            @RequestParam(defaultValue = "") String[] sortBy,
+            @RequestParam(defaultValue = "ASC") String[] sortDirection) {
+        if (statuses.length > 0) return ResponseEntity.ok(service.getAllTask(statuses, sortBy, sortDirection));
+        else {
+            List<TaskV2> taskList = service.getAllTask();
+            List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
+            return ResponseEntity.ok(taskList);
+        }
     }
 
     @GetMapping("/{taskId}")
@@ -53,7 +59,6 @@ public class TaskControllerV2 {
         TaskV2 task = service.updateTask(taskId, taskDTO);
         return ResponseEntity.ok(task);
     }
-
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {

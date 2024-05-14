@@ -7,11 +7,13 @@ import int221.integrated1backend.entities.TaskV2;
 import int221.integrated1backend.repositories.TaskV2Repository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,6 +30,17 @@ public class TaskV2Service {
 
     public List<TaskV2> getAllTask() {
         return repository.findAll();
+    }
+
+    public List<TaskV2> getAllTask(String[] statuses, String[] sortBy, String[] direction) {
+        List<TaskV2> taskV2List = new ArrayList<>();
+        if (statuses != null && statuses.length > 0) {
+            for (int i = 0; i < statuses.length; i++) {
+                Status status = statusService.findByName(statuses[i]);
+                taskV2List.addAll(repository.findAllByStatus(status));
+            }
+        }
+        return taskV2List;
     }
 
     public TaskV2 findByID(Integer id) {

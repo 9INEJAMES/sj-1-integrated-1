@@ -54,7 +54,7 @@ public class StatusControllerV2 {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id) {
         Status status = service.removeStatus(id);
-        Map<String, Object> responseBody = new HashMap<>();
+        Map<String, Object> responseBody = new HashMap<>();//return empty body
         return ResponseEntity.ok().body(responseBody);
     }
 
@@ -62,7 +62,7 @@ public class StatusControllerV2 {
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id, @PathVariable Integer newId) {
         List<TaskV2> taskV2List = taskService.updateStatusOfTask(id, newId);
         Status status = service.removeStatus(id);
-        Map<String, Object> responseBody = new HashMap<>();
+        Map<String, Object> responseBody = new HashMap<>();//return empty body
         return ResponseEntity.ok().body(responseBody);
     }
 
