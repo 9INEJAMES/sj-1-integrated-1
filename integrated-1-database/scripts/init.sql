@@ -91,7 +91,19 @@ FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delete rows from limit_task';
 END;
-//
+
+CREATE TRIGGER limit_task_before_update
+BEFORE UPDATE ON limit_task
+FOR EACH ROW
+BEGIN
+    SET NEW.limitId = 1;
+    IF NEW.isLimit IS NULL THEN
+        SET NEW.isLimit = OLD.isLimit;
+    END IF;
+    IF NEW.limitMaximumTask IS NULL THEN
+        SET NEW.limitMaximumTask = OLD.limitMaximumTask;
+    END IF;
+END$$
 
 DELIMITER ;
 
@@ -125,9 +137,21 @@ CREATE TRIGGER before_update_statuses
 BEFORE UPDATE ON statuses
 FOR EACH ROW
 BEGIN
+	IF NEW.statusId = 1 OR NEW.statusId = 4 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot edit default status';
+	END IF;
     SET NEW.limitId = 1;
 	SET NEW.statusName = TRIM(NEW.statusName);
 	SET NEW.statusDescription = TRIM(NEW.statusDescription);
+END$$
+
+CREATE TRIGGER before_delete_statuses
+BEFORE DELETE ON statuses
+FOR EACH ROW
+BEGIN
+	IF OLD.statusId = 1 OR OLD.statusId = 4 THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delet default status';
+	END IF;
 END$$
 
 DELIMITER ;

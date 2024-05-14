@@ -17,7 +17,6 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusId")
     private Integer id;
-    @Getter
     @Column(name = "statusName")
     private String name;
     @Column(name = "statusDescription")
