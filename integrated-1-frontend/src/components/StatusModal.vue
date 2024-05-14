@@ -45,9 +45,10 @@ const submitStatus = async (isSave) => {
         newStatus.value.description = isNullStr(newStatus.value.description)
         if (route.params.id) {
             const updated = await statusApi.updateStatus(newStatus.value)
-            statusesStore.updateStatus({
-                ...updated,
-            })
+            if (updated)
+                statusesStore.updateStatus({
+                    ...updated,
+                })
         } else {
             const status = await statusApi.addStatus(newStatus.value)
             if (status) statusesStore.addStatus(status)

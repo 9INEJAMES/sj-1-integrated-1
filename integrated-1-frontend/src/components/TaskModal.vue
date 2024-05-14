@@ -53,15 +53,15 @@ const submitTask = async (isSave) => {
         newTask.value.description = isNullStr(newTask.value.description)
         newTask.value.assignees = isNullStr(newTask.value.assignees)
         // newTask.value.status = statusStore.getIdOfStatus(newTask.value.status)
-        console.log(newTask.value)
         if (route.params.taskId) {
             const updated = await taskApi.updateTask(newTask.value)
-            taskStore.updateTask({
-                ...updated,
-            })
+            if (updated)
+                taskStore.updateTask({
+                    ...updated,
+                })
         } else {
             const task = await taskApi.addTask(newTask.value)
-            taskStore.addTasks([task])
+            if (task) taskStore.addTask(task)
         }
     }
     router.back()

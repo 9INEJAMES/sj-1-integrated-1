@@ -38,6 +38,10 @@ export const useTaskApi = () => {
                 },
                 body: JSON.stringify({ ...obj }),
             })
+            if (response.status / 400 >= 1) {
+                myToast.changeToast(false, 'An error has occurred, the task could not be added.')
+                return
+            }
             const result = await response.json()
             myToast.changeToast(true, 'The task has been successfully added')
             return result
