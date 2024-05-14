@@ -76,7 +76,7 @@ USE integrated;
 
 INSERT INTO limit_task (limitMaximumTask) VALUES (10);
 
-DELIMITER //
+DELIMITER $$
 
 CREATE TRIGGER limit_task_before_insert
 BEFORE INSERT ON limit_task
@@ -84,7 +84,6 @@ FOR EACH ROW
 BEGIN
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot insert new rows into limit_task';
 END;
-//
 
 CREATE TRIGGER limit_task_before_delete
 BEFORE DELETE ON limit_task
@@ -101,8 +100,8 @@ CREATE TABLE statuses (
     statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     statusColor VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '#cbd5e1',
-    limitMaximumTask INT DEFAULT 1,
-    CONSTRAINT FK_limit FOREIGN KEY (limitMaximumTask) REFERENCES limit_task(limitId) ON DELETE RESTRICT,
+    limitId INT DEFAULT 1,
+    CONSTRAINT FK_limit FOREIGN KEY (limitId) REFERENCES limit_task(limitId) ON DELETE RESTRICT,
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),
     CONSTRAINT CHK_statusDescription_length CHECK (CHAR_LENGTH(TRIM(statusDescription)) <= 200)
 )ENGINE=InnoDB;
@@ -113,7 +112,7 @@ CREATE TRIGGER before_insert_statuses
 BEFORE INSERT ON statuses
 FOR EACH ROW
 BEGIN
-    SET NEW.limitMaximumTask = 1;
+    SET NEW.limitId = 1;
     SET NEW.statusName = TRIM(NEW.statusName);
 	SET NEW.statusDescription = TRIM(NEW.statusDescription);
     SET NEW.statusColor = TRIM(NEW.statusColor);
@@ -126,7 +125,7 @@ CREATE TRIGGER before_update_statuses
 BEFORE UPDATE ON statuses
 FOR EACH ROW
 BEGIN
-    SET NEW.limitMaximumTask = 1;
+    SET NEW.limitId = 1;
 	SET NEW.statusName = TRIM(NEW.statusName);
 	SET NEW.statusDescription = TRIM(NEW.statusDescription);
 END$$
