@@ -19,7 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/v2/statuses")
-@CrossOrigin(origins = { "http://ip23sj1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://localhost:5173"})
+@CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://localhost:5173"})
 public class StatusControllerV2 {
     @Autowired
     private StatusService service;
@@ -68,7 +68,7 @@ public class StatusControllerV2 {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getStatusById(@PathVariable Integer id) {
-         Status status = service.findByID(id);
+        Status status = service.findByID(id);
         return ResponseEntity.ok(status);
     }
 }

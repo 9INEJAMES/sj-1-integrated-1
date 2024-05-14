@@ -2,6 +2,7 @@ package int221.integrated1backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +24,7 @@ public class Status {
     private String description;
     @Column(name = "statusColor")
     private String color;
-//    @JsonIgnore
+    //    @JsonIgnore
     @OneToMany(mappedBy = "status")
     private List<TaskV2> tasks;
 
@@ -36,7 +37,7 @@ public class Status {
     }
 
     public void setName(String name) {
-        this.name = name != null ? isStringNull(name): null;
+        this.name = name != null ? isStringNull(name) : null;
     }
 
     public void setDescription(String description) {

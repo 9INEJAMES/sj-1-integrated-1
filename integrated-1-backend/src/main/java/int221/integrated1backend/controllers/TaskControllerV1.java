@@ -37,7 +37,7 @@ public class TaskControllerV1 {
         return ResponseEntity.ok(task);
     }
 
-//    @ResponseStatus(HttpStatus.CREATED)
+    //    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO) {
         Task task = service.createNewTask(taskDTO);
@@ -52,9 +52,9 @@ public class TaskControllerV1 {
 
 
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId){
+    public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {
         TaskOutputDTO taskWithIdDTO = service.removeTask(taskId);
-        return  ResponseEntity.ok(taskWithIdDTO);
+        return ResponseEntity.ok(taskWithIdDTO);
     }
 }
 

@@ -12,8 +12,10 @@ public class ApplicationConfig { //classนี้เพื่อให้เร�
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
     @Bean
     public ListMapper listMapper() {
-        return ListMapper.getInstance(); }
+        return ListMapper.getInstance();
+    }
 
 }

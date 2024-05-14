@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,9 +31,7 @@ public class TaskV2Service {
     }
 
     public TaskV2 findByID(Integer id) {
-        return repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Task id " + id + " does not exists !!!"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists !!!"));
     }
 
     @Transactional
@@ -65,7 +64,8 @@ public class TaskV2Service {
         return repository.save(existingTask);
     }
 
-    public List<TaskV2> updateStatusOfTask(Integer statusId,Integer newId){
+    public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
+        if (Objects.equals(statusId, newId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND");
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusService.findByID(newId);

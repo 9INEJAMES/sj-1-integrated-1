@@ -26,9 +26,7 @@ public class TaskService {
     }
 
     public Task findByID(Integer id) {
-        return repository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Task id " + id + " does not exists !!!"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists !!!"));
     }
 
     @Transactional
