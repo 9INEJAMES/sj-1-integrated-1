@@ -100,11 +100,15 @@ export const useStatusApi = () => {
             console.error(`Error deleting status: ${error}`)
         }
     }
-    async function deleteStatusAndTransfer(id, newId, tasks) {
+    async function deleteStatusAndTransfer(id,newStatus, tasks) {
         try {
-            const response = await fetch(`${url}/statuses/${id}/${newId}`, {
+            const response = await fetch(`${url}/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
+            if (response.status / 500 >= 1) {
+                myToast.changeToast(false, `Cannot tranfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to trnsfer to.`)
+                return
+            }
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
