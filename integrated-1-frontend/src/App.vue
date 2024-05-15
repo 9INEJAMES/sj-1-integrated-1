@@ -5,14 +5,18 @@ import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
 import { useToast } from '@/stores/toast.js'
 import { useTasksStore } from '@/stores/task.js'
-import { useStatusesStore } from './stores/status'
+import { useStatusesStore } from '@/stores/status'
+import { useLimitStore } from '@/stores/limitTask'
+
 const themeStore = useTheme()
 const myToast = useToast()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
+const limitStore = useLimitStore()
 onMounted(async () => {
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
 })
 </script>
 
@@ -36,3 +40,4 @@ onMounted(async () => {
     font-style: normal;
 }
 </style>
+@/stores/limitTask

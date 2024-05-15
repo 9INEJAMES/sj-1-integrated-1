@@ -6,12 +6,14 @@ import VButton from '@/ui/VButton.vue'
 import { useTaskApi } from '@/composables/task-api.js'
 import { useTheme } from '@/stores/theme'
 import router from '@/router'
+import StatusSetting from '@/components/StatusSetting.vue'
 
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
 const isSelectTask = ref(false)
 const themeStore = useTheme()
 const selectedTask = ref({})
+const isSettingOpen = ref(false)
 
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
@@ -21,7 +23,10 @@ const chosenTask = async (id) => {
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/status"> <VButton msg="Manage Status" class="itbkk-manage-status" /> </RouterLink>
+        <div class="flex gap-2">
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" iconurl="/settings.png" />
+            <RouterLink to="/status"> <VButton msg="Manage Status" class="itbkk-manage-status" /> </RouterLink>
+        </div>
         <RouterLink :to="{ name: 'taskAdd' }"><VButton class="itbkk-button-add" msg="Add Task" /></RouterLink>
     </div>
     <RouterView class="z-40" />
@@ -30,6 +35,7 @@ const chosenTask = async (id) => {
             <TaskTable @get-task="chosenTask"></TaskTable>
         </div>
     </div>
+    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-50"></StatusSetting>
 </template>
 
 <style scoped></style>

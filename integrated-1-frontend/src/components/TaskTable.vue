@@ -78,7 +78,7 @@ const handleDeleteModal = () => {
                     </th>
                     <th style="width: 25%">Assignees</th>
                     <th style="width: 10%" class="text-center">Status
-                                            <div class="rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
+                                            <div class="itbkk-status-sort rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
                                 @click="switchSortOrder">
                                 <img :src="'/sort-' + sort + '.png'" class="w-[15px] h-[15px]" />
                             </div></th>
