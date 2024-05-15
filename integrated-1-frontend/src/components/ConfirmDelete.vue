@@ -80,7 +80,7 @@ watch(newStatusId, () => {
 </script>
 
 <template>
-    <div class="py-[30vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-35 w-full z-50">
+    <div class="py-[30vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-35 w-full z-40">
         <div class="flex-col border rounded-md p-[2vh] w-fit h-fit" :class="themeStore.getTheme()">
             <p class="font-bold text-[4vh] py-[2vh]" :class="themeStore.getTextHeaderTheme()">Delete a {{ mode == 'task' ?
                 'Task' : 'Status' }}</p>

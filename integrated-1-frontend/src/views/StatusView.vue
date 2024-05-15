@@ -19,7 +19,7 @@ const chosenStatus = async (id) => {
         <RouterLink :to="{ name: 'statusAdd' }"><VButton class="itbkk-button-add" msg="Add Status" /></RouterLink>
     </div>
 
-    <RouterView class="z-40" />
+    <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <StatusTable @get-Status="chosenStatus"></StatusTable>
     </div>

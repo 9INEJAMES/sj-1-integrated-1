@@ -6,6 +6,7 @@ import { useStatusesStore } from './status'
 export const useToast = defineStore('toast', () => {
     const currToast = ref({ style: '', msg: '' })
     const changeToast = async (isSuccess, msg) => {
+        clearTimeout();
         isSuccess ? (currToast.value.style = 'alert-success') : (currToast.value.style = 'alert-error')
         if (!isSuccess || msg.toLowerCase().includes('tranferred') || msg.toLowerCase().includes('the status has been updated.')) {
             if (msg.toLowerCase().includes('task') || msg.toLowerCase().includes('the status does not exist.') || msg.toLowerCase().includes('the status has been updated.')) {
@@ -19,7 +20,7 @@ export const useToast = defineStore('toast', () => {
         currToast.value.msg = msg
         setTimeout(() => {
             resetToast()
-        }, 2000)
+        }, 5000)
     }
     const resetToast = () => {
         currToast.value = { style: '', msg: '' }

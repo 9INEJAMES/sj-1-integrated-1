@@ -93,7 +93,7 @@ public class TaskV2Service {
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusService.findByID(newId);
-        if (limitTask.getLimit() && status.getId() != 1 && newStatus.getId() != 4 && newStatus.getTasks() + taskV2List.size() > limitTask.getLimitMaximumTask()) {
+        if (limitTask.getLimit() && newStatus.getId() != 1 && newStatus.getId() != 4 && newStatus.getTasks() + taskV2List.size() > limitTask.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT MOVE ALL TASKS TO NEW STATUS BECAUSE ITS OVER LIMIT");
         }
         taskV2List.stream().map(task -> task.setStatus(newStatus)).collect(Collectors.toList());

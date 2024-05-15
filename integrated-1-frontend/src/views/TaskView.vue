@@ -29,13 +29,13 @@ const chosenTask = async (id) => {
         </div>
         <RouterLink :to="{ name: 'taskAdd' }"><VButton class="itbkk-button-add" msg="Add Task" /></RouterLink>
     </div>
-    <RouterView class="z-40" />
+    <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
             <TaskTable @get-task="chosenTask"></TaskTable>
         </div>
     </div>
-    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-50"></StatusSetting>
+    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-40"></StatusSetting>
 </template>
 
 <style scoped></style>

@@ -106,7 +106,7 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.status / 500 >= 1) {
-                myToast.changeToast(false, `Cannot tranfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to trnsfer to.`)
+                myToast.changeToast(false, `Cannot transfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to transfer to.`)
                 return
             }
             if (response.status / 400 >= 1) {
