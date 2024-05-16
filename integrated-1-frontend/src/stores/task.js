@@ -5,8 +5,8 @@ import { useTaskApi } from '@/composables/task-api'
 export const useTasksStore = defineStore('tasks', () => {
     const tasks = ref([])
     const taskApi = useTaskApi()
-    const fetchTasks = async () => {
-        const tasksData = await taskApi.getAllTasks()
+    const fetchTasks = async (filterStatuses) => {
+        const tasksData = await taskApi.getAllTasks(filterStatuses)
         resetTasks()
         addTasks(tasksData)
     }

@@ -15,7 +15,7 @@ const isSelectTask = ref(false)
 const themeStore = useTheme()
 const selectedTask = ref({})
 const isSettingOpen = ref(false)
-const isFilterOpen = ref(false)  
+const isFilterOpen = ref(false)
 
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
@@ -34,12 +34,13 @@ const filttedTasks = ref([])
             </RouterLink>
         </div>
         <div class="flex gap-2">
-            <VButton @click="isFilterOpen  = true" msg="Filter" class="itbkk-filter" iconurl="/filter.png" />
+            <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-filter" iconurl="/filter.png" />
             <RouterLink :to="{ name: 'taskAdd' }">
                 <VButton class="itbkk-button-add" msg="Add Task" />
             </RouterLink>
         </div>
     </div>
+
     <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
@@ -47,7 +48,7 @@ const filttedTasks = ref([])
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-40"></StatusSetting>
-    <FilterModal :isVisible="isFilterOpen" @close="isFilterOpen = false"></FilterModal> <!-- Include FilterModal -->
+    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
 <style scoped></style>

@@ -4,9 +4,16 @@ export const useTaskApi = () => {
     const myToast = useToast()
     const url = import.meta.env.VITE_BASE_URL
 
-    async function getAllTasks() {
+    async function getAllTasks(filterStatuses) {
         try {
-            const data = await fetch(`${url}/tasks`)
+            let filter = ''
+            if (filterStatuses && filterStatuses.length > 0) {
+                filter = filterStatuses.reduce((acc, status, index) => {
+                    const prefix = index === 0 ? '?filterStatuses=' : '&filterStatuses='
+                    return acc + prefix + status
+                }, '')
+            }
+            const data = await fetch(`${url}/tasks${filter}`)
             const result = await data.json()
             return result
         } catch (error) {
