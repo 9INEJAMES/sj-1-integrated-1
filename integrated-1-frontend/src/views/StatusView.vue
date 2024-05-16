@@ -15,8 +15,13 @@ const chosenStatus = async (id) => {
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
-        <RouterLink :to="{ name: 'statusAdd' }"><VButton class="itbkk-button-add" msg="Add Status" /></RouterLink>
+        <div class="flex gap-2">
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" iconurl="/settings.png" />
+            <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
+        </div>
+        <RouterLink :to="{ name: 'statusAdd' }">
+            <VButton class="itbkk-button-add" msg="Add Status" />
+        </RouterLink>
     </div>
 
     <RouterView class="z-30" />

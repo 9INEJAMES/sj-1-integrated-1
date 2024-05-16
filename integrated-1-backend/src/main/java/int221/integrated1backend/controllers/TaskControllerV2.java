@@ -30,10 +30,10 @@ public class TaskControllerV2 {
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTask(
-            @RequestParam(defaultValue = "") String[] statuses,
+            @RequestParam(defaultValue = "") String[] filterStatuses,
             @RequestParam(defaultValue = "") String[] sortBy,
             @RequestParam(defaultValue = "ASC") String[] sortDirection) {
-        if (statuses.length > 0) return ResponseEntity.ok(service.getAllTask(statuses, sortBy, sortDirection));
+        if (filterStatuses.length > 0) return ResponseEntity.ok(service.getAllTask(filterStatuses, sortBy, sortDirection));
         else {
             List<TaskV2> taskList = service.getAllTask();
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
