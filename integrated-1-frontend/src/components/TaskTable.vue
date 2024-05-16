@@ -11,8 +11,8 @@ const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
-const statusesStore = useStatusesStore()
-const sort = ref('default') // 'default', 'asc', 'desc'
+const sort = ref('default') 
+const queryParams = ref({})
 
 const switchSortOrder = () => {
     if (sort.value === 'default') {
@@ -63,6 +63,8 @@ const handleDeleteModal = () => {
     selectedTask.value = null
     selectedIndex.value = null
 }
+
+
 </script>
 
 <template>

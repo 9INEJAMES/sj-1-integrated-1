@@ -6,66 +6,66 @@ import StatusView from '@/views/StatusView.vue'
 import StatusModal from '@/components/StatusModal.vue'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      redirect: '/task',
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      redirect: '/task',
-    },
-    {
-      path: '/status',
-      name: 'statusView',
-      component: StatusView,
-      children: [
+    history: createWebHistory(import.meta.env.BASE_URL),
+    routes: [
         {
-          path: '',
-          name: 'home',
-          component: Home,
+            path: "/",
+            redirect: "/task",
         },
         {
-          path: 'add',
-          name: 'statusAdd',
-          component: StatusModal,
+            path: "/:pathMatch(.*)*",
+            redirect: "/task",
         },
         {
-          path: ':id/edit',
-          name: 'statusEdit',
-          component: StatusModal,
-        },
-      ],
-    },
-    {
-      path: '/task',
-      name: 'taskView',
-      component: TaskView,
-      children: [
-        {
-          path: '',
-          name: 'home',
-          component: Home,
-        },
-        {
-          path: ':taskId',
-          name: 'taskDetails',
-          component: TaskModal,
-        },
-        {
-          path: 'add',
-          name: 'taskAdd',
-          component: TaskModal,
+            path: "/status",
+            name: "statusView",
+            component: StatusView,
+            children: [
+                {
+                    path: "",
+                    name: "home",
+                    component: Home,
+                },
+                {
+                    path: "add",
+                    name: "statusAdd",
+                    component: StatusModal,
+                },
+                {
+                    path: ":id/edit",
+                    name: "statusEdit",
+                    component: StatusModal,
+                },
+            ],
         },
         {
-          path: ':taskId/edit',
-          name: 'taskEdit',
-          component: TaskModal,
+            path: "/task",
+            name: "taskView",
+            component: TaskView,
+            children: [
+                {
+                    path: "",
+                    name: "home",
+                    component: Home,
+                },
+                {
+                    path: ":taskId",
+                    name: "taskDetails",
+                    component: TaskModal,
+                },
+                {
+                    path: "add",
+                    name: "taskAdd",
+                    component: TaskModal,
+                },
+                {
+                    path: ":taskId/edit",
+                    name: "taskEdit",
+                    component: TaskModal,
+                },
+            ],
         },
-      ],
-    },
-  ],
+    ],
 })
 
 export default router
