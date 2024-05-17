@@ -5,12 +5,14 @@ import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 import { useTaskApi } from '@/composables/task-api'
 import { useStatusesStore } from '../stores/status.js'
+import { useLimitStore } from '@/stores/limitTask'
 
 const statusStore = useStatusesStore()
 const statusList = ref([])
 const themeStore = useTheme()
 const taskStore = useTasksStore()
 const taskApi = useTaskApi()
+const limitStore = useLimitStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -20,6 +22,7 @@ const isDisibled = ref(false)
 const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
+const limitTask = ref({})
 let task
 const newTask = ref({
     title: '',
@@ -33,7 +36,6 @@ const oldTask = ref({
     assignees: '',
     status: 1,
 })
-
 watch(
     newTask,
     () => {
@@ -83,6 +85,8 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
+    if (limitStore.limitTask.length == 0) await limitStore.fetchLimit()
+    limitTask.value = await limitStore.getLimit()
     if (statusStore.statuses.length == 0) await statusStore.fetchStatuses()
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
@@ -123,11 +127,15 @@ onMounted(async () => {
     <div class="py-[10vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
         <div class="itbkk-modal-task w-full rounded-lg" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
-            <div v-else class="grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
-                    {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
-                    Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
-                </p>
+            <div v-else class="grid gap-[2vh] border-none p-[2vh]">
+                <div>
+                    <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
+                        {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
+                        Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
+                    </p>
+                    <p>{{ limitStore.limitTask[0].limit ? 'limit enable':'limit disable' }}</p>
+                </div>
+
                 <hr />
                 <div>
                     <p :class="themeStore.getTextHeaderTheme()">Title<span v-if="route.name != 'taskDetails'" class="text-red-600">*</span></p>

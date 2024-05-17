@@ -28,7 +28,10 @@ export const useLimitApi = () => {
                 return
             }
             const result = await response.json()
-            myToast.changeToast(true, 'The setting has been updated')
+            obj.limit
+                ? myToast.changeToast(true, `The Kanban board now limits ${obj.limitMaximumTask} tasks in each status`)
+                : myToast.changeToast(true, `The Kanban board has disabled the task limit in each status`)
+
             return result
         } catch (error) {
             myToast.changeToast(false, 'The update was unsuccesful')
