@@ -1,6 +1,7 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.TaskInputDTO;
+import int221.integrated1backend.dtos.TaskOutputAllFieldDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.entities.Task;
@@ -44,7 +45,7 @@ public class TaskControllerV2 {
     @GetMapping("/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
         TaskV2 task = service.findByID(taskId);
-        TaskOutputDTO outputDTO = modelMapper.map(task,TaskOutputDTO.class);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task,TaskOutputAllFieldDTO.class);
         return ResponseEntity.ok(outputDTO);
     }
 

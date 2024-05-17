@@ -49,7 +49,7 @@ const applyFilter = () => {
                                 class="px-2 py-1 rounded-lg mr-2 mb-2 flex-shrink-0"
                                 :style="{ backgroundColor: status.color }">
                                 {{ status.name }} <img src="/close.png" alt="remove filter"
-                                    class="w-[1vh] h-[1vh] inline-block ml-[1vh]"
+                                    class="w-[1vh] h-[1vh] inline-block ml-[1vh] hover:cursor-pointer"
                                     @click="filterStore.removeStatus(status.name)">
                             </span>
                         </div>

@@ -3,13 +3,11 @@ package int221.integrated1backend.dtos;
 import lombok.Data;
 
 @Data
-public class TaskInputDTO {
+public class TaskOutputAllFieldDTO {
+    private Integer id;
     private String title;
     private String description;
     private String assignees;
-    private String status;
+    private StatusOutputDTO status;
 
-    public String getStatus() {
-        return status == null ? "0" : status;
-    }
 }
