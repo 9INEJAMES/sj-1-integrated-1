@@ -23,7 +23,11 @@ export const useFilterStore = defineStore("filter", () => {
         selectedStatuses.value = []
     }
 
-    return { selectedStatuses, toggleStatus, selectedStatusNames, clearFilter }
+    const removeStatus = (statusName) => {
+        selectedStatuses.value = selectedStatuses.value.filter((name) => name !== statusName)
+    }
+
+    return { selectedStatuses,selectedStatusNames, toggleStatus,  clearFilter , removeStatus }
 })
 
 if (import.meta.hot) {

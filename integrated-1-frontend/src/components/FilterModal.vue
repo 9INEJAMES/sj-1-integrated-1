@@ -1,5 +1,4 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import VButton from '@/ui/VButton.vue'
 import { useRouter } from 'vue-router'
@@ -9,7 +8,7 @@ const statusesStore = useStatusesStore()
 const router = useRouter()
 const filterStore = useFilterStore()
 
-const emits = defineEmits(['close'])
+const emits = defineEmits(['close','applyFilter'])
 
 const closeModal = () => {
     emits('close')
@@ -35,30 +34,32 @@ const applyFilter = () => {
                         <label for="status">Status</label>
                         <div class="mt-2 overflow-auto max-h-[20vh] border p-[1vh] rounded-lg">
                             <div v-for="status in statusesStore.statuses" :key="status.id">
-                                <input
-                                    type="checkbox"
-                                    :id="status.id"
-                                    :value="status.name"
+                                <input type="checkbox" :id="status.id" :value="status.name"
                                     class="mr-[1vh] checkbox checkbox-success"
                                     @change="filterStore.toggleStatus(status.name)"
-                                    :checked="filterStore.selectedStatuses.includes(status.name)"
-                                />
+                                    :checked="filterStore.selectedStatuses.includes(status.name)" />
                                 <label :for="status.id">{{ status.name }}</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-span-1">
                         <label for="filter">Filter</label>
-                        <div class="mt-2 border w-full h-[20vh] p-[1vh] rounded-lg flex-wrap">
-                            <span v-for="status in filterStore.selectedStatusNames" :key="status.id" class="px-2 py-1 rounded-lg mr-2" :style="{ backgroundColor: status.color }">
-                                {{ status.name }} <img src="/close.png" alt="remove filter"  class="w-[1vh] h-[1vh] inline-block">
+                        <div class="mt-2 border w-full h-[20vh] p-[1vh] rounded-lg flex flex-wrap items-start">
+                            <span v-for="status in filterStore.selectedStatusNames" :key="status.id"
+                                class="px-2 py-1 rounded-lg mr-2 mb-2 flex-shrink-0"
+                                :style="{ backgroundColor: status.color }">
+                                {{ status.name }} <img src="/close.png" alt="remove filter"
+                                    class="w-[1vh] h-[1vh] inline-block ml-[1vh]"
+                                    @click="filterStore.removeStatus(status.name)">
                             </span>
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-[1vh]">
-                    <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md " @click="applyFilter()">Filter</button>
-                    <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md " @click="closeModal()">Cancel</button>
+                    <button class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md"
+                        @click="applyFilter()">Filter</button>
+                    <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md"
+                        @click="closeModal()">Cancel</button>
                 </div>
             </div>
         </div>
