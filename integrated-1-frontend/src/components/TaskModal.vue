@@ -120,7 +120,12 @@ onMounted(async () => {
             switchTimeZone(task)
         }
     }
+    checkLimitStatus()
 })
+const currStatus = ref(0)
+const checkLimitStatus = () => {
+    currStatus.value = taskStore.tasks.filter((t) => t.status.id == newTask.value.status).length
+}
 </script>
 
 <template>
@@ -128,12 +133,14 @@ onMounted(async () => {
         <div class="itbkk-modal-task w-full rounded-lg" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] border-none p-[2vh]">
-                <div>
+                <div class="flex justify-between items-center">
                     <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                         {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
                         Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
                     </p>
-                    <p>{{ limitStore.limitTask[0].limit ? 'limit enable':'limit disable' }}</p>
+                    <button class="rounded-2xl w-[15vh] h-[40px] text-[2vh] font-bold cursor-default bg-amber-200">
+                        {{ limitTask.limit ? 'Limit enable' : 'Limit disable' }}
+                    </button>
                 </div>
 
                 <hr />
@@ -222,9 +229,17 @@ onMounted(async () => {
                             </div>
 
                             <div class="flex flex-col pt-[3vh]">
-                                <select v-model="newTask.status" id="status" class="itbkk-status select select-bordered" :class="themeStore.getTextHeaderTheme()" :disabled="isDisibled">
+                                <select
+                                    v-model="newTask.status"
+                                    id="status"
+                                    @change="checkLimitStatus"
+                                    class="itbkk-status select select-bordered"
+                                    :class="themeStore.getTextHeaderTheme()"
+                                    :disabled="isDisibled"
+                                >
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
+                                <p>{{ currStatus }}/{{ limitTask.limitMaximumTask }}</p>
                             </div>
 
                             <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">

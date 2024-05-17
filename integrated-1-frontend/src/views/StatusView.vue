@@ -3,8 +3,11 @@ import { useStatusApi } from '@/composables/status-api'
 import StatusTable from '@/components/StatusTable.vue'
 import { useTheme } from '@/stores/theme'
 import VButton from '@/ui/VButton.vue'
+import StatusSetting from '@/components/StatusSetting.vue'
 import router from '@/router'
+import { ref } from 'vue'
 
+const isSettingOpen = ref(false)
 const themeStore = useTheme()
 const statusApi = useStatusApi()
 const chosenStatus = async (id) => {
@@ -28,6 +31,7 @@ const chosenStatus = async (id) => {
     <div class="px-[5vh] pt-[1vh]">
         <StatusTable @get-Status="chosenStatus"></StatusTable>
     </div>
+    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-40"></StatusSetting>
 </template>
 
 <style lang="scss" scoped></style>
