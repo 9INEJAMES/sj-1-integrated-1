@@ -49,7 +49,7 @@ export const useTasksStore = defineStore('tasks', () => {
         }
     }
 
-    function getIdOfTask(searchId) {
+    function findTaskById(searchId) {
         return tasks.value.find((task) => task.id == searchId)
     }
 
@@ -76,7 +76,7 @@ export const useTasksStore = defineStore('tasks', () => {
         getTasks,
         addTasks,
         updateTask,
-        getIdOfTask,
+        findTaskById,
         findIndexTask,
         removeTask,
         resetTasks,

@@ -54,7 +54,7 @@ const submitTask = async (isSave) => {
     if (isSave) {
         newTask.value.description = isNullStr(newTask.value.description)
         newTask.value.assignees = isNullStr(newTask.value.assignees)
-        // newTask.value.status = statusStore.getIdOfStatus(newTask.value.status)
+        // newTask.value.status = statusStore.findStatusById(newTask.value.status)
         if (route.params.taskId) {
             const updated = await taskApi.updateTask(newTask.value)
             if (updated)
@@ -66,6 +66,7 @@ const submitTask = async (isSave) => {
             if (task) taskStore.addTask(task)
         }
     }
+    console.log(newTask.value)
     router.back()
 }
 const checkLength = (name, value, length) => {
@@ -130,7 +131,7 @@ const checkLimitStatus = () => {
 
 <template>
     <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[10vh] mx-[10vh] itbkk-modal-task h-fit w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="my-[10vh] mx-[10vh] itbkk-modal-task h-fit w-full rounded-lg pb-2" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] border-none p-[2vh]">
                 <div class="flex justify-between items-center">

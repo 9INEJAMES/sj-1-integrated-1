@@ -43,7 +43,7 @@ const submitDelete = async () => {
         }
     } else {
         if (isInUsed.value) {
-            const newStatus = statusStore.getIdOfStatus(newStatusId.value)
+            const newStatus = statusStore.findStatusById(newStatusId.value)
             const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatus, props.object.noOfTasks)
             if (result) {
                 statusStore.removeStatus(props.object.id)

@@ -1,7 +1,10 @@
+import { useStatusesStore } from '../stores/status.js'
 import { useToast } from '@/stores/toast'
 
 export const useTaskApi = () => {
     const myToast = useToast()
+    const statusesStore = useStatusesStore()
+
     const url = import.meta.env.VITE_BASE_URL
 
     async function getAllTasks(filterStatuses) {
@@ -36,15 +39,20 @@ export const useTaskApi = () => {
         }
     }
 
-    async function addTask(obj) {
+    async function addTask(task) {
         try {
             const response = await fetch(`${url}/tasks`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...obj }),
+                body: JSON.stringify({ ...task }),
             })
+            if (response.status / 500 >= 1) {
+                const status = statusesStore.findStatusById(task.status)
+                myToast.changeToast(false, `The status ${status.name} will have too many tasks. Please make progress and update status of existing tasks first.`)
+                return
+            }
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'An error has occurred, the task could not be added.')
                 return
@@ -57,14 +65,14 @@ export const useTaskApi = () => {
         }
     }
 
-    async function updateTask(obj) {
+    async function updateTask(task) {
         try {
             const response = await fetch(`${url}/tasks/${obj.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...obj }),
+                body: JSON.stringify({ ...task }),
             })
             if (response.status / 400 >= 1) {
                 myToast.changeToast(false, 'The update was unsuccesful')
