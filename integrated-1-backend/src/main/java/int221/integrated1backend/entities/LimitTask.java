@@ -1,8 +1,11 @@
 package int221.integrated1backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -15,7 +18,9 @@ public class LimitTask {
     private Boolean limit;
     @Column(name = "limitMaximumTask")
     private Integer limitMaximumTask;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "limitMaximumTask")
+    private List<Status> status;
     public void setId() {
         this.id = 1;
     }

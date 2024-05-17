@@ -25,10 +25,14 @@ public class Status {
     private String color;
     //    @JsonIgnore
     @OneToMany(mappedBy = "status")
-    private List<TaskV2> tasks;
+    private List<TaskV2> noOfTasks;
 
-    public Integer getTasks() {
-        return this.tasks.size();
+    @ManyToOne
+    @JoinColumn(name = "limitId")
+    private LimitTask limitMaximumTask;
+
+    public Integer getNoOfTasks() {
+        return this.noOfTasks.size();
     }
 
     private String isStringNull(String string) {

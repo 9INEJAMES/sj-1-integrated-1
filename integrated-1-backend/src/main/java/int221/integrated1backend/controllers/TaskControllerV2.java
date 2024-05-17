@@ -37,7 +37,7 @@ public class TaskControllerV2 {
         else {
             List<TaskV2> taskList = service.getAllTask();
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
-            return ResponseEntity.ok(taskList);
+            return ResponseEntity.ok(taskDTO);
         }
     }
 

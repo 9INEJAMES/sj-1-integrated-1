@@ -1,6 +1,8 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
+import int221.integrated1backend.dtos.StatusLimitInputDTO;
+import int221.integrated1backend.dtos.StatusLimitOutputDTO;
 import int221.integrated1backend.dtos.StatusOutputDTO;
 import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.entities.TaskV2;
@@ -48,27 +50,32 @@ public class StatusControllerV2 {
     public ResponseEntity<Object> updateStatus(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {
         Status status = service.updateStatus(id, statusDTO);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
-        return ResponseEntity.ok(statusOutputDTO); 
+        return ResponseEntity.ok(statusOutputDTO);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id) {
         Status status = service.removeStatus(id);
         Map<String, Object> responseBody = new HashMap<>();//return empty body
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.ok().body(new HashMap<>());
     }
 
     @DeleteMapping("/{id}/{newId}")
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id, @PathVariable Integer newId) {
         List<TaskV2> taskV2List = taskService.updateStatusOfTask(id, newId);
         Status status = service.removeStatus(id);
-        Map<String, Object> responseBody = new HashMap<>();//return empty body
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.ok().body(new HashMap<>());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getStatusById(@PathVariable Integer id) {
         Status status = service.findByID(id);
-        return ResponseEntity.ok(status);
+        return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
+    }
+
+    @PatchMapping("/{id}/maximum-task")
+    public ResponseEntity<Object> updateMaximumTask(@PathVariable Integer id, @RequestBody StatusLimitInputDTO statusLimitDTO) {
+        Status status = service.findByID(id);
+        return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 }
