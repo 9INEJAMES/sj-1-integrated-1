@@ -10,7 +10,6 @@ public class TaskOutputDTO {
     private Integer id;
     private String title;
     private String assignees;
-    private String description;
     private StatusOutputDTO status;
 
 }
