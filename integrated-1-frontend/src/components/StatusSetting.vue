@@ -43,18 +43,17 @@ const submitSetting = async (isSave) => {
 
 const checkStatusLimit = () => {
     if (newLimit.value.limit) {
-        statusReachedLimit.value = status.statuses.filter(s => s.noOfTasks >= newLimit.value.limitMaximumTask)
+        statusReachedLimit.value = status.statuses.filter((s) => s.noOfTasks >= newLimit.value.limitMaximumTask)
     } else {
         statusReachedLimit.value = []
     }
     console.log('Statuses that reached limit:', statusReachedLimit.value)
 }
-
 </script>
 
 <template>
-    <div class="py-[24vh] px-[40vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="w-full rounded-lg" :class="themeStore.getTheme()">
+    <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
+        <div class="my-[24vh] mx-[56vh] w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Status Settings</p>
                 <hr />
@@ -63,7 +62,7 @@ const checkStatusLimit = () => {
                     <br />
                     <div v-if="statusReachedLimit.length > 0" class="p-[1vh] rounded-lg bg-amber-200 border border-yellow-900">
                         <p>These statuses have reached the task limit. No additional tasks can be added to these statuses:</p>
-                        <br>
+                        <br />
                         <p v-for="status in statusReachedLimit" :key="status.id">{{ status.name === 'Done' || status.name === 'No Status' ? '' : status.name }}</p>
                     </div>
                     <div class="flex items-center gap-2 mt-[1vh]">
@@ -75,7 +74,13 @@ const checkStatusLimit = () => {
                     <br />
                     <div class="flex items-center gap-2">
                         <p for="statusName">Maximum tasks</p>
-                        <input type="number" v-model="newLimit.limitMaximumTask" min="1" :disabled="!newLimit.limit" class="itbkk-max-task block w-[vh] p-[2vh] resize-none text-sm rounded-lg border text-gray-900 bg-gray-50 border-gray-300" />
+                        <input
+                            type="number"
+                            v-model="newLimit.limitMaximumTask"
+                            min="1"
+                            :disabled="!newLimit.limit"
+                            class="itbkk-max-task block w-[vh] p-[2vh] resize-none text-sm rounded-lg border text-gray-900 bg-gray-50 border-gray-300"
+                        />
                     </div>
                 </div>
                 <div class="flex gap-[2vh] justify-end py-[2vh]">

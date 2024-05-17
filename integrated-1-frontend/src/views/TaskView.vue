@@ -48,7 +48,7 @@ const filttedTasks = ref([])
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-40"></StatusSetting>
-    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
 <style scoped></style>

@@ -8,6 +8,7 @@ import java.util.List;
 
 @Data
 public class StatusLimitOutputDTO {
+    private Integer id;
     private String name;
     private String description;
     private String color;
