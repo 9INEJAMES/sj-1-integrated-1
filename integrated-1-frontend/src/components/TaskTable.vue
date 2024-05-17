@@ -12,7 +12,6 @@ const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
 const sort = ref('default') 
-const queryParams = ref({})
 
 const switchSortOrder = () => {
     if (sort.value === 'default') {

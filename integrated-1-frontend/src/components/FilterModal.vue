@@ -3,49 +3,23 @@ import { ref, computed, onMounted } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import VButton from '@/ui/VButton.vue'
 import { useRouter } from 'vue-router'
+import { useFilterStore } from '../stores/filter.js'
 
 const statusesStore = useStatusesStore()
-const selectedStatuses = ref([])
 const router = useRouter()
+const filterStore = useFilterStore()
 
-const emits = defineEmits(['close', 'applyFilter'])
+const emits = defineEmits(['close'])
 
 const closeModal = () => {
     emits('close')
 }
 
 const applyFilter = () => {
-    emits('applyFilter', selectedStatuses.value)
+    emits('applyFilter', filterStore.selectedStatuses)
     closeModal()
 }
 
-const toggleStatus = (statusName) => {
-    if (selectedStatuses.value.includes(statusName)) {
-        selectedStatuses.value = selectedStatuses.value.filter((name) => name !== statusName)
-    } else {
-        selectedStatuses.value.push(statusName)
-    }
-}
-
-const selectedStatusNames = computed(() => {
-    return statusesStore.statuses.filter((status) => selectedStatuses.value.includes(status.name))
-})
-
-const clearFilter = () => {
-    selectedStatuses.value = []
-}
-
-onMounted(() => {
-    const params = router.currentRoute.value.query
-    if (params.statuses) {
-        const statusNames = params.statuses.split(',')
-        statusNames.forEach((name) => {
-            if (!selectedStatuses.value.includes(name)) {
-                selectedStatuses.value.push(name)
-            }
-        })
-    }
-})
 </script>
 
 <template>
@@ -53,7 +27,7 @@ onMounted(() => {
         <div class="bg-white p-[2vh] rounded-lg w-full h-full">
             <div class="flex justify-between items-center mb-4">
                 <p class="text-lg font-semibold">Filter Tasks</p>
-                <VButton @click="clearFilter()" msg="Clear filters" class="itbkk-filter" />
+                <VButton @click="filterStore.clearFilter()" msg="Clear filters" class="itbkk-filter" />
             </div>
             <div>
                 <div class="grid grid-cols-2 gap-3">
@@ -66,8 +40,8 @@ onMounted(() => {
                                     :id="status.id"
                                     :value="status.name"
                                     class="mr-[1vh] checkbox checkbox-success"
-                                    @change="toggleStatus(status.name)"
-                                    :checked="selectedStatuses.includes(status.name)"
+                                    @change="filterStore.toggleStatus(status.name)"
+                                    :checked="filterStore.selectedStatuses.includes(status.name)"
                                 />
                                 <label :for="status.id">{{ status.name }}</label>
                             </div>
@@ -76,8 +50,8 @@ onMounted(() => {
                     <div class="col-span-1">
                         <label for="filter">Filter</label>
                         <div class="mt-2 border w-full h-[20vh] p-[1vh] rounded-lg flex-wrap">
-                            <span v-for="status in selectedStatusNames" :key="status.id" class="px-2 py-1 rounded-lg mr-2" :style="{ backgroundColor: status.color }">
-                                {{ status.name }}
+                            <span v-for="status in filterStore.selectedStatusNames" :key="status.id" class="px-2 py-1 rounded-lg mr-2" :style="{ backgroundColor: status.color }">
+                                {{ status.name }} <img src="/close.png" alt="remove filter"  class="w-[1vh] h-[1vh] inline-block">
                             </span>
                         </div>
                     </div>
