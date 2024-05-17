@@ -138,8 +138,12 @@ const checkLimitStatus = () => {
                         {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}
                         Task {{ route.name == 'taskDetails' ? 'Details' : '' }}
                     </p>
-                    <button class="rounded-2xl w-[15vh] h-[40px] text-[2vh] font-bold cursor-default bg-amber-200">
-                        {{ limitTask.limit ? 'Limit enable' : 'Limit disable' }}
+                    <button
+                        v-if="route.name != 'taskDetails'"
+                        class="rounded-2xl text-md font-normal cursor-default"
+                        :class="limitTask.limit ? 'bg-green-400  text-zinc-700  w-[24vh] h-[36px]' : 'text-zinc-300 bg-slate-500 w-[15vh] h-[40px] text-[2vh]'"
+                    >
+                        {{ limitTask.limit ? `Limit ${limitTask.limitMaximumTask} task enable` : 'Limit disable' }}
                     </button>
                 </div>
 
