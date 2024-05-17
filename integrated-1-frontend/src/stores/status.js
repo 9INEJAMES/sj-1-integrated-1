@@ -26,7 +26,7 @@ export const useStatusesStore = defineStore('statuses', () => {
         }
     }
 
-    function getIdOfStatus(searchId) {
+    function findStatusById(searchId) {
         return statuses.value.find((Status) => Status.id == searchId)
     }
 
@@ -54,7 +54,7 @@ export const useStatusesStore = defineStore('statuses', () => {
         addStatuses,
         addStatus,
         updateStatus,
-        getIdOfStatus,
+        findStatusById,
         findIndexStatus,
         removeStatus,
         getStatuses,

@@ -51,11 +51,14 @@ const submitStatus = async (isSave) => {
                 })
         } else {
             const status = await statusApi.addStatus(newStatus.value)
+
             if (status) statusesStore.addStatus(status)
+            
         }
     }
     router.back()
 }
+
 const checkLength = (name, value, length) => {
     if (value.trim().length > length) {
         if (name === 'name') newStatus.value.name = value.trim().slice(0, length)

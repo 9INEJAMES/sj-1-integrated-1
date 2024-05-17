@@ -48,7 +48,7 @@ const checkStatusLimit = () => {
     } else {
         statusReachedLimit.value = []
     }
-    console.log('Statuses that reached limit:', statusReachedLimit.value)
+   
 }
 </script>
 

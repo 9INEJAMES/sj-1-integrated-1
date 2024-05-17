@@ -1,8 +1,11 @@
 import { useToast } from '@/stores/toast'
 import { useRouter } from 'vue-router'
+import { useStatusesStore } from '../stores/status.js'
+
 export const useStatusApi = () => {
     const myToast = useToast()
     const router = useRouter()
+    const statusesStore = useStatusesStore()
 
     const url = import.meta.env.VITE_BASE_URL
 
@@ -31,14 +34,14 @@ export const useStatusApi = () => {
         }
     }
 
-    async function addStatus(obj) {
+    async function addStatus(status) {
         try {
             const response = await fetch(`${url}/statuses`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...obj }),
+                body: JSON.stringify({ ...status }),
             })
 
             if (response.status / 400 >= 1) {
@@ -56,14 +59,14 @@ export const useStatusApi = () => {
         }
     }
 
-    async function updateStatus(obj) {
+    async function updateStatus(status) {
         try {
-            const response = await fetch(`${url}/statuses/${obj.id}`, {
+            const response = await fetch(`${url}/statuses/${status.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ...obj }),
+                body: JSON.stringify({ ...status }),
             })
             if (response.status == 500) {
                 // myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
@@ -100,7 +103,7 @@ export const useStatusApi = () => {
             console.error(`Error deleting status: ${error}`)
         }
     }
-    async function deleteStatusAndTransfer(id,newStatus, tasks) {
+    async function deleteStatusAndTransfer(id, newStatus, tasks) {
         try {
             const response = await fetch(`${url}/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
