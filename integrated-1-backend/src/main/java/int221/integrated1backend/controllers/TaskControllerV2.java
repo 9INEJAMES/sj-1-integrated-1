@@ -44,7 +44,8 @@ public class TaskControllerV2 {
     @GetMapping("/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
         TaskV2 task = service.findByID(taskId);
-        return ResponseEntity.ok(task);
+        TaskOutputDTO outputDTO = modelMapper.map(task,TaskOutputDTO.class);
+        return ResponseEntity.ok(outputDTO);
     }
 
     //    @ResponseStatus(HttpStatus.CREATED)
