@@ -53,7 +53,7 @@ const checkStatusLimit = () => {
 
 <template>
     <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[24vh] mx-[56vh] h-fit w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="my-[4vh] mx-[56vh] h-fit w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Status Settings</p>
                 <hr />
@@ -62,7 +62,6 @@ const checkStatusLimit = () => {
                     <br />
                     <div v-if="statusReachedLimit.length > 0" class="p-[1vh] rounded-lg bg-amber-200 border border-yellow-900">
                         <p>These statuses have reached the task limit. No additional tasks can be added to these statuses:</p>
-                        <br />
                         <p v-for="status in statusReachedLimit" :key="status.id">{{ status.name === 'Done' || status.name === 'No Status' ? '' : status.name }}</p>
                     </div>
                     <div class="flex items-center gap-2 mt-[1vh]">
