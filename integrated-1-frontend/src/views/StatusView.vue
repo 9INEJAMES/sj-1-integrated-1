@@ -4,7 +4,6 @@ import StatusTable from '@/components/StatusTable.vue'
 import { useTheme } from '@/stores/theme'
 import VButton from '@/ui/VButton.vue'
 import StatusSetting from '@/components/StatusSetting.vue'
-import router from '@/router'
 import { ref } from 'vue'
 
 const isSettingOpen = ref(false)

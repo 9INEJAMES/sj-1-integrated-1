@@ -2,6 +2,7 @@ package int221.integrated1backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.text.ParseException;
@@ -15,14 +16,19 @@ import java.util.TimeZone;
 @Entity
 @Table(name = "tasksV2")
 public class TaskV2 {
+    @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
     private Integer id;
+    @Size(min = 1,max = 100)
+    @NotEmpty
     @Column(name = "taskTitle")
     private String title;
+    @Size(min = 1,max = 500)
     @Column(name = "taskDescription")
     private String description;
+    @Size(min = 1,max = 30)
     @Column(name = "taskAssignees")
     private String assignees;
     //    @Column(name = "taskStatus")

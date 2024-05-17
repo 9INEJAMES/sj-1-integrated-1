@@ -2,6 +2,7 @@ package int221.integrated1backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,7 @@ public class LimitTask {
     private Integer id;
     @Column(name = "isLimit")
     private Boolean limit;
+    @Positive
     @Column(name = "limitMaximumTask")
     private Integer limitMaximumTask;
     @JsonIgnore

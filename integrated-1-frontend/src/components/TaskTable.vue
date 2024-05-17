@@ -4,7 +4,6 @@ import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
-import { useStatusesStore } from '@/stores/status'
 
 const themeStore = useTheme()
 const deleteModal = ref(false)

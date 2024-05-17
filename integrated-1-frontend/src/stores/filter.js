@@ -1,10 +1,11 @@
-import { defineStore, acceptHMRUpdate } from "pinia"
-import { ref, computed } from "vue"
-import { useStatusesStore } from "@/stores/status.js"
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { ref, computed } from 'vue'
+import { useStatusesStore } from '@/stores/status.js'
 
-export const useFilterStore = defineStore("filter", () => {
+export const useFilterStore = defineStore('filter', () => {
     const statusesStore = useStatusesStore()
     const selectedStatuses = ref([])
+    const pastStatuses = ref([])
 
     const toggleStatus = (statusName) => {
         if (selectedStatuses.value.includes(statusName)) {
@@ -27,7 +28,7 @@ export const useFilterStore = defineStore("filter", () => {
         selectedStatuses.value = selectedStatuses.value.filter((name) => name !== statusName)
     }
 
-    return { selectedStatuses,selectedStatusNames, toggleStatus,  clearFilter , removeStatus }
+    return { selectedStatuses, pastStatuses, selectedStatusNames, toggleStatus, clearFilter, removeStatus }
 })
 
 if (import.meta.hot) {

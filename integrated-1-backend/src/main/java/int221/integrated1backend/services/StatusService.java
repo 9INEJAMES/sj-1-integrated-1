@@ -41,9 +41,6 @@ public class StatusService {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
     }
 
-    private String isStringNull(String string, String oldString) {
-        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
-    }
 
     @Transactional
     public Status createNewStatus(StatusInputDTO statusInputDTO) {

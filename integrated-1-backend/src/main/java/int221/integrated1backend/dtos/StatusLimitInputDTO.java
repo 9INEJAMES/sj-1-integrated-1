@@ -12,6 +12,5 @@ public class StatusLimitInputDTO {
     private String description;
     private String color;
     private Boolean limitMaximumTask;
-
-
+    
 }

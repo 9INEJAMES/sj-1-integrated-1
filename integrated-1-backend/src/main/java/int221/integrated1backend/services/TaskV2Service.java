@@ -75,10 +75,11 @@ public class TaskV2Service {
         TaskV2 task = modelMapper.map(taskDTO, TaskV2.class);
         task.setId(taskId);
         Status status = statusService.findByID(Integer.valueOf(taskDTO.getStatus()));
-        if (limitTask.getLimit() && status.getId() != 1 && status.getId() != 4 && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
+        TaskV2 existingTask = findByID(taskId);
+
+        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && limitTask.getLimit() && status.getId() != 1 && status.getId() != 4 && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");
         }
-        TaskV2 existingTask = findByID(taskId);
         existingTask.setTitle(task.getTitle());
         existingTask.setDescription(task.getDescription());
         existingTask.setAssignees(task.getAssignees());
@@ -89,7 +90,7 @@ public class TaskV2Service {
 
     public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (Objects.equals(statusId, newId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND");
+        if (Objects.equals(statusId, newId)) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "YOU CAN NOT MOVE TASKS TO SAME STATUS YOU WANT TO DELETE");
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusService.findByID(newId);

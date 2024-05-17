@@ -21,7 +21,6 @@ const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
     isSelectTask.value = true
 }
-
 </script>
 
 <template>

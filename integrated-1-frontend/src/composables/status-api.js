@@ -3,7 +3,7 @@ import { useRouter } from 'vue-router'
 import { useStatusesStore } from '../stores/status.js'
 
 export const useStatusApi = () => {
-    const myToast = useToast()
+    const toastStore = useToast()
     const router = useRouter()
     const statusesStore = useStatusesStore()
 
@@ -23,13 +23,13 @@ export const useStatusApi = () => {
         try {
             const data = await fetch(`${url}/statuses/${id}`)
             if (data.status == 404) {
-                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
             const result = await data.json()
             return result
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.log(`error: ${error}`)
         }
     }
@@ -45,15 +45,14 @@ export const useStatusApi = () => {
             })
 
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the status could not be added.')
-
+                toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
                 return
             }
             const result = await response.json()
-            myToast.changeToast(true, 'The status has been added.')
+            toastStore.changeToast(true, 'The status has been added.')
             return result
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the status could not be added.')
+            toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
 
             console.error(`Error adding status: ${error}`)
         }
@@ -69,18 +68,18 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...status }),
             })
             if (response.status == 500) {
-                // myToast.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
+                // toastStore.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
                 // return
             }
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
             const updatedStatus = await response.json()
-            myToast.changeToast(true, 'The status has been updated.')
+            toastStore.changeToast(true, 'The status has been updated.')
             return updatedStatus
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error updating status: ${error}`)
         }
     }
@@ -91,14 +90,14 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, 'The status has been deleted.')
+            toastStore.changeToast(true, 'The status has been deleted.')
             return deleted
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
 
             console.error(`Error deleting status: ${error}`)
         }
@@ -109,18 +108,18 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.status / 500 >= 1) {
-                myToast.changeToast(false, `Cannot transfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to transfer to.`)
+                toastStore.changeToast(false, `Cannot transfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to transfer to.`)
                 return
             }
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+                toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been tranferred and the status has been deleted.`)
+            toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been tranferred and the status has been deleted.`)
             return deleted
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error deleting status: ${error}`)
         }
     }

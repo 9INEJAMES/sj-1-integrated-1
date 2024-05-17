@@ -13,12 +13,16 @@ import java.util.List;
 @Entity
 @Table(name = "statuses")
 public class Status {
+    @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusId")
     private Integer id;
+    @Size(min = 1,max = 50)
+    @NotEmpty
     @Column(name = "statusName")
     private String name;
+    @Size(min = 1,max = 200)
     @Column(name = "statusDescription")
     private String description;
     @Column(name = "statusColor")
@@ -32,7 +36,7 @@ public class Status {
     private LimitTask limitMaximumTask;
 
     public Integer getNoOfTasks() {
-        return this.noOfTasks.size();
+        return this.noOfTasks == null ? 0 : this.noOfTasks.size();
     }
 
     private String isStringNull(String string) {

@@ -5,7 +5,6 @@ import { useTaskApi } from '@/composables/task-api.js'
 import { onMounted, ref, watch } from 'vue'
 import { useStatusesStore } from '@/stores/status'
 import { useStatusApi } from '@/composables/status-api'
-import router from '@/router'
 
 const taskApi = useTaskApi()
 const statusApi = useStatusApi()
@@ -78,19 +77,19 @@ watch(newStatusId, () => {
 </script>
 
 <template>
-    <div class="py-[30vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-35 w-full z-40">
-        <div class="flex-col border rounded-md p-[2vh] w-fit h-fit" :class="themeStore.getTheme()">
+    <div class="py-[30vh] px-[10vh] fixed inset-0 flex justify-center items-center bg-black bg-opacity-35 w-full z-40">
+        <div class="flex-col border rounded-md p-[2vh] w-1/4 h-fit" :class="themeStore.getTheme()">
             <p class="font-bold text-[4vh] py-[2vh]" :class="themeStore.getTextHeaderTheme()">Delete a {{ mode == 'task' ? 'Task' : 'Status' }}</p>
             <hr />
             <p v-if="!isInUsed" class="itbkk-message py-[3vh]">
                 Do you want to delete <span v-if="mode == 'task'">the Task number {{ number }} "{{ object.title }}"</span>
                 <span v-else>{{ object.name }} status</span>
             </p>
-            <p v-else-if="object.id == 1 && mode == 'status'">You can't delete default status</p>
-            <div v-else>
-                <p>There {{ object.tasks == 1 ? 'is' : 'are' }} {{ object.tasks }} {{ object.tasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
+            <p v-else-if="(object.id == 1 || object.id == 4) && mode == 'status'" class="itbkk-message py-[3vh]">You can't delete default status</p>
+            <div v-else class="pt-[3vh]">
+                <p class="itbkk-message">There {{ object.tasks == 1 ? 'is' : 'are' }} {{ object.tasks }} {{ object.tasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
                 <div class="flex">
-                    <p class="w-1/3">Transfer to</p>
+                    <p class="w-1/3 flex items-center">Transfer to</p>
                     <select v-model="newStatusId" id="status" class="itbkk-status select select-bordered disabled:text-black w-2/3" :class="themeStore.getTheme()">
                         <option v-for="status in statusList" :disabled="status.id == object.id" :value="status.id">{{ status.name }}</option>
                     </select>

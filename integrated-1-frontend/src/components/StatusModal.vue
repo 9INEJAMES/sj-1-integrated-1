@@ -4,8 +4,6 @@ import { onMounted, ref, watch } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
-import { useTasksStore } from '@/stores/task.js'
-import { useToast } from '@/stores/toast'
 const themeStore = useTheme()
 const route = useRoute()
 const router = useRouter()
@@ -13,8 +11,6 @@ const statusesStore = useStatusesStore()
 const statusApi = useStatusApi()
 const isDisibled = ref(false)
 const isChanged = ref(false)
-const taskStore = useTasksStore()
-const myToast = useToast()
 let status
 const newStatus = ref({
     name: '',
@@ -53,7 +49,6 @@ const submitStatus = async (isSave) => {
             const status = await statusApi.addStatus(newStatus.value)
 
             if (status) statusesStore.addStatus(status)
-            
         }
     }
     router.back()
@@ -91,7 +86,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
+    <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 w-full">
         <div class="my-[10vh] mx-[10vh] h-fit w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">

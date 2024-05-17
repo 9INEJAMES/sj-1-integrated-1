@@ -130,8 +130,8 @@ const checkLimitStatus = () => {
 </script>
 
 <template>
-    <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[10vh] mx-[10vh] itbkk-modal-task h-fit w-full rounded-lg pb-2" :class="themeStore.getTheme()">
+    <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 w-full">
+        <div class="itbkk-modal-task my-[10vh] mx-[10vh] h-fit w-full rounded-lg pb-2" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] border-none p-[2vh]">
                 <div class="flex justify-between items-center">
@@ -244,7 +244,9 @@ const checkLimitStatus = () => {
                                 >
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
-                                <p v-if="$route.name != 'taskDetails' && newTask.status != 1 && newTask.status != 4">{{ currStatus }}/{{ limitTask.limitMaximumTask }}</p>
+                                <p v-if="$route.name != 'taskDetails' && newTask.status != 1 && newTask.status != 4" class="text-end font-semibold text-sm m-2">
+                                    Status usage: {{ currStatus }}/{{ limitTask.limitMaximumTask }} tasks
+                                </p>
                             </div>
 
                             <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">

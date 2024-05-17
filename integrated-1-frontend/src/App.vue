@@ -9,7 +9,7 @@ import { useStatusesStore } from '@/stores/status'
 import { useLimitStore } from '@/stores/limitTask'
 
 const themeStore = useTheme()
-const myToast = useToast()
+const toastStore = useToast()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
 const limitStore = useLimitStore()

@@ -2,7 +2,7 @@ import { useStatusesStore } from '../stores/status.js'
 import { useToast } from '@/stores/toast'
 
 export const useTaskApi = () => {
-    const myToast = useToast()
+    const toastStore = useToast()
     const statusesStore = useStatusesStore()
 
     const url = import.meta.env.VITE_BASE_URL
@@ -28,13 +28,13 @@ export const useTaskApi = () => {
         try {
             const data = await fetch(`${url}/tasks/${id}`)
             if (data.status / 400 >= 1) {
-                myToast.changeToast(false, 'The requested task does not exist')
+                toastStore.changeToast(false, 'The requested task does not exist')
                 return
             }
             const result = await data.json()
             return result
         } catch (error) {
-            myToast.changeToast(false, 'The requested task does not exist')
+            toastStore.changeToast(false, 'The requested task does not exist')
             console.log(`error: ${error}`)
         }
     }
@@ -50,15 +50,15 @@ export const useTaskApi = () => {
             })
             if (response.status / 500 >= 1) {
                 const status = statusesStore.findStatusById(task.status)
-                myToast.changeToast(false, `The status ${status.name} will have too many tasks. Please make progress and update status of existing tasks first.`)
+                toastStore.changeToast(false, `The status ${status.name} will have too many tasks. Please make progress and update status of existing tasks first.`)
                 return
             }
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the task could not be added.')
+                toastStore.changeToast(false, 'An error has occurred, the task could not be added.')
                 return
             }
             const result = await response.json()
-            myToast.changeToast(true, 'The task has been successfully added')
+            toastStore.changeToast(true, 'The task has been successfully added')
             return result
         } catch (error) {
             console.error(`Error adding task: ${error}`)
@@ -67,22 +67,27 @@ export const useTaskApi = () => {
 
     async function updateTask(task) {
         try {
-            const response = await fetch(`${url}/tasks/${obj.id}`, {
+            const response = await fetch(`${url}/tasks/${task.id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ ...task }),
             })
+            if (response.status / 500 >= 1) {
+                const status = statusesStore.findStatusById(task.status)
+                toastStore.changeToast(false, `The status ${status.name} will have too many tasks. Please make progress and update status of existing tasks first.`)
+                return
+            }
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'The update was unsuccesful')
+                toastStore.changeToast(false, 'The update was unsuccesful')
                 return
             }
             const updatedTask = await response.json()
-            myToast.changeToast(true, 'The task has been updated')
+            toastStore.changeToast(true, 'The task has been updated')
             return updatedTask
         } catch (error) {
-            myToast.changeToast(false, 'The update was unsuccesful')
+            toastStore.changeToast(false, 'The update was unsuccesful')
             console.error(`Error updating task: ${error}`)
         }
     }
@@ -93,14 +98,14 @@ export const useTaskApi = () => {
                 method: 'DELETE',
             })
             if (response.status / 400 >= 1) {
-                myToast.changeToast(false, 'An error has occurred, the task does not exist.')
+                toastStore.changeToast(false, 'An error has occurred, the task does not exist.')
                 return
             }
             const deleted = await response.json()
-            myToast.changeToast(true, 'The task has been deleted')
+            toastStore.changeToast(true, 'The task has been deleted')
             return deleted
         } catch (error) {
-            myToast.changeToast(false, 'An error has occurred, the task does not exist.')
+            toastStore.changeToast(false, 'An error has occurred, the task does not exist.')
             console.error(`Error deleting task: ${error}`)
         }
     }
