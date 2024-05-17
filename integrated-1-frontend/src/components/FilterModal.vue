@@ -21,8 +21,8 @@ const applyFilter = () => {
 </script>
 
 <template>
-    <div class="py-[25vh] px-[10vh] fixed inset-0 flex justify-center bg-black bg-opacity-50 z-50 w-full">
-        <div class="bg-white p-[2vh] rounded-lg w-full h-full">
+    <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 z-50 w-full">
+        <div class="my-[25vh] mx-[10vh] bg-white p-[2vh] rounded-lg w-full h-fit">
             <div class="flex justify-between items-center mb-4">
                 <p class="text-lg font-semibold">Filter Tasks</p>
                 <VButton @click="filterStore.clearFilter()" msg="Clear filters" class="itbkk-filter" />
@@ -32,7 +32,7 @@ const applyFilter = () => {
                     <div class="col-span-1">
                         <label for="status">Status</label>
                         <div class="mt-2 overflow-auto max-h-[20vh] border p-[1vh] rounded-lg">
-                            <div v-for="status in statusesStore.statuses" :key="status.id">
+                            <div v-for="status in statusesStore.statuses" :key="status.id" class="flex justify-start p-1">
                                 <input
                                     type="checkbox"
                                     :id="status.id"
@@ -41,7 +41,7 @@ const applyFilter = () => {
                                     @change="filterStore.toggleStatus(status.name)"
                                     :checked="filterStore.selectedStatuses.includes(status.name)"
                                 />
-                                <label :for="status.id">{{ status.name }}</label>
+                                <span :for="status.id">{{ status.name }}</span>
                             </div>
                         </div>
                     </div>

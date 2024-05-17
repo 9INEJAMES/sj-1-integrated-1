@@ -130,7 +130,7 @@ const checkLimitStatus = () => {
 
 <template>
     <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[10vh] mx-[10vh] itbkk-modal-task w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="my-[10vh] mx-[10vh] itbkk-modal-task h-fit w-full rounded-lg" :class="themeStore.getTheme()">
             <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
             <div v-else class="grid gap-[2vh] border-none p-[2vh]">
                 <div class="flex justify-between items-center">

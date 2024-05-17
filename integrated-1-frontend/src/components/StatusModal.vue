@@ -89,7 +89,7 @@ onMounted(async () => {
 
 <template>
     <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[10vh] mx-[10vh]  w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="my-[10vh] mx-[10vh] h-fit w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                     {{ route.name == 'statusAdd' ? 'Add Status' : 'Edit Status' }}

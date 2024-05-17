@@ -53,12 +53,12 @@ const checkStatusLimit = () => {
 
 <template>
     <div class="fixed inset-0 flex justify-center bg-black bg-opacity-50 w-full">
-        <div class="my-[24vh] mx-[56vh] w-full rounded-lg" :class="themeStore.getTheme()">
+        <div class="my-[24vh] mx-[56vh] h-fit w-full rounded-lg" :class="themeStore.getTheme()">
             <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
                 <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Status Settings</p>
                 <hr />
-                <div class="px-[2vh]">
-                    <p class="text-lg font-medium">Users can limit the task in a status by setting maximum tasks in each status (except "No Status" and "Done" statuses).</p>
+                <div class="text-sm sm:text-lg px-[2vh]">
+                    <p class="font-medium">Users can limit the task in a status by setting maximum tasks in each status (except "No Status" and "Done" statuses).</p>
                     <br />
                     <div v-if="statusReachedLimit.length > 0" class="p-[1vh] rounded-lg bg-amber-200 border border-yellow-900">
                         <p>These statuses have reached the task limit. No additional tasks can be added to these statuses:</p>
@@ -84,8 +84,10 @@ const checkStatusLimit = () => {
                     </div>
                 </div>
                 <div class="flex gap-[2vh] justify-end py-[2vh]">
-                    <button @click="submitSetting(true)" :disabled="!isChanged || newLimit.limitMaximumTask <= 0" class="itbkk-button-save btn btn-success text-white rounded-md p-2">Save</button>
-                    <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error text-white rounded-md p-2">Cancel</button>
+                    <button @click="submitSetting(true)" :disabled="!isChanged || newLimit.limitMaximumTask <= 0" class="itbkk-button-save btn btn-success btn-xs sm:btn-md text-white rounded-md p-2">
+                        Save
+                    </button>
+                    <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error btn-xs sm:btn-md text-white rounded-md p-2">Cancel</button>
                 </div>
             </div>
         </div>
