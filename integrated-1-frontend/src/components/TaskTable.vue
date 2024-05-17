@@ -11,27 +11,6 @@ const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
-const sort = ref('default')
-
-const switchSortOrder = () => {
-    if (sort.value === 'default') {
-        sort.value = 'asc'
-    } else if (sort.value === 'asc') {
-        sort.value = 'desc'
-    } else {
-        sort.value = 'default'
-    }
-}
-
-const sortedTasks = computed(() => {
-    if (sort.value === 'default') {
-        return taskStore.tasks
-    } else if (sort.value === 'asc') {
-        return taskStore.tasks.slice().sort((a, b) => a.status.name.localeCompare(b.status.name))
-    } else {
-        return taskStore.tasks.slice().sort((a, b) => b.status.name.localeCompare(a.status.name))
-    }
-})
 
 const getTask = (id) => {
     router.push({
@@ -77,16 +56,16 @@ const handleDeleteModal = () => {
                         Status
                         <div
                             class="itbkk-status-sort rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
-                            @click="switchSortOrder"
+                            @click="taskStore.switchSortOrder()"
                         >
-                            <img :src="'/sort-' + sort + '.png'" class="w-[15px] h-[15px]" />
+                            <img :src="'/sort-' + taskStore.sortDirection + '.png'" class="w-[15px] h-[15px]" />
                         </div>
                     </th>
                     <th style="width: 9%" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(task, index) in sortedTasks" :key="task.id" class="itbkk-item">
+                <tr v-for="(task, index) in taskStore.tasks" :key="task.id" class="itbkk-item">
                     <td>
                         <div class="flex">
                             {{ index + 1 }}

@@ -4,11 +4,34 @@ import { useTaskApi } from '@/composables/task-api'
 
 export const useTasksStore = defineStore('tasks', () => {
     const tasks = ref([])
+    const sortDirection = ref('default')
     const taskApi = useTaskApi()
     const fetchTasks = async (filterStatuses) => {
         const tasksData = await taskApi.getAllTasks(filterStatuses)
         resetTasks()
         addTasks(tasksData)
+        sortedTasks()
+    }
+
+    const sortedTasks = () => {
+        if (sortDirection.value === 'default') {
+            tasks.value.sort((a, b) => a.id - b.id)
+        } else if (sortDirection.value === 'asc') {
+            tasks.value.sort((a, b) => a.status.name.localeCompare(b.status.name))
+        } else {
+            tasks.value.sort((a, b) => b.status.name.localeCompare(a.status.name))
+        }
+    }
+
+    const switchSortOrder = () => {
+        if (sortDirection.value === 'default') {
+            sortDirection.value = 'asc'
+        } else if (sortDirection.value === 'asc') {
+            sortDirection.value = 'desc'
+        } else {
+            sortDirection.value = 'default'
+        }
+        sortedTasks()
     }
 
     function addTasks(newTasks) {
@@ -49,6 +72,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
     return {
         tasks,
+        sortDirection,
         getTasks,
         addTasks,
         updateTask,
@@ -58,6 +82,7 @@ export const useTasksStore = defineStore('tasks', () => {
         resetTasks,
         fetchTasks,
         addTask,
+        switchSortOrder,
     }
 })
 
