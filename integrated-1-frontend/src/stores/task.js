@@ -38,7 +38,7 @@ export const useTasksStore = defineStore('tasks', () => {
         newTasks.forEach((newTask) => addTask(newTask))
     }
 
-    function addTask(task) {
+    async function addTask(task) {
         tasks.value.push(task)
     }
 

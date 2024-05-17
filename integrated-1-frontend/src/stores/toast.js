@@ -20,7 +20,7 @@ export const useToast = defineStore('toast', () => {
         currToast.value.msg = msg
         setTimeout(() => {
             resetToast()
-        }, 5000)
+        }, 3000)
     }
     const resetToast = () => {
         currToast.value = { style: '', msg: '' }

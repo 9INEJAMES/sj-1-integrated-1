@@ -22,7 +22,6 @@ const chosenTask = async (id) => {
     isSelectTask.value = true
 }
 
-const filttedTasks = ref([])
 </script>
 
 <template>
@@ -47,7 +46,7 @@ const filttedTasks = ref([])
             <TaskTable @get-task="chosenTask"></TaskTable>
         </div>
     </div>
-    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-40"></StatusSetting>
+    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
     <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
