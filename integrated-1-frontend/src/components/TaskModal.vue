@@ -244,7 +244,7 @@ const checkLimitStatus = () => {
                                 >
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
-                                <p>{{ currStatus }}/{{ limitTask.limitMaximumTask }}</p>
+                                <p v-if="$route.name != 'taskDetails' && newTask.status != 1 && newTask.status != 4">{{ currStatus }}/{{ limitTask.limitMaximumTask }}</p>
                             </div>
 
                             <div v-if="$route.name != 'taskAdd'" class="pt-[4vh] text-sm">
