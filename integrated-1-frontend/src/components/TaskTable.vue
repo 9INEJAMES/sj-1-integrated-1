@@ -10,6 +10,7 @@ const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
+const base = import.meta.env.VITE_BASE
 
 const getTask = (id) => {
     router.push({
@@ -57,7 +58,7 @@ const handleDeleteModal = () => {
                             class="itbkk-status-sort rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
                             @click="taskStore.switchSortOrder()"
                         >
-                            <img :src="'/sort-' + taskStore.sortDirection + '.png'" class="w-[15px] h-[15px]" />
+                            <img :src="`${base ? base : ''}/sort-' + taskStore.sortDirection + '.png`" class="w-[15px] h-[15px]" />
                         </div>
                     </th>
                     <th style="width: 9%" class="text-center">Action</th>
