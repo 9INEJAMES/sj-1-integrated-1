@@ -66,7 +66,6 @@ const submitTask = async (isSave) => {
             if (task) taskStore.addTask(task)
         }
     }
-    console.log(newTask.value)
     router.back()
 }
 const checkLength = (name, value, length) => {
