@@ -6,6 +6,7 @@ import VButton from '@/ui/VButton.vue'
 import StatusSetting from '@/components/StatusSetting.vue'
 import { ref } from 'vue'
 
+const base = import.meta.env.VITE_BASE
 const isSettingOpen = ref(false)
 const themeStore = useTheme()
 const statusApi = useStatusApi()
@@ -18,7 +19,7 @@ const chosenStatus = async (id) => {
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" iconurl="/settings.png" />
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`"/>
             <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
         </div>
         <RouterLink :to="{ name: 'statusAdd' }">

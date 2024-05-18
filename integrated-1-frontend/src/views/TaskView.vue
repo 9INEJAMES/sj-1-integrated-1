@@ -9,6 +9,8 @@ import router from '@/router'
 import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
 
+
+const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
 const isSelectTask = ref(false)
@@ -26,13 +28,13 @@ const chosenTask = async (id) => {
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" iconurl="/settings.png" />
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
             <RouterLink to="/status">
                 <VButton msg="Manage Status" class="itbkk-manage-status" />
             </RouterLink>
         </div>
         <div class="flex gap-2">
-            <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-filter" iconurl="/filter.png" />
+            <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-filter" :iconurl="`${base ? base : ''}/filter.png`" />
             <RouterLink :to="{ name: 'taskAdd' }">
                 <VButton class="itbkk-button-add" msg="Add Task" />
             </RouterLink>
