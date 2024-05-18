@@ -10,8 +10,9 @@ public class TaskOutputAllFieldDTO {
     private String title;
     private String description;
     private String assignees;
-    private Date createdOn;
-    private Date updatedOn;
+    private String createdOn;
+    private String updatedOn;
     private StatusOutputDTO status;
+
 
 }
