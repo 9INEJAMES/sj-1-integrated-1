@@ -66,7 +66,6 @@ const submitTask = async (isSave) => {
             if (task) taskStore.addTask(task)
         }
     }
-    console.log(newTask.value)
     router.back()
 }
 const checkLength = (name, value, length) => {
@@ -244,7 +243,7 @@ const checkLimitStatus = () => {
                                 >
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
-                                <p v-if="$route.name != 'taskDetails' && newTask.status != 1 && newTask.status != 4" class="text-end font-semibold text-sm m-2">
+                                <p v-if="$route.name != 'taskDetails' && limitTask.limit && newTask.status != 1 && newTask.status != 4" class="text-end font-semibold text-sm m-2">
                                     Status usage: {{ currStatus }}/{{ limitTask.limitMaximumTask }} tasks
                                 </p>
                             </div>

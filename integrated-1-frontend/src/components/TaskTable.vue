@@ -12,6 +12,7 @@ const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
+const base = import.meta.env.VITE_BASE
 
 const getTask = (id) => {
     router.push({

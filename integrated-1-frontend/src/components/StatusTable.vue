@@ -16,8 +16,7 @@ const base = import.meta.env.VITE_BASE
 
 const emit = defineEmits(['getStatus'])
 
-onMounted(async () => {
-})
+onMounted(async () => {})
 const toEditPage = (id) => {
     router.push({
         name: 'statusEdit',
@@ -71,7 +70,7 @@ const handleDeleteModal = () => {
                         {{ status.description ? status.description : 'No description is provided' }}
                     </td>
                     <td>
-                        <div class="flex justify-center gap-1 overflow-scroll">
+                        <div class="flex justify-center gap-1">
                             <div class="itbkk-button-edit btn btn-sm" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
                                 Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
                             </div>
