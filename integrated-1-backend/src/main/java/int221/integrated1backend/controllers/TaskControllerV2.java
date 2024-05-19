@@ -34,7 +34,8 @@ public class TaskControllerV2 {
             @RequestParam(defaultValue = "") String[] filterStatuses,
             @RequestParam(defaultValue = "") String[] sortBy,
             @RequestParam(defaultValue = "ASC") String[] sortDirection) {
-        if (filterStatuses.length > 0) return ResponseEntity.ok(service.getAllTask(filterStatuses, sortBy, sortDirection));
+        if (filterStatuses.length > 0)
+            return ResponseEntity.ok(service.getAllTask(filterStatuses, sortBy, sortDirection));
         else {
             List<TaskV2> taskList = service.getAllTask();
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
@@ -45,7 +46,7 @@ public class TaskControllerV2 {
     @GetMapping("/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
         TaskV2 task = service.findByID(taskId);
-        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task,TaskOutputAllFieldDTO.class);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         return ResponseEntity.ok(outputDTO);
     }
 

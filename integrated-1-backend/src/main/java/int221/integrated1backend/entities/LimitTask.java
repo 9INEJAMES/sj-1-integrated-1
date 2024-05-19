@@ -23,6 +23,7 @@ public class LimitTask {
     @JsonIgnore
     @OneToMany(mappedBy = "limitMaximumTask")
     private List<Status> status;
+
     public void setId() {
         this.id = 1;
     }

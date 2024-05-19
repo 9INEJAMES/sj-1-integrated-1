@@ -90,7 +90,8 @@ public class TaskV2Service {
 
     public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (Objects.equals(statusId, newId)) throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "YOU CAN NOT MOVE TASKS TO SAME STATUS YOU WANT TO DELETE");
+        if (Objects.equals(statusId, newId))
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "YOU CAN NOT MOVE TASKS TO SAME STATUS YOU WANT TO DELETE");
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusService.findByID(newId);
