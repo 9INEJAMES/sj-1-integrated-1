@@ -40,6 +40,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
     async function addTask(task) {
         tasks.value.push(task)
+        sortedTasks()
     }
 
     function updateTask(updatedTask) {
@@ -47,6 +48,7 @@ export const useTasksStore = defineStore('tasks', () => {
         if (index !== -1) {
             tasks.value.splice(index, 1, updatedTask)
         }
+        sortedTasks()
     }
 
     function findTaskById(searchId) {
@@ -62,6 +64,7 @@ export const useTasksStore = defineStore('tasks', () => {
         if (index !== -1) {
             tasks.value.splice(index, 1)
         }
+        sortedTasks()
     }
 
     function getTasks() {

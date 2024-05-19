@@ -12,7 +12,8 @@ export const useFilterStore = defineStore('filter', () => {
             selectedStatuses.value = selectedStatuses.value.filter((name) => name !== statusName)
         } else {
             selectedStatuses.value.push(statusName)
-        }    }
+        }
+    }
 
     const selectedStatusNames = computed(() => {
         return statusesStore.statuses.filter((status) => selectedStatuses.value.includes(status.name))

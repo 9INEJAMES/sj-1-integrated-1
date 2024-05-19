@@ -5,14 +5,12 @@ import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 
-
 const base = import.meta.env.VITE_BASE
 const themeStore = useTheme()
 const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
-const base = import.meta.env.VITE_BASE
 
 const getTask = (id) => {
     router.push({
