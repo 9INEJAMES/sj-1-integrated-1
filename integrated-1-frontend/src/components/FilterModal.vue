@@ -39,17 +39,17 @@ const applyFilter = () => {
                                     type="checkbox"
                                     :id="status.id"
                                     :value="status.name"
-                                    class="mr-[1vh] checkbox checkbox-success"
+                                    class="mr-[1vh] checkbox checkbox-success itbkk-status-choice"
                                     @change="filterStore.toggleStatus(status.name)"
                                     :checked="filterStore.selectedStatuses.includes(status.name)"
                                 />
-                                <span :for="status.id">{{ status.name }}</span>
+                                <span  :for="status.id">{{ status.name }}</span>
                             </div>
                         </div>
                     </div>
                     <div class="col-span-1">
                         <label for="filter">Filter</label>
-                        <div class="itbkk-status-filter mt-2 border w-full h-[20vh] p-[1vh] rounded-lg flex flex-wrap items-start">
+                        <div class=" mt-2 border w-full h-[20vh] p-[1vh] rounded-lg flex flex-wrap items-start">
                             <span
                                 v-for="status in filterStore.selectedStatusNames"
                                 :key="status.id"

@@ -34,7 +34,7 @@ const chosenTask = async (id) => {
             </RouterLink>
         </div>
         <div class="flex gap-2">
-            <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-filter" :iconurl="`${base ? base : ''}/filter.png`" />
+            <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-status-filter" :iconurl="`${base ? base : ''}/filter.png`" />
             <RouterLink :to="{ name: 'taskAdd' }">
                 <VButton class="itbkk-button-add" msg="Add Task" />
             </RouterLink>
@@ -48,7 +48,7 @@ const chosenTask = async (id) => {
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
-    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" class="z-40 " @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
 <style scoped></style>
