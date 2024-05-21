@@ -18,11 +18,11 @@ public class Status {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "statusId")
     private Integer id;
-    @Size(min = 1, max = 50)
-    @NotEmpty
+    @Size(min = 0, max = 50)
+    @NotNull
     @Column(name = "statusName")
     private String name;
-    @Size(min = 1, max = 200)
+    @Size(min = 0, max = 200)
     @Column(name = "statusDescription")
     private String description;
     @Column(name = "statusColor")

@@ -10,6 +10,7 @@ import int221.integrated1backend.services.ListMapper;
 import int221.integrated1backend.services.StatusService;
 import int221.integrated1backend.services.TaskService;
 import int221.integrated1backend.services.TaskV2Service;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
