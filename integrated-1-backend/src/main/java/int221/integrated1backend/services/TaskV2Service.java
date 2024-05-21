@@ -54,7 +54,7 @@ public class TaskV2Service {
     public TaskV2 createNewTask(TaskInputDTO taskDTO) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Status status = statusService.findByID(Integer.valueOf(taskDTO.getStatus()));
-        if (limitTask.getLimit() && status.getId() != 1 && status.getId() != 4 && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
+        if (limitTask.getLimit() && !Objects.equals(status.getName(), "No Status") && !Objects.equals(status.getName(), "Done") && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT ADD TASK MORE THAN STATUS LIMIT");
         }
         TaskV2 tmp = modelMapper.map(taskDTO, TaskV2.class);
@@ -77,7 +77,7 @@ public class TaskV2Service {
         Status status = statusService.findByID(Integer.valueOf(taskDTO.getStatus()));
         TaskV2 existingTask = findByID(taskId);
 
-        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && limitTask.getLimit() && status.getId() != 1 && status.getId() != 4 && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
+        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && limitTask.getLimit() && !Objects.equals(status.getName(), "No Status") && !Objects.equals(status.getName(), "Done") && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");
         }
         existingTask.setTitle(task.getTitle());
@@ -95,7 +95,7 @@ public class TaskV2Service {
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusService.findByID(newId);
-        if (limitTask.getLimit() && newStatus.getId() != 1 && newStatus.getId() != 4 && newStatus.getNoOfTasks() + taskV2List.size() > limitTask.getLimitMaximumTask()) {
+        if (limitTask.getLimit() && !Objects.equals(newStatus.getName(), "No Status") && !Objects.equals(newStatus.getName(), "Done") && newStatus.getNoOfTasks() + taskV2List.size() > limitTask.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT MOVE ALL TASKS TO NEW STATUS BECAUSE ITS OVER LIMIT");
         }
         taskV2List.stream().map(task -> task.setStatus(newStatus)).collect(Collectors.toList());
