@@ -52,9 +52,11 @@ public class StatusService {
         //มันจับ exception ของ cannot be change no status ด้านล่างก่อนจึงต้อง force check name == null
         Status existStatus = findByID(id);
         Status newStatus = modelMapper.map(statusInputDTO, Status.class);
-        if (newStatus.getName()==null) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"status name must not be null");
+        if (newStatus.getName() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status name must not be null");
         if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name " + existStatus.getName() + " cannot be change");
+        newStatus.setId(id);
         isUnique(newStatus);
         return repository.save(newStatus);
     }
@@ -63,7 +65,7 @@ public class StatusService {
         List<Status> statuses = getAllStatus();
         if (newStatus.getName() != null) {
             for (Status status : statuses) {
-                if (Objects.equals(status.getName().toLowerCase(), newStatus.getName().toLowerCase())) {
+                if (!Objects.equals(status.getId(), newStatus.getId()) && Objects.equals(status.getName().toLowerCase(), newStatus.getName().toLowerCase())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name must be unique");
                 }
             }
