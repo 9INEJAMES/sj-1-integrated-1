@@ -48,7 +48,7 @@ const chosenTask = async (id) => {
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
-    <FilterModal v-show="isFilterOpen" @close="isFilterOpen = false" class="z-40 " @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40 " @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
 <style scoped></style>

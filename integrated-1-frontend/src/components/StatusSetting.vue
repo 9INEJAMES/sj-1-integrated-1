@@ -76,7 +76,7 @@ const checkStatusLimit = () => {
                     </div>
                     <div class="flex items-center gap-2 mt-[1vh]">
                         <label class="flex cursor-pointer gap-2">
-                            <input type="checkbox" class="toggle theme-controller" @change="checkStatusLimit" v-model="newLimit.limit" />
+                            <input type="checkbox" class="itbkk-limit-task toggle theme-controller" @change="checkStatusLimit" v-model="newLimit.limit" />
                         </label>
                         <span class="text-base">Limit tasks in this status</span>
                     </div>
@@ -93,7 +93,7 @@ const checkStatusLimit = () => {
                     </div>
                 </div>
                 <div class="flex gap-[2vh] justify-end py-[2vh]">
-                    <button @click="submitSetting(true)" :disabled="!isChanged || newLimit.limitMaximumTask <= 0" class="itbkk-button-save btn btn-success btn-xs sm:btn-md text-white rounded-md p-2">
+                    <button @click="submitSetting(true)" :disabled="!isChanged || newLimit.limitMaximumTask <= 0" class="itbkk-button-confirm btn btn-success btn-xs sm:btn-md text-white rounded-md p-2">
                         Save
                     </button>
                     <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error btn-xs sm:btn-md text-white rounded-md p-2">Cancel</button>

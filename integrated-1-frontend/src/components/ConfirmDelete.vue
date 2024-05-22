@@ -85,7 +85,7 @@ watch(newStatusId, () => {
                 Do you want to delete <span v-if="mode == 'task'">the Task number {{ number }} "{{ object.title }}"</span>
                 <span v-else>{{ object.name }} status</span>
             </p>
-            <p v-else-if="(object.id == 1 || object.id == 4) && mode == 'status'" class="itbkk-message py-[3vh]">You can't delete default status</p>
+            <p v-else-if="(object.name == "No Status" || object.name == "Done") && mode == 'status'" class="itbkk-message py-[3vh]">You can't delete default status</p>
             <div v-else class="pt-[3vh]">
                 <p class="itbkk-message">There {{ object.tasks == 1 ? 'is' : 'are' }} {{ object.tasks }} {{ object.tasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
                 <div class="flex">
@@ -101,10 +101,10 @@ watch(newStatusId, () => {
                 <button
                     @click="submitDelete"
                     class="itbkk-button-confirm btn btn-success text-white rounded-md p-2"
-                    :class="(object.id == 1 && mode == 'status') || (mode == 'status' && isInUsed && !isSelectNewStatus) ? 'disabled' : ''"
-                    :disabled="(object.id == 1 && mode == 'status') || (mode == 'status' && isInUsed && !isSelectNewStatus)"
+                    :class="(object.name == "No Status" && mode == 'status') || (mode == 'status' && isInUsed && !isSelectNewStatus) ? 'disabled' : ''"
+                    :disabled="(object.name == "No Status"  && mode == 'status') || (mode == 'status' && isInUsed && !isSelectNewStatus)"
                 >
-                    {{ mode == 'status' && isInUsed && object.id != 1 ? 'Transfer' : 'Confirm' }}
+                    {{ mode == 'status' && isInUsed && object.name == "No Status" &&object.name == "Done"  ? 'Transfer' : 'Confirm' }}
                 </button>
             </div>
         </div>
