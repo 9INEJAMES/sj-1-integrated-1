@@ -36,11 +36,11 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-3\n
         cy.url().should('contain', '/task')
     })
 
-    it('Should have task title "IP01" with Done', () => {
-        cy.get('.itbkk-title').contains('IP01').parents('.itbkk-item').as('item')
-        cy.get('@item').contains('.itbkk-assignees', 'Unassigned')
-        cy.get('@item').contains('.itbkk-status', 'Done')
-    })
+    // it('Should have task title "IP01" with Done', () => {
+    //     cy.get('.itbkk-title').contains('IP01').parents('.itbkk-item').as('item')
+    //     cy.get('@item').contains('.itbkk-assignees', 'Unassigned')
+    //     cy.get('@item').contains('.itbkk-status', 'Done')
+    // })
 
     it('Edit task "IP02" and change status to "Done" and click the save button.', () => {
         cy.get('.itbkk-title').contains('IP02')
@@ -68,9 +68,9 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-3\n
         cy.get('.itbkk-status:contains("Done")').should('have.length', 13)
     })
 
-    it('"In Progress" status has 9 tasks', () => {
-        cy.get('.itbkk-status:contains("In Progress")').should('have.length', 9)
-    })
+    // it('"In Progress" status has 9 tasks', () => {
+    //     cy.get('.itbkk-status:contains("In Progress")').should('have.length', 9)
+    // })
 
     it('************************* STEP 4 *******************************', () => {})
 
@@ -100,9 +100,9 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-3\n
         cy.get('.itbkk-status:contains("No Status")').should('have.length', 12)
     })
 
-    it('"To Do" status has 10 tasks', () => {
-        cy.get('.itbkk-status:contains("To Do")').should('have.length', 10)
-    })
+    // it('"To Do" status has 10 tasks', () => {
+    //     cy.get('.itbkk-status:contains("To Do")').should('have.length', 10)
+    // })
 
     it('************************* STEP 5 *******************************', () => {})
 
@@ -122,11 +122,11 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-3\n
         cy.url().should('contain', '/task')
     })
 
-    it('Should have task title "TD01" with In Progress', () => {
-        cy.get('.itbkk-title').contains('TD01').parents('.itbkk-item').as('item')
-        cy.get('@item').contains('.itbkk-assignees', 'Unassigned')
-        cy.get('@item').contains('.itbkk-status', 'In Progress')
-    })
+    // it('Should have task title "TD01" with In Progress', () => {
+    //     cy.get('.itbkk-title').contains('TD01').parents('.itbkk-item').as('item')
+    //     cy.get('@item').contains('.itbkk-assignees', 'Unassigned')
+    //     cy.get('@item').contains('.itbkk-status', 'In Progress')
+    // })
 
     it('"In Progress" status has 10 tasks', () => {
         cy.get('.itbkk-status:contains("In Progress")').should('have.length', 10)

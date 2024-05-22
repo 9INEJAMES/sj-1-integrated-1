@@ -1,3 +1,4 @@
+USE integrated;
 
 INSERT INTO tasksV2 (taskTitle, statusId) 
 VALUES ('NS02', 1),('NS03', 1),('NS04', 1),('NS05', 1),('NS06', 1),('NS07', 1),('NS08', 1),('NS09', 1),('NS10', 1),

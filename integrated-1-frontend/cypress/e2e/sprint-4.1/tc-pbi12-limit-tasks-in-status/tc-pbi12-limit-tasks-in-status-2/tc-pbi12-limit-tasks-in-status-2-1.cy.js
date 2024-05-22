@@ -15,8 +15,8 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-1\n
         cy.contains('Status') ;
     })
 
-    it('Task table has 42 task entries.',()=>{
-        cy.get('.itbkk-item').should('have.length',42) ;
+    it('Task table has 44 task entries.',()=>{
+        cy.get('.itbkk-item').should('have.length',44) ;
     })
 
     it('should have "Status Setting" and click to open the Status Setting',()=>{

@@ -56,7 +56,7 @@ describe(`TC-PBI12-LIMIT-TASKS-IN-STATUS-2-2\n
         cy.get('@modal').find('.itbkk-description').clear()
         cy.get('@modal').find('.itbkk-assignees').clear()
         cy.get('@modal').find('.itbkk-status').select('Done')
-        ccy.get('@modal').find('.itbkk-button-confirm').contains('save', { matchCase: false }).as('save')
+        cy.get('@modal').find('.itbkk-button-confirm').contains('save', { matchCase: false }).as('save')
         cy.get('@save').click()
     })
     

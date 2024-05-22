@@ -129,7 +129,7 @@ CREATE TRIGGER before_update_statuses
 BEFORE UPDATE ON statuses
 FOR EACH ROW
 BEGIN
-	IF NEW.statusId = 1 OR NEW.statusId = 4 THEN
+	IF NEW.statusName = 'No Status' OR NEW.statusName = 'Done' THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot edit default status';
 	END IF;
     SET NEW.limitId = 1;
@@ -141,7 +141,7 @@ CREATE TRIGGER before_delete_statuses
 BEFORE DELETE ON statuses
 FOR EACH ROW
 BEGIN
-	IF OLD.statusId = 1 OR OLD.statusId = 4 THEN
+	IF OLD.statusName = 'No Status' OR OLD.statusName = 'Done' THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot delet default status';
 	END IF;
 END$$
@@ -172,11 +172,13 @@ BEGIN
 	DECLARE isLimitValue INT;
 	DECLARE limit_value INT;
     DECLARE tasks_count INT;
+	DECLARE current_status VARCHAR(50);
+
 	IF NEW.statusId IS NULL THEN
         SET NEW.statusId = 1;
     END IF;
-    
-    IF NEW.statusId != 1 AND NEW.statusId != 4 THEN
+    SELECT statusName INTO current_status FROM statuses WHERE statusId =NEW.statusId;
+    IF current_status != 'No Status' AND current_status != 'Done' THEN
 		SELECT isLimit INTO isLimitValue FROM limit_task;
         IF isLimitValue = 1 THEN
         SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
@@ -202,11 +204,27 @@ CREATE TRIGGER before_update_tasksV2
 BEFORE UPDATE ON tasksV2
 FOR EACH ROW
 BEGIN
+    DECLARE current_status VARCHAR(50);
+	DECLARE isLimitValue INT;
+	DECLARE limit_value INT;
+    DECLARE tasks_count INT;
     SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
     SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
     IF NEW.statusId IS NULL THEN
         SET NEW.statusId = 1;
+    END IF;
+
+    SELECT statusName INTO current_status FROM statuses WHERE statusId =NEW.statusId;
+    IF current_status != 'No Status' AND current_status != 'Done' THEN
+		SELECT isLimit INTO isLimitValue FROM limit_task;
+        IF isLimitValue = 1 THEN
+        SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
+        SELECT limitMaximumTask INTO limit_value FROM limit_task;
+			IF tasks_count >= limit_value+1 THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
+            END IF;
+		END IF;
     END IF;
     IF NEW.updatedOn IS NULL THEN
         SET NEW.updatedOn = CURRENT_TIMESTAMP;
