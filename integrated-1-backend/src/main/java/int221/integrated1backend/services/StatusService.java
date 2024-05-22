@@ -5,6 +5,7 @@ import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.entities.TaskV2;
 import int221.integrated1backend.repositories.StatusRepository;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,7 @@ public class StatusService {
     public Status updateStatus(Integer id, StatusInputDTO statusInputDTO) {
         //มันจับ exception ของ cannot be change no status ด้านล่างก่อนจึงต้อง force check name == null
         Status existStatus = findByID(id);
-        Status newStatus = modelMapper.map(statusInputDTO, Status.class);
+         Status newStatus =  modelMapper.map(statusInputDTO, Status.class);
         if (newStatus.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status name must not be null");
         if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))
