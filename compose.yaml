@@ -4,10 +4,11 @@ services:
   database:
     build: ./integrated-1-database
     container_name: database
-    # ports:
-    #   - '3306:3306'
+    restart: unless-stopped
     networks:
       - integrated_net
+    volumes:
+      - myapp:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
@@ -17,9 +18,7 @@ services:
   backend:
     build: ./integrated-1-backend
     container_name: backend
-    restart: always
-    # ports:
-    #   - '8080:8080'
+    restart: unless-stopped
     networks:
       - integrated_net
     depends_on:
@@ -34,8 +33,7 @@ services:
   frontend:
     build: ./integrated-1-frontend
     container_name: frontend
-    # ports:
-    #   - 80:80
+    restart: unless-stopped
     networks:
       - integrated_net
     depends_on:
@@ -44,6 +42,7 @@ services:
   proxy:
     build: ./integrated-1-proxy
     container_name: proxy
+    restart: unless-stopped
     ports:
       - 80:80
     networks:
@@ -55,3 +54,6 @@ services:
 
 networks:
   integrated_net:
+
+volumes:
+  myapp:
