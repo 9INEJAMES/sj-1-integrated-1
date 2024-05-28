@@ -1,7 +1,6 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
-import int221.integrated1backend.dtos.StatusLimitInputDTO;
 import int221.integrated1backend.dtos.StatusLimitOutputDTO;
 import int221.integrated1backend.dtos.StatusOutputDTO;
 import int221.integrated1backend.entities.Status;
@@ -72,7 +71,7 @@ public class StatusControllerV2 {
     }
 
     @PatchMapping("/{id}/maximum-task")
-    public ResponseEntity<Object> updateMaximumTask(@PathVariable Integer id, @RequestBody StatusLimitInputDTO statusLimitDTO) {
+    public ResponseEntity<Object> updateMaximumTask(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {
         Status status = service.findByID(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }

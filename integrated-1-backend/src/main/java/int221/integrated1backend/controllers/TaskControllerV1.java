@@ -19,16 +19,11 @@ import java.util.List;
 public class TaskControllerV1 {
     @Autowired
     private TaskService service;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private ListMapper listMapper;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllTask() {
         List<Task> taskList = service.getAllTask();
-        List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
-        return ResponseEntity.ok(taskDTO);
+        return ResponseEntity.ok(taskList);
     }
 
     @GetMapping("/{taskId}")
@@ -37,7 +32,6 @@ public class TaskControllerV1 {
         return ResponseEntity.ok(task);
     }
 
-    //    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO) {
         Task task = service.createNewTask(taskDTO);
@@ -49,12 +43,10 @@ public class TaskControllerV1 {
         Task task = service.updateTask(taskId, taskDTO);
         return ResponseEntity.ok(task);
     }
-
-
+    
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {
-        TaskOutputDTO taskWithIdDTO = service.removeTask(taskId);
-        return ResponseEntity.ok(taskWithIdDTO);
+        return ResponseEntity.ok(service.removeTask(taskId));
     }
 }
 

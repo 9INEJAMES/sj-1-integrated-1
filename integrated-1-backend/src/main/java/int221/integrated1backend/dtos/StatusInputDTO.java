@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-
 public class StatusInputDTO {
     @Size(min = 0, max = 50)
     @NotNull

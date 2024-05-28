@@ -12,5 +12,4 @@ public class TaskOutputAllFieldDTO {
     private String updatedOn;
     private StatusOutputDTO status;
 
-
 }

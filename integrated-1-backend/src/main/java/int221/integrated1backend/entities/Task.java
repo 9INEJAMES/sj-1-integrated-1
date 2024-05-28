@@ -54,7 +54,7 @@ public class Task {
     }
 
     public void setStatus(String status) {
-        this.status = status != null ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : null;
+        this.status = status != null ? !status.equals("0") ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : null : null;
     }
 
     private String getDateString(Date d) throws ParseException {

@@ -44,7 +44,7 @@ const chosenTask = async (id) => {
     <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
-            <TaskTable @get-task="chosenTask"></TaskTable>
+            <TaskTable ></TaskTable>
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
