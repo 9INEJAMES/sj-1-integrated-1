@@ -4,7 +4,7 @@ const toastStore = useToast()
 </script>
 
 <template>
-    <div v-if="toastStore.currToast.msg.length > 0" class="toast toast-start toast-top">
+    <div v-if="toastStore.currToast.msg.length > 0" class="toast toast-start toast-top transition-opacity">
         <div class="alert text-white" :class="toastStore.currToast.style">
             <span class="text-xl font-semibold">{{ toastStore.currToast.style === 'alert-success' ? 'Success' : 'Error' }}:</span>
             <span class="itbkk-message">{{ toastStore.currToast.msg }}</span>
