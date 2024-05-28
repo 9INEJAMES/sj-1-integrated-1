@@ -1,9 +1,6 @@
 package int221.integrated1backend.services;
 
-
-import int221.integrated1backend.dtos.StatusInputDTO;
 import int221.integrated1backend.entities.LimitTask;
-import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.repositories.LimitTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

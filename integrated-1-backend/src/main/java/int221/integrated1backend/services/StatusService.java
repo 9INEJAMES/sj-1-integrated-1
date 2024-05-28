@@ -1,17 +1,13 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
-import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.Status;
-import int221.integrated1backend.entities.TaskV2;
 import int221.integrated1backend.repositories.StatusRepository;
-import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;

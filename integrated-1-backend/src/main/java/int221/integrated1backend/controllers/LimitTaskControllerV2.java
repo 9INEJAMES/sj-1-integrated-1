@@ -1,15 +1,10 @@
 package int221.integrated1backend.controllers;
 
-import int221.integrated1backend.dtos.StatusInputDTO;
-import int221.integrated1backend.dtos.StatusOutputDTO;
 import int221.integrated1backend.entities.LimitTask;
-import int221.integrated1backend.entities.Status;
 import int221.integrated1backend.services.LimitTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v2/limit")
