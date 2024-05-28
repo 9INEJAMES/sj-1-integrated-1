@@ -24,48 +24,46 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<myErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
+        myErrorResponse errorResponse = new myErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation error. Check 'errors' field for details.", request.getDescription(false));
+        //loop not valid field
         for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
             String fieldName = violation.getPropertyPath().toString();
             String errorMessage = violation.getMessage();
-            errors.put(fieldName, errorMessage);
+            errorResponse.addValidationError(fieldName, errorMessage);
         }
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<myErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
+        myErrorResponse errorResponse = new myErrorResponse(HttpStatus.BAD_REQUEST.value(), "Validation error. Check 'errors' field for details.", request.getDescription(false));
+        //loop not valid field
+        for (int i = 0; i < ex.getErrorCount(); i++) {
+            FieldError err = ex.getFieldErrors().get(i);
+            errorResponse.addValidationError(err.getField(), err.getDefaultMessage());
+        }
+        return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, String>> handleResponseStatusException(ResponseStatusException ex, WebRequest request) {
-        Map<String, String> error = new HashMap<>();
-        error.put("timestamp", java.time.LocalDateTime.now().toString());
-        error.put("status", String.valueOf(ex.getStatusCode().value()));
-        error.put("message", ex.getReason());
-        return new ResponseEntity<>(error, ex.getStatusCode());
+    public ResponseEntity<myErrorResponse> handleResponseStatusException(
+            ResponseStatusException ex, WebRequest request) {
+        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
     }
 
-//    private ResponseEntity<myErrorResponse> buildErrorResponse(
-//            Exception exception, HttpStatus httpStatus, WebRequest request) {
-//        return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
-//    }
-//
-//    private ResponseEntity<myErrorResponse> buildErrorResponse(
-//            Exception exception, String message, HttpStatus httpStatus, WebRequest request) {
-//        myErrorResponse errorResponse = new myErrorResponse(httpStatus.value(), message, request.getDescription(false)
-//        );
-//        return ResponseEntity.status(httpStatus).body(errorResponse);
-//    }
+    private ResponseEntity<myErrorResponse> buildErrorResponse(
+            Exception exception, HttpStatus httpStatus, WebRequest request) {
+        return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
+    }
+
+    private ResponseEntity<myErrorResponse> buildErrorResponse(
+            Exception exception, String message, HttpStatus httpStatus, WebRequest request) {
+        myErrorResponse errorResponse = new myErrorResponse(httpStatus.value(), message, request.getDescription(false)
+        );
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
 //    @ExceptionHandler(Exception.class) //exception กลาง
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 //    public ResponseEntity<myErrorResponse> handleAllUncaughtException(

@@ -56,7 +56,6 @@ public class StatusControllerV2 {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteStatus(@PathVariable Integer id) {
         Status status = service.removeStatus(id);
-        Map<String, Object> responseBody = new HashMap<>();//return empty body
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
