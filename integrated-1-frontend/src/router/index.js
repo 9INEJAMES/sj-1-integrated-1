@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TaskView from '@/views/TaskView.vue'
-import Home from '@/components/Home.vue'
 import TaskModal from '@/components/TaskModal.vue'
 import StatusView from '@/views/StatusView.vue'
 import StatusModal from '@/components/StatusModal.vue'
@@ -22,11 +21,6 @@ const router = createRouter({
             component: StatusView,
             children: [
                 {
-                    path: '',
-                    name: 'home',
-                    component: Home,
-                },
-                {
                     path: 'add',
                     name: 'statusAdd',
                     component: StatusModal,
@@ -43,11 +37,6 @@ const router = createRouter({
             name: 'taskView',
             component: TaskView,
             children: [
-                {
-                    path: '',
-                    name: 'home',
-                    component: Home,
-                },
                 {
                     path: ':taskId',
                     name: 'taskDetails',

@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<myErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, WebRequest request) {
@@ -40,12 +38,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
     }
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<myErrorResponse> handleResponseStatusException(
-            ResponseStatusException ex, WebRequest request) {
-        return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request);
-    }
-
     private ResponseEntity<myErrorResponse> buildErrorResponse(
             Exception exception, HttpStatus httpStatus, WebRequest request) {
         return buildErrorResponse(exception, exception.getMessage(), httpStatus, request);
@@ -57,18 +49,4 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(httpStatus).body(errorResponse);
     }
-//    @ExceptionHandler(Exception.class) //exception กลาง
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ResponseEntity<myErrorResponse> handleAllUncaughtException(
-//            Exception exception, WebRequest request) {
-//        return buildErrorResponse(exception, "Unknown error occurred", HttpStatus.INTERNAL_SERVER_ERROR, request
-//        );
-//    }
-
-//    @ExceptionHandler({ItemNotFoundException.class, ResponseStatusException.class, HttpClientErrorException.class})
-//    @ResponseStatus(HttpStatus.NOT_FOUND)
-//    public ResponseEntity<myErrorResponse> handleItemNotFoundException(
-//            RuntimeException exception, WebRequest request) {
-//        return buildErrorResponse(exception, HttpStatus.NOT_FOUND, request);
-//    }
 }
