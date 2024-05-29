@@ -1,11 +1,7 @@
 import { useToast } from '@/stores/toast'
-import { useRouter } from 'vue-router'
-import { useStatusesStore } from '../stores/status.js'
 
 export const useStatusApi = () => {
     const toastStore = useToast()
-    const router = useRouter()
-    const statusesStore = useStatusesStore()
 
     const url = import.meta.env.VITE_BASE_URL
 
@@ -22,7 +18,7 @@ export const useStatusApi = () => {
     async function getStatusById(id) {
         try {
             const data = await fetch(`${url}/statuses/${id}`)
-            if (data.status == 404) {
+            if (data.status / 400 >= 1) {
                 toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
             }
@@ -67,10 +63,6 @@ export const useStatusApi = () => {
                 },
                 body: JSON.stringify({ ...status }),
             })
-            if (response.status == 500) {
-                // toastStore.changeToast(false, `An error has occurred, the status can't use duplicated name.`)
-                // return
-            }
             if (response.status / 400 >= 1) {
                 toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
                 return
@@ -107,14 +99,14 @@ export const useStatusApi = () => {
             const response = await fetch(`${url}/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
-            if (response.status / 500 >= 1) {
+            if (response.status / 400 >= 1) {
                 toastStore.changeToast(false, `Cannot transfer to ${newStatus.name} status since it will exceed the limit, Please choose another status to transfer to.`)
                 return
             }
-            if (response.status / 400 >= 1) {
-                toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
-                return
-            }
+            // if (response.status / 400 >= 1) {
+            //     toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
+            //     return
+            // }
             const deleted = await response.json()
             toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been tranferred and the status has been deleted.`)
             return deleted

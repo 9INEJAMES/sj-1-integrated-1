@@ -1,15 +1,13 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { onMounted } from 'vue'
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
-import { useToast } from '@/stores/toast.js'
 import { useTasksStore } from '@/stores/task.js'
 import { useStatusesStore } from '@/stores/status'
 import { useLimitStore } from '@/stores/limitTask'
 
 const themeStore = useTheme()
-const toastStore = useToast()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
 const limitStore = useLimitStore()
