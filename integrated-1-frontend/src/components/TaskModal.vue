@@ -120,11 +120,17 @@ onMounted(async () => {
             switchTimeZone(task)
         }
     }
-    checkLimitStatus()
+    checkLimitStatus(oldTask.value.status)
 })
 const currStatus = ref(0)
-const checkLimitStatus = () => {
+const isNotDefault = ref(false)
+const checkLimitStatus = (id) => {
     currStatus.value = taskStore.tasks.filter((t) => t.status.id == newTask.value.status).length
+
+    if (id) {
+        const newStatus = statusStore.findStatusById(id)
+        isNotDefault.value = newStatus.name != 'No Status' && newStatus.name != 'Done'
+    }
 }
 </script>
 
@@ -236,14 +242,14 @@ const checkLimitStatus = () => {
                                 <select
                                     v-model="newTask.status"
                                     id="status"
-                                    @change="checkLimitStatus"
+                                    @change="checkLimitStatus(newTask.status)"
                                     class="itbkk-status select select-bordered"
                                     :class="themeStore.getTextHeaderTheme()"
                                     :disabled="isDisibled"
                                 >
                                     <option v-for="status in statusList" :disabled="status.name == newTask.status" :value="status.id">{{ status.name }}</option>
                                 </select>
-                                <p v-if="$route.name != 'taskDetails' && limitTask.limit && newTask.status != 1 && newTask.status != 4" class="text-end font-semibold text-sm m-2">
+                                <p v-if="$route.name != 'taskDetails' && limitTask.limit && isNotDefault" class="text-end font-semibold text-sm m-2">
                                     Status usage: {{ currStatus }}/{{ limitTask.limitMaximumTask }} tasks
                                 </p>
                             </div>
