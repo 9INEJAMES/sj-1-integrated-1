@@ -1,6 +1,7 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.exceptions.myErrorResponse;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,7 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -48,5 +51,12 @@ public class GlobalExceptionHandler {
         myErrorResponse errorResponse = new myErrorResponse(httpStatus.value(), message, request.getDescription(false)
         );
         return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    @ExceptionHandler({ResponseStatusException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<myErrorResponse> handleItemNotFoundException(
+            ResponseStatusException exception, WebRequest request) {
+        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request);
     }
 }
