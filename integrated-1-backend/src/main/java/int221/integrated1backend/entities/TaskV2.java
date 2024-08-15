@@ -81,12 +81,5 @@ public class TaskV2 {
     public String getUpdatedOn() throws ParseException {
         return getDateString(updatedOn);
     }
-//    public void setCreatedOn() {
-//        this.setCreatedOn(new Date());
-//    }
-//
-//    public void setUpdatedOn() {
-//        this.setUpdatedOn(new Date());
-//    }
 
 }
