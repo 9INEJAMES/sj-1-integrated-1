@@ -29,20 +29,20 @@ public class TaskService {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists !!!"));
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public Task createNewTask(TaskInputDTO taskDTO) {
         Task tmp = modelMapper.map(taskDTO, Task.class);
         return repository.save(tmp);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public TaskOutputDTO removeTask(Integer taskId) {
         Task task = repository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(task);
         return modelMapper.map(task, TaskOutputDTO.class);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public Task updateTask(Integer taskId, TaskInputDTO taskDTO) {
         Task task = modelMapper.map(taskDTO, Task.class);
         task.setId(taskId);

@@ -35,7 +35,7 @@ public class StatusService {
         return repository.findByName(name);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public Status createNewStatus(StatusInputDTO statusInputDTO) {
         Status newStatus = modelMapper.map(statusInputDTO, Status.class);
 
@@ -44,7 +44,7 @@ public class StatusService {
         return repository.save(newStatus);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public Status updateStatus(Integer id, StatusInputDTO statusInputDTO) {
         //มันจับ exception ของ cannot be change no status ด้านล่างก่อนจึงต้อง force check name == null
         Status existStatus = findByID(id);
@@ -69,7 +69,7 @@ public class StatusService {
         }
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public Status removeStatus(Integer id) {
         Status status = repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         if (Objects.equals(status.getName().toLowerCase(), "no status") || Objects.equals(status.getName().toLowerCase(), "done"))

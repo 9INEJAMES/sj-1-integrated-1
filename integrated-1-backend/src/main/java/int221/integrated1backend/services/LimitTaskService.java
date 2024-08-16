@@ -18,7 +18,7 @@ public class LimitTaskService {
     }
 
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public LimitTask updateLimitTask(LimitTask limitTaskInput) {
         LimitTask limitTask = getLimitTask();
         limitTask.setLimit(limitTaskInput.getLimit() == null ? limitTask.getLimit() : limitTaskInput.getLimit());

@@ -53,7 +53,7 @@ public class TaskV2Service {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists !!!"));
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public TaskV2 createNewTask(TaskInputDTO taskDTO) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
@@ -65,14 +65,14 @@ public class TaskV2Service {
         return repository.save(tmp);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public TaskOutputDTO removeTask(Integer taskId) {
         TaskV2 task = repository.findById(taskId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NOT FOUND"));
         repository.delete(task);
         return modelMapper.map(task, TaskOutputDTO.class);
     }
 
-    @Transactional
+    @Transactional("firstTransactionManager")
     public TaskV2 updateTask(Integer taskId, TaskInputDTO taskDTO) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         TaskV2 task = modelMapper.map(taskDTO, TaskV2.class);
