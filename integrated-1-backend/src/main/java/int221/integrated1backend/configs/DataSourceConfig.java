@@ -1,4 +1,4 @@
-package int221.integrated1backend;
+package int221.integrated1backend.configs;
 
 
 import jakarta.persistence.EntityManagerFactory;
