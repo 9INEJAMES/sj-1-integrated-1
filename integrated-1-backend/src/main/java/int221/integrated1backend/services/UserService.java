@@ -1,7 +1,7 @@
 package int221.integrated1backend.services;
 
-import int221.integrated1backend.entities.User;
-import int221.integrated1backend.repositories.UserRepository;
+import int221.integrated1backend.entities.ex.User;
+import int221.integrated1backend.repositories.ex.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

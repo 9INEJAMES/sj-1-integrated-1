@@ -1,14 +1,12 @@
 package int221.integrated1backend.services;
 
-import int221.integrated1backend.entities.LimitTask;
-import int221.integrated1backend.repositories.LimitTaskRepository;
+import int221.integrated1backend.entities.in.LimitTask;
+import int221.integrated1backend.repositories.in.LimitTaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
 public class LimitTaskService {

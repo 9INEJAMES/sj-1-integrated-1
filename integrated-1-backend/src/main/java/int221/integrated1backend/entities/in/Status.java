@@ -1,4 +1,4 @@
-package int221.integrated1backend.entities;
+package int221.integrated1backend.entities.in;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -27,7 +27,7 @@ public class Status {
     @Column(name = "statusColor")
     private String color;
     //    @JsonIgnore
-    @OneToMany(mappedBy = "status")
+    @OneToMany(mappedBy = "status",fetch = FetchType.EAGER)
     private List<TaskV2> noOfTasks;
 
     @ManyToOne
@@ -35,7 +35,7 @@ public class Status {
     private LimitTask limitMaximumTask;
 
     public Integer getNoOfTasks() {
-        return this.noOfTasks == null ? 0 : this.noOfTasks.size();
+        return this.noOfTasks == null ? 0 : (this.noOfTasks.size());
     }
 
     private String isStringNull(String string) {

@@ -1,6 +1,6 @@
 package int221.integrated1backend.dtos;
 
-import int221.integrated1backend.entities.LimitTask;
+import int221.integrated1backend.entities.in.LimitTask;
 import lombok.Data;
 
 @Data

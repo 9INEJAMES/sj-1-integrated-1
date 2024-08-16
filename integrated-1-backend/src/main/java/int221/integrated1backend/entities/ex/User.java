@@ -1,4 +1,4 @@
-package int221.integrated1backend.entities;
+package int221.integrated1backend.entities.ex;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -16,6 +16,7 @@ public class User {
     private String oid;
     private String username;
     private String name;
+    private String email;
     private String role;
 
 }

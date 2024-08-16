@@ -3,7 +3,7 @@ package int221.integrated1backend.controllers;
 import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputAllFieldDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
-import int221.integrated1backend.entities.TaskV2;
+import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.services.ListMapper;
 import int221.integrated1backend.services.TaskV2Service;
 import org.modelmapper.ModelMapper;

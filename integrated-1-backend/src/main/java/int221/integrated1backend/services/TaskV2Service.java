@@ -2,12 +2,12 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
-import int221.integrated1backend.entities.LimitTask;
-import int221.integrated1backend.entities.Status;
-import int221.integrated1backend.entities.TaskV2;
-import int221.integrated1backend.repositories.LimitTaskRepository;
-import int221.integrated1backend.repositories.StatusRepository;
-import int221.integrated1backend.repositories.TaskV2Repository;
+import int221.integrated1backend.entities.in.LimitTask;
+import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.entities.in.TaskV2;
+import int221.integrated1backend.repositories.in.LimitTaskRepository;
+import int221.integrated1backend.repositories.in.StatusRepository;
+import int221.integrated1backend.repositories.in.TaskV2Repository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

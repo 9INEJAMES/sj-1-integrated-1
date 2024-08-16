@@ -1,7 +1,9 @@
-package int221.integrated1backend.entities;
+package int221.integrated1backend.entities.in;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.text.ParseException;
@@ -13,15 +15,15 @@ import java.util.TimeZone;
 @Getter
 @Setter
 @Entity
-@Table(name = "tasksV2")
-public class TaskV2 {
+@Table(name = "tasks")
+public class Task {
     @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "taskId")
     private Integer id;
-    @NotNull
     @Size(min = 0, max = 100)
+    @NotEmpty
     @Column(name = "taskTitle")
     private String title;
     @Size(min = 0, max = 500)
@@ -30,22 +32,13 @@ public class TaskV2 {
     @Size(min = 0, max = 30)
     @Column(name = "taskAssignees")
     private String assignees;
-    //    @Column(name = "taskStatus")
-//    private String status;
+    @Column(name = "taskStatus")
+    private String status;
     private Date createdOn;
     private Date updatedOn;
-    //    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "statusId")
-    private Status status;
-
 
     private String isStringNull(String string) {
         return string == null ? null : !string.trim().isEmpty() ? string.trim() : null;
-    }
-
-    private String isStringNull(String string, String oldString) {
-        return string == null ? oldString : !string.trim().isEmpty() ? string.trim() : oldString;
     }
 
     public void setTitle(String title) {
@@ -60,9 +53,8 @@ public class TaskV2 {
         this.assignees = isStringNull(assignees);
     }
 
-    public Status setStatus(Status status) {
-        this.status = status;
-        return this.status;
+    public void setStatus(String status) {
+        this.status = status != null ? !status.equals("0") ? isStringNull(status).replaceAll("\\s", "_").toUpperCase() : null : null;
     }
 
     private String getDateString(Date d) throws ParseException {
@@ -81,5 +73,12 @@ public class TaskV2 {
     public String getUpdatedOn() throws ParseException {
         return getDateString(updatedOn);
     }
+//    public void setCreatedOn() {
+//        this.setCreatedOn(new Date());
+//    }
+//
+//    public void setUpdatedOn() {
+//        this.setUpdatedOn(new Date());
+//    }
 
 }

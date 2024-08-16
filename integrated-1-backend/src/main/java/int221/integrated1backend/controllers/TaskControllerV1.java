@@ -1,11 +1,8 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.TaskInputDTO;
-import int221.integrated1backend.dtos.TaskOutputDTO;
-import int221.integrated1backend.entities.Task;
-import int221.integrated1backend.services.ListMapper;
+import int221.integrated1backend.entities.in.Task;
 import int221.integrated1backend.services.TaskService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +40,7 @@ public class TaskControllerV1 {
         Task task = service.updateTask(taskId, taskDTO);
         return ResponseEntity.ok(task);
     }
-    
+
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {
         return ResponseEntity.ok(service.removeTask(taskId));

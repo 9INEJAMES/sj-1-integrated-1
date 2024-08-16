@@ -1,4 +1,4 @@
-package int221.integrated1backend.entities;
+package int221.integrated1backend.entities.in;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

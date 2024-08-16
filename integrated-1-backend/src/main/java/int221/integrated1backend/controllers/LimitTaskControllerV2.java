@@ -1,6 +1,6 @@
 package int221.integrated1backend.controllers;
 
-import int221.integrated1backend.entities.LimitTask;
+import int221.integrated1backend.entities.in.LimitTask;
 import int221.integrated1backend.services.LimitTaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

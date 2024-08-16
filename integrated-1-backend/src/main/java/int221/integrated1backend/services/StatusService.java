@@ -1,8 +1,8 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
-import int221.integrated1backend.entities.Status;
-import int221.integrated1backend.repositories.StatusRepository;
+import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.repositories.in.StatusRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -2,8 +2,8 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
-import int221.integrated1backend.entities.Task;
-import int221.integrated1backend.repositories.TaskRepository;
+import int221.integrated1backend.entities.in.Task;
+import int221.integrated1backend.repositories.in.TaskRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
