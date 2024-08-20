@@ -32,8 +32,8 @@ export const useAuthApi = () => {
             // Earn code here
 
             //Book code here
+            AuthStore.user.value = [{...user},token]
 
-            
             console.log(token)  
             return token
             

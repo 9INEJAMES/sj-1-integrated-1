@@ -32,7 +32,7 @@ const submitSignIn = async () => {
         console.error('Sign in error:', error)
         alert('Invalid username or password')
     }
-    router.push({ name: 'task' })
+    router.push('/task')
 }
 
 
@@ -47,11 +47,8 @@ const submitSignIn = async () => {
                 <div class="mb-4">
                     <div class="flex justify-between items-center">
                         <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-<<<<<<< Updated upstream
-                        <p v-show="loginField.username.length > 0" class="block text-[0.75rem] font-medium text-gray-500">{{ loginField.username.length }} /50</p>
-=======
                         <p v-show="loginField.userName.length > 0" class="block text-[0.75rem] font-medium text-gray-700">{{ loginField.userName.length }} /50</p>
->>>>>>> Stashed changes
+
                     </div>
 
                     <input
