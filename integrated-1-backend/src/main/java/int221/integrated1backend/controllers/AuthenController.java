@@ -30,9 +30,7 @@ public class AuthenController {
 
     @PostMapping("")
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
-//        if (jwtRequestUser.getPassword().length() > 14) {
-//            return ResponseEntity.badRequest().body("");
-//        }
+
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);

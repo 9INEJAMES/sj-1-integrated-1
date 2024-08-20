@@ -7,8 +7,9 @@ import lombok.Data;
 @Data
 public class JwtRequestUser {
     @NotBlank
+    @Size(max = 50)
     private String userName;
-    @Size(min = 8)
     @NotBlank
+    @Size(max = 14)
     private String password;
 }
