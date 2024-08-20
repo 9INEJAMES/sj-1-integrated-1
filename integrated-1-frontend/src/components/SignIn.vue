@@ -20,19 +20,16 @@ function togglePasswordVisibility() {
 }
 
 const submitSignIn = async () => {
-
     try {
-        const signIn = await authApi.signIn(loginField.value)
-        if (response.status === 200) {
-            alert('Sign in successful')
-            // Redirect or handle successful sign-in
+        const token = await authApi.signIn(loginField.value)
+        if (token) {
+            router.push('/task') 
         }
     } catch (error) {
-        // Handle errors
         console.error('Sign in error:', error)
-        alert('Invalid username or password')
+
     }
-    router.push('/task')
+    
 }
 
 

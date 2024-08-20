@@ -27,18 +27,29 @@ export const useAuthApi = () => {
                 },
                 body: JSON.stringify({ ...user }),
             })
-            const token = await response.json()
             toastStore.changeToast(true, "You have successfully logged in")
             // Earn code here
 
             //Book code here
-            AuthStore.user.value = [{...user},token]
+            if (response.ok) {
+                const token = await response.text()
 
-            console.log(token)  
-            return token
-            
+                const userTokenObject = {
+                    username: user.userName,
+                    token: token
+                }
+
+                localStorage.setItem("authData", JSON.stringify(userTokenObject))
+                toastStore.changeToast(true, "You have successfully logged in")
+                
+                return userTokenObject
+            } else {
+                console.error("Sign in failed:", response.statusText)
+                throw new Error("Sign in failed")
+            }
         } catch (error) {
-            console.error(`Error adding task: ${error}`)
+            console.error(`Error during sign in: ${error}`)
+            throw error
         }
     }
 
