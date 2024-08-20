@@ -30,6 +30,9 @@ public class AuthenController {
 
     @PostMapping("")
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
+//        if (jwtRequestUser.getPassword().length() > 14) {
+//            return ResponseEntity.badRequest().body("");
+//        }
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -42,7 +45,7 @@ public class AuthenController {
     }
 
     @GetMapping("/validate-token")
-    public ResponseEntity<Object> validateToken(@RequestHeader("Authorization") String requestTokenHeader) {
+    public ResponseEntity<Object> validateToken(@RequestHeader("Authorization") @Valid String requestTokenHeader) {
         Claims claims = null;
         String jwtToken = null;
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
