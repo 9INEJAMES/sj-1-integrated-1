@@ -1,8 +1,10 @@
 package int221.integrated1backend.services;
 
+import int221.integrated1backend.entities.ex.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,9 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     @Value("#{${jwt.max-token-interval-hour}*60*60*1000}")
     private long JWT_TOKEN_VALIDITY;
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+
+    @Autowired
+    UserService userService;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -45,17 +50,21 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     }
 
     public String generateToken(UserDetails userDetails) {
+        User user = userService.findByUserName(userDetails.getUsername());
         Map<String, Object> claims = new HashMap<>();
-//        claims.put("info#1", "claim-objec 1");
-//        claims.put("info#2", "claim-objec 2");
-//        claims.put("info#3", "claim-objec 3");
-        return doGenerateToken(claims, userDetails.getUsername());
+        claims.put("name", user.getName());
+        claims.put("oid", user.getOid());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRole());
+        return doGenerateToken(claims);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setHeaderParam("typ", "JWT").setClaims(claims).setSubject(subject)
+    private String doGenerateToken(Map<String, Object> claims) {
+        return Jwts.builder().setHeaderParam("typ", "JWT").setClaims(claims)
+                .setIssuer("https:/inproj23.sit.kmutt.ac.th/sj1/")
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY)).signWith(signatureAlgorithm, SECRET_KEY).compact();
+                .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
+                .signWith(signatureAlgorithm, SECRET_KEY).compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
