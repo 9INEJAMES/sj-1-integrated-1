@@ -1,40 +1,64 @@
 <script setup>
 import { ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
+import { useAuthApi } from '@/composables/auth-api.js'
+import router from '@/router';
 
 const isChecked = ref(false)
 const themeStore = useTheme()
+const authApi = useAuthApi()
 
 const isPasswordVisible = ref(false)
 const base = import.meta.env.VITE_BASE
+const loginField = ref({
+    userName: '',
+    password: '',
+})
 
 function togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value
 }
 
-const loginField = ref({
-    username: '',
-    password: '',
-})
+const submitSignIn = async () => {
+
+    try {
+        const signIn = await authApi.signIn(loginField.value)
+        if (response.status === 200) {
+            alert('Sign in successful')
+            // Redirect or handle successful sign-in
+        }
+    } catch (error) {
+        // Handle errors
+        console.error('Sign in error:', error)
+        alert('Invalid username or password')
+    }
+    router.push({ name: 'task' })
+}
+
+
 </script>
 
 <template>
     <div>
-        <div class="flex justify-center items-center h-screen col-span-2">
+        <div class="flex justify-center items-center mt-[25vh] col-span-2">
             <div class="w-[90vh] p-[6vh] bg-pink-300 rounded-lg shadow-lg">
                 <h1 class="text-2xl font-bold text-center">Welcome To ITB-KK</h1>
 
                 <div class="mb-4">
                     <div class="flex justify-between items-center">
                         <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+<<<<<<< Updated upstream
                         <p v-show="loginField.username.length > 0" class="block text-[0.75rem] font-medium text-gray-500">{{ loginField.username.length }} /50</p>
+=======
+                        <p v-show="loginField.userName.length > 0" class="block text-[0.75rem] font-medium text-gray-700">{{ loginField.userName.length }} /50</p>
+>>>>>>> Stashed changes
                     </div>
 
                     <input
                         type="text"
                         id="text"
                         name="username"
-                        v-model="loginField.username"
+                        v-model="loginField.userName"
                         maxlength="50"
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
@@ -61,7 +85,8 @@ const loginField = ref({
                         />
                     </div>
                 </div>
-                <button :disabled="loginField.username.length <= 0 || loginField.password.length <= 0" class="itbkk-button-signin btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg w-full">
+                <button :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0" class="itbkk-button-signin btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg w-full" 
+                @click="submitSignIn()">
                     Sign In
                 </button>
             </div>
