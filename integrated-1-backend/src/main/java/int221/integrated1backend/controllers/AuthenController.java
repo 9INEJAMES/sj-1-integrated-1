@@ -34,7 +34,7 @@ public class AuthenController {
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         if (!authentication.isAuthenticated()) {
-            throw new UsernameNotFoundException("Invalid user or password");
+            throw new UsernameNotFoundException("Invalid user or password");//////////////exception
         }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
         String token = jwtTokenUtil.generateToken(userDetails);

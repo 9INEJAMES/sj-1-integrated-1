@@ -46,9 +46,9 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("info#1", "claim-objec 1");
-        claims.put("info#2", "claim-objec 2");
-        claims.put("info#3", "claim-objec 3");
+//        claims.put("info#1", "claim-objec 1");
+//        claims.put("info#2", "claim-objec 2");
+//        claims.put("info#3", "claim-objec 3");
         return doGenerateToken(claims, userDetails.getUsername());
     }
 

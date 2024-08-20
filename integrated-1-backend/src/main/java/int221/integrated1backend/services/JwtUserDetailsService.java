@@ -19,15 +19,22 @@ import java.util.List;
 public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException { User user = userRepository.findByUsername(userName);
-        if(user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, userName+ " does not exist !!"); }
-        List<GrantedAuthority> roles = new ArrayList<>(); GrantedAuthority grantedAuthority = new GrantedAuthority() {
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(userName);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, userName + " does not exist !!");
+        }
+        List<GrantedAuthority> roles = new ArrayList<>();
+        GrantedAuthority grantedAuthority = new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return user.getRole(); }
+                return user.getRole();
+            }
         };
         roles.add(grantedAuthority);
-        UserDetails userDetails = new AuthUser(userName, user.getPassword(), roles); return userDetails;
-    } }
+        UserDetails userDetails = new AuthUser(userName, user.getPassword(), roles);
+        return userDetails;
+    }
+}
