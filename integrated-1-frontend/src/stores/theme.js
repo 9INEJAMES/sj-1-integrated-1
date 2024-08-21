@@ -11,6 +11,9 @@ export const useTheme = defineStore('theme', () => {
     function getTheme() {
         return isLight.value ? 'bg-white text-black' : 'bg-slate-600 text-amber-50'
     }
+    function getModalTheme() {
+        return isLight.value ? 'bg-pink-300   text-black' : 'bg-slate-500 text-amber-50'
+    }
 
     function getAlterTheme() {
         return isLight.value ? 'bg-slate-600 text-amber-50' : 'bg-white text-black'
@@ -31,6 +34,7 @@ export const useTheme = defineStore('theme', () => {
         isLight,
         changeTheme,
         getTheme,
+        getModalTheme,
         getAlterTheme,
         getTableTheme,
         getTextTheme,
