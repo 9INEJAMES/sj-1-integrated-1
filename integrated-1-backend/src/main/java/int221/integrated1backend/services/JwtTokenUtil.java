@@ -21,6 +21,8 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     private String SECRET_KEY;
     @Value("#{${jwt.max-token-interval-hour}*60*60*1000}")
     private long JWT_TOKEN_VALIDITY;
+    @Value("${jwt.iss}")
+    private String ISS;
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Autowired
@@ -28,6 +30,17 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
+    }
+    public String getOidFromToken(String token) {
+        // Parse the JWT token to get the claims
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+
+        // Extract the 'oid' claim
+        String oid = claims.get("oid", String.class);
+        return oid;
     }
 
     public Date getExpirationDateFromToken(String token) {
@@ -56,12 +69,14 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
         claims.put("oid", user.getOid());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
+        claims.put("sub", user.getUsername());
         return doGenerateToken(claims);
     }
 
     private String doGenerateToken(Map<String, Object> claims) {
-        return Jwts.builder().setHeaderParam("typ", "JWT").setClaims(claims)
-                .setIssuer("https:/inproj23.sit.kmutt.ac.th/sj1/")
+        return Jwts.builder().setHeaderParam("typ", "JWT")
+                .setClaims(claims)
+                .setIssuer(ISS)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
                 .signWith(signatureAlgorithm, SECRET_KEY).compact();

@@ -1,26 +1,50 @@
 import { useStatusesStore } from '../stores/status.js'
 import { useToast } from '@/stores/toast'
 
+
 export const useTaskApi = () => {
     const toastStore = useToast()
     const statusesStore = useStatusesStore()
 
     const url = import.meta.env.VITE_BASE_URL
 
+    async function fetchWithToken(endpoint, options = {}) {
+        const auth = JSON.parse(localStorage.getItem("authData"))
+        const token = auth ? auth.token : null
+
+        const headers = {
+            "Content-Type": "application/json",
+            ...options.headers,
+        }
+
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`
+        }
+
+        const response = await fetch(`${url}${endpoint}`, {
+            ...options,
+            headers,
+        })
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        return response.json()
+    }
+    
     async function getAllTasks(filterStatuses) {
         try {
-            let filter = ''
+            let filter = ""
             if (filterStatuses && filterStatuses.length > 0) {
                 filter = filterStatuses.reduce((acc, status, index) => {
-                    const prefix = index === 0 ? '?filterStatuses=' : '&filterStatuses='
+                    const prefix = index === 0 ? "?filterStatuses=" : "&filterStatuses="
                     return acc + prefix + status
-                }, '')
+                }, "")
             }
-            const data = await fetch(`${url}/tasks${filter}`)
-            const result = await data.json()
-            return result
+            return await fetchWithToken(`/tasks${filter}`)
         } catch (error) {
-            console.log(`error: ${error}`)
+            console.error(`Error fetching tasks: ${error}`)
         }
     }
 

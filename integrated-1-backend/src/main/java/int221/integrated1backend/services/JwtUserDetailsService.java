@@ -34,4 +34,17 @@ public class JwtUserDetailsService implements UserDetailsService {
         UserDetails userDetails = new AuthUser(userName, user.getPassword(), roles);
         return userDetails;
     }
+    public UserDetails loadUserByOid(String oid) throws UsernameNotFoundException {
+        User user = userRepository.findByOid(oid);
+        List<GrantedAuthority> roles = new ArrayList<>();
+        GrantedAuthority grantedAuthority = new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return user.getRole();
+            }
+        };
+        roles.add(grantedAuthority);
+        UserDetails userDetails = new AuthUser(user.getUsername(), user.getPassword(), roles);
+        return userDetails;
+    }
 }

@@ -32,8 +32,8 @@ public class WebSecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/login").permitAll()
 //                                .requestMatchers("/v2/*").permitAll()
-                                .requestMatchers("/login/validate-token")
-                                .hasAuthority("STAFF").anyRequest().authenticated()
+                                .requestMatchers("/login/validate-token").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
         httpSecurity.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
