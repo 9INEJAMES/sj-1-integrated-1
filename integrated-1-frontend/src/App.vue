@@ -1,21 +1,13 @@
 <script setup>
-import { onMounted } from 'vue'
+
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
-import { useTasksStore } from '@/stores/task.js'
-import { useStatusesStore } from '@/stores/status'
-import { useLimitStore } from '@/stores/limitTask'
+
 
 const themeStore = useTheme()
-const taskStore = useTasksStore()
-const statusStore = useStatusesStore()
-const limitStore = useLimitStore()
-onMounted(async () => {
-    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
-})
+
+
 </script>
 
 <template>

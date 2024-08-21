@@ -7,15 +7,6 @@ export const useAuthApi = () => {
 
     const url = import.meta.env.VITE_BASE_URL2
 
-    async function getToken() {
-        try {
-            const data = await fetch(`${url}/`)
-            const result = await data.json()
-            return result
-        } catch (error) {
-            console.log(`error: ${error}`)
-        }
-    }
 
     async function signIn(user) {
         try {
@@ -57,5 +48,5 @@ export const useAuthApi = () => {
 
 
 
-    return { signIn, getToken }
+    return { signIn}
 }
