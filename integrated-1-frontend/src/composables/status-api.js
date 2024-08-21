@@ -26,12 +26,12 @@ export const useStatusApi = () => {
             throw new Error(`HTTP error! status: ${response.status}`)
         }
 
-        return response.json()
+        return response
     }
 
     async function getAllStatuses() {
         try {
-            return await fetchWithToken(`/statuses`)
+            return (await fetchWithToken(`/statuses`)).json()
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }
@@ -39,7 +39,7 @@ export const useStatusApi = () => {
 
     async function getStatusById(id) {
         try {
-            return await fetchWithToken(`/statuses/${id}`)
+            return (await fetchWithToken(`/statuses/${id}`)).json()
         } catch (error) {
             toastStore.changeToast(false, "An error has occurred, the status does not exist.")
             console.error(`Error fetching status by ID: ${error}`)
@@ -53,7 +53,7 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...status }),
             })
             toastStore.changeToast(true, "The status has been added.")
-            return result
+            return result.json()
         } catch (error) {
             toastStore.changeToast(false, "An error has occurred, the status could not be added.")
             console.error(`Error adding status: ${error}`)
@@ -67,7 +67,7 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...status }),
             })
             toastStore.changeToast(true, "The status has been updated.")
-            return updatedStatus
+            return updatedStatus.json()
         } catch (error) {
             toastStore.changeToast(false, "An error has occurred, the status could not be updated.")
             console.error(`Error updating status: ${error}`)
@@ -80,7 +80,7 @@ export const useStatusApi = () => {
                 method: "DELETE",
             })
             toastStore.changeToast(true, "The status has been deleted.")
-            return deleted
+            return deleted.json()
         } catch (error) {
             toastStore.changeToast(false, "An error has occurred, the status does not exist.")
             console.error(`Error deleting status: ${error}`)
@@ -93,7 +93,7 @@ export const useStatusApi = () => {
                 method: "DELETE",
             })
             toastStore.changeToast(true, `${tasks} task${tasks > 1 ? "s" : ""} have been transferred and the status has been deleted.`)
-            return deleted
+            return deleted.json()
         } catch (error) {
             toastStore.changeToast(false, "An error has occurred, the status does not exist.")
             console.error(`Error deleting status and transferring tasks: ${error}`)

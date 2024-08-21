@@ -91,6 +91,7 @@ public class TaskV2Service {
         return repository.save(existingTask);
     }
 
+    @Transactional("firstTransactionManager")
     public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
         LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (Objects.equals(statusId, newId))

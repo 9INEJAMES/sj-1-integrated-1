@@ -7,7 +7,9 @@ import { useTaskApi } from '@/composables/task-api.js'
 import { useTheme } from '@/stores/theme'
 import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
-
+import { useStatusesStore } from '@/stores/status'
+import { useLimitStore } from '@/stores/limitTask'
+import { onMounted } from 'vue'
 
 const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
@@ -17,11 +19,18 @@ const themeStore = useTheme()
 const selectedTask = ref({})
 const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
+const statusStore = useStatusesStore()
+const limitStore = useLimitStore()
 
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
     isSelectTask.value = true
 }
+onMounted(async () => {
+    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
+})
 </script>
 
 <template>
@@ -43,11 +52,11 @@ const chosenTask = async (id) => {
     <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
-            <TaskTable ></TaskTable>
+            <TaskTable></TaskTable>
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
-    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40 " @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
 </template>
 
 <style scoped></style>

@@ -69,7 +69,7 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
         claims.put("oid", user.getOid());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
-        claims.put("sub", user.getUsername());
+//        claims.put("sub", user.getUsername());
         return doGenerateToken(claims);
     }
 
@@ -83,7 +83,8 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final String oid = getOidFromToken(token);
+        User user = userService.findByUserName(userDetails.getUsername());
+        return (oid.equals(user.getOid()) && !isTokenExpired(token));
     }
 }

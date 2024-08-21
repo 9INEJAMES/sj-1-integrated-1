@@ -5,15 +5,28 @@ import { useTheme } from '@/stores/theme'
 import VButton from '@/ui/VButton.vue'
 import StatusSetting from '@/components/StatusSetting.vue'
 import { ref } from 'vue'
+import { useStatusesStore } from '@/stores/status'
+import { useLimitStore } from '@/stores/limitTask'
+import { onMounted } from 'vue'
+import { useTasksStore } from '@/stores/task'
 
 const base = import.meta.env.VITE_BASE
 const isSettingOpen = ref(false)
 const themeStore = useTheme()
 const statusApi = useStatusApi()
+const statusStore = useStatusesStore()
+const limitStore = useLimitStore()
+const taskStore = useTasksStore()
+
 const chosenStatus = async (id) => {
     selectedStatus.value = await statusApi.getStatusById(id)
     isSelectStatus.value = true
 }
+onMounted(async () => {
+    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
+})
 </script>
 
 <template>

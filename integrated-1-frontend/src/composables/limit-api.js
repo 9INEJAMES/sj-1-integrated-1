@@ -26,12 +26,12 @@ export const useLimitApi = () => {
             throw new Error(`HTTP error! status: ${response.status}`)
         }
 
-        return response.json()
+        return response
     }
 
     async function getLimit() {
         try {
-            return await fetchWithToken(`/limit`)
+            return (await fetchWithToken(`/limit`)).json()
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
