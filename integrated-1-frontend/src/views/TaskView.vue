@@ -5,7 +5,6 @@ import { useTasksStore } from '@/stores/task.js'
 import VButton from '@/ui/VButton.vue'
 import { useTaskApi } from '@/composables/task-api.js'
 import { useTheme } from '@/stores/theme'
-import router from '@/router'
 import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
 
