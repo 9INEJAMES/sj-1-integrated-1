@@ -10,7 +10,6 @@ export const useAuthApi = () => {
 
     async function signIn(user) {
         try {
-            console.log(user)
             const response = await fetch(`${url}/login`, {
                 method: "POST",
                 headers: {

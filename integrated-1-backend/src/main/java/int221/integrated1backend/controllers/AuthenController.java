@@ -1,6 +1,7 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.JwtRequestUser;
+import int221.integrated1backend.dtos.Token;
 import int221.integrated1backend.services.JwtTokenUtil;
 import int221.integrated1backend.services.JwtUserDetailsService;
 import io.jsonwebtoken.Claims;
@@ -39,7 +40,9 @@ public class AuthenController {
 //        }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
         String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(token);
+        Token tokenObj = new Token();
+        tokenObj.setAccess_token(token);
+        return ResponseEntity.ok(tokenObj);
     }
 
     @GetMapping("/validate-token")
