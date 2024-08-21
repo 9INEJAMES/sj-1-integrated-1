@@ -7,15 +7,6 @@ export const useAuthApi = () => {
 
     const url = import.meta.env.VITE_BASE_URL2
 
-    async function getToken() {
-        try {
-            const data = await fetch(`${url}/`)
-            const result = await data.json()
-            return result
-        } catch (error) {
-            console.log(`error: ${error}`)
-        }
-    }
 
     async function signIn(user) {
         try {
@@ -43,9 +34,11 @@ export const useAuthApi = () => {
                 toastStore.changeToast(true, "You have successfully logged in")
                 
                 return userTokenObject
-            } else {
-                console.error("Sign in failed:", response.statusText)
-                throw new Error("Sign in failed")
+            } else if (response.status === 400) {
+                toastStore.changeToast(false, "Username or password is incorrect")
+                
+            }else{
+                toastStore.changeToast(false, "There is a problem. Please try again later")
             }
         } catch (error) {
             console.error(`Error during sign in: ${error}`)
@@ -55,5 +48,5 @@ export const useAuthApi = () => {
 
 
 
-    return { signIn, getToken }
+    return { signIn}
 }

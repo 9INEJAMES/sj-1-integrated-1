@@ -2,11 +2,17 @@
 import { ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthApi } from '@/composables/auth-api.js'
-import router from '@/router';
+import router from '@/router'
+import { useLimitStore } from '@/stores/limitTask'
+import { useStatusesStore } from '@/stores/status'
+import { useTasksStore } from '@/stores/task'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
 const authApi = useAuthApi()
+const taskStore = useTasksStore()
+const statusStore = useStatusesStore()
+const limitStore = useLimitStore()
 
 const isPasswordVisible = ref(false)
 const base = import.meta.env.VITE_BASE
@@ -24,6 +30,9 @@ const submitSignIn = async () => {
         const token = await authApi.signIn(loginField.value)
         if (token) {
             router.push('/task') 
+            if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+            if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+            if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
         }
     } catch (error) {
         console.error('Sign in error:', error)
