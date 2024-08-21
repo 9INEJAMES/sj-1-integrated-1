@@ -44,10 +44,10 @@ export const useAuthApi = () => {
                 
                 return userTokenObject
             } else if (response.status === 400) {
-                toastStore.changeToast(true, "Username or password is incorrect")
+                toastStore.changeToast(false, "Username or password is incorrect")
                 
             }else{
-                toastStore.changeToast(true, "There is a problem. Please try again later")
+                toastStore.changeToast(false, "There is a problem. Please try again later")
             }
         } catch (error) {
             console.error(`Error during sign in: ${error}`)
