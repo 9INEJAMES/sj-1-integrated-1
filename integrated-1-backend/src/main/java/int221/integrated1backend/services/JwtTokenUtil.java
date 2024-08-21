@@ -37,8 +37,6 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
-
-        // Extract the 'oid' claim
         String oid = claims.get("oid", String.class);
         return oid;
     }
