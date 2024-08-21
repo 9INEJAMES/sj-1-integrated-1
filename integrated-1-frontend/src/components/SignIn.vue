@@ -51,14 +51,14 @@ const submitSignIn = async () => {
                         <label for="username" :class="themeStore.getTextTheme()" class="block text-sm font-medium text-gray-700">Username</label>
                         <p v-show="loginField.userName.length > 0" :class="themeStore.getTextTheme()" class="block text-[0.75rem] font-medium text-gray-700">{{ loginField.userName.length }} /50</p>
                     </div>
-
                     <input
                         type="text"
                         id="text"
                         name="username"
                         v-model="loginField.userName"
                         maxlength="50"
-                        class="itbkk-username mt-1 block w-full px-3 py-2 border border-gray-300  text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        :class="themeStore.getTheme()"
+                        class="itbkk-username mt-1 block w-full px-3 py-2 border border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
                 <div class="mb-4">
@@ -74,10 +74,11 @@ const submitSignIn = async () => {
                             name="password"
                             v-model="loginField.password"
                             maxlength="14"
-                            class="itbkk-password mt-1 block w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10"
+                            :class="themeStore.getTheme()"
+                            class="itbkk-password mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10"
                         />
                         <img
-                            :src="isPasswordVisible ? '../../public/eye_off_icon.png' : '../../public/eye_icon.png'"
+                            :src="isPasswordVisible ? '/eye_off_icon.png' : '/eye_icon.png'"
                             @click="togglePasswordVisibility"
                             class="absolute inset-y-2 right-3 ml-2 h-5 w-5 cursor-pointercursor-pointer"
                         />
