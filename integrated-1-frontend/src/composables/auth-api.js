@@ -22,11 +22,11 @@ export const useAuthApi = () => {
 
             //Book code here
             if (response.ok) {
-                const token = await response.text()
+                const token = await response.json()
 
                 const userTokenObject = {
                     username: user.userName,
-                    token: token
+                    token: token.access_token,
                 }
 
                 localStorage.setItem("authData", JSON.stringify(userTokenObject))
