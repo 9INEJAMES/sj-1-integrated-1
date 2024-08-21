@@ -20,7 +20,7 @@ const chosenStatus = async (id) => {
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
             <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`"/>
-            <RouterLink to="/"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
+            <RouterLink to="/task"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
         </div>
         <RouterLink :to="{ name: 'statusAdd' }">
             <VButton class="itbkk-button-add" msg="Add Status" />
