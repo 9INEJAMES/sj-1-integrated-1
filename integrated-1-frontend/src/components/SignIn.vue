@@ -29,7 +29,7 @@ const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
         if (token) {
-            router.push('/task') 
+            router.push('/task')
             if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
             if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
             if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
@@ -58,14 +58,14 @@ const submitSignIn = async () => {
                         v-model="loginField.userName"
                         maxlength="50"
                         :class="themeStore.getTheme()"
-                        class="itbkk-username mt-1 block w-full px-3 py-2 border border-gray-300  rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        class="itbkk-username mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     />
                 </div>
                 <div class="mb-4">
                     <div class="flex justify-between items-center">
                         <label for="password" :class="themeStore.getTextTheme()" class="block text-sm font-medium text-gray-700">Password</label>
 
-                        <p v-show="loginField.password.length > 0" :class="themeStore.getTextTheme()"  class="block text-[0.75rem] font-medium text-gray-500">{{ loginField.password.length }} /14</p>
+                        <p v-show="loginField.password.length > 0" :class="themeStore.getTextTheme()" class="block text-[0.75rem] font-medium text-gray-500">{{ loginField.password.length }} /14</p>
                     </div>
                     <div class="relative">
                         <input
@@ -86,6 +86,7 @@ const submitSignIn = async () => {
                 </div>
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
+                    :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'disabled' : ''"
                     class="itbkk-button-signin btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg w-full"
                     @click="submitSignIn()"
                 >
