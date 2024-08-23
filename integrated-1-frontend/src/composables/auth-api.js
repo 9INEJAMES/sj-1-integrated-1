@@ -25,7 +25,7 @@ export const useAuthApi = () => {
                 const token = await response.json()
 
                 const userTokenObject = {
-                    username: user.userName,
+                    username: token.username,
                     token: token.access_token,
                 }
 

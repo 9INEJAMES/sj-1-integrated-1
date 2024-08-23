@@ -4,6 +4,8 @@ import { useTheme } from '@/stores/theme.js'
 const isChecked = ref(false)
 const themeStore = useTheme()
 const base = import.meta.env.VITE_BASE
+const auth = JSON.parse(localStorage.getItem('authData'))
+const username = auth ? auth.username : null
 </script>
 
 <template>
@@ -12,7 +14,7 @@ const base = import.meta.env.VITE_BASE
             <img :src="`${base ? base : ''}/pig${themeStore.isLight ? '' : '2'}.png`" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce" />
             <div class="flex-col">
                 <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
-                <p class="text-[3vh]" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'">Integrated Project I</p>
+                <p class="text-[3vh]" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'">{{ username }}</p>
             </div>
         </div>
         <div class="flex items-center">

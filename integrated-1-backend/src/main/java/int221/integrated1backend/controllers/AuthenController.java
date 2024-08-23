@@ -2,8 +2,10 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.JwtRequestUser;
 import int221.integrated1backend.dtos.Token;
+import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.services.JwtTokenUtil;
 import int221.integrated1backend.services.JwtUserDetailsService;
+import int221.integrated1backend.services.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.Valid;
@@ -28,6 +30,8 @@ public class AuthenController {
     JwtTokenUtil jwtTokenUtil;
     @Autowired
     AuthenticationManager authenticationManager;
+    @Autowired
+    UserService userService;
 
     @PostMapping("")
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
@@ -40,8 +44,10 @@ public class AuthenController {
 //        }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
         String token = jwtTokenUtil.generateToken(userDetails);
+        User user = userService.findByUserName(jwtRequestUser.getUserName());
         Token tokenObj = new Token();
         tokenObj.setAccess_token(token);
+        tokenObj.setUsername(user.getName());
         return ResponseEntity.ok(tokenObj);
     }
 
