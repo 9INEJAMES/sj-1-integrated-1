@@ -17,7 +17,7 @@ const base = import.meta.env.VITE_BASE
                 class="w-[50px] h-[50px] hover:animate-bounce" />
             <div class="flex-col">
                 <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
-                <p class="text-[3vh]" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'"
+                <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'"
                     v-if="$route.path === '/task' || $route.path === '/status'">{{ authStore.name }}</p>
             </div>
         </div>
