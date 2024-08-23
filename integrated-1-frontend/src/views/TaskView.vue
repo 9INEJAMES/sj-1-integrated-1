@@ -9,6 +9,7 @@ import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
 import { useStatusesStore } from '@/stores/status'
 import { useLimitStore } from '@/stores/limitTask'
+import { useAuthStore } from '@/stores/auth'
 import { onMounted } from 'vue'
 
 const base = import.meta.env.VITE_BASE
@@ -21,6 +22,7 @@ const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
 const statusStore = useStatusesStore()
 const limitStore = useLimitStore()
+const authStore = useAuthStore()
 
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
