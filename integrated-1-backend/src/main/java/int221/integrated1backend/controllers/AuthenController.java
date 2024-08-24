@@ -2,7 +2,6 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.JwtRequestUser;
 import int221.integrated1backend.dtos.Token;
-import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.services.JwtTokenUtil;
 import int221.integrated1backend.services.JwtUserDetailsService;
 import int221.integrated1backend.services.UserService;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -35,19 +33,17 @@ public class AuthenController {
 
     @PostMapping("")
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
+        System.out.println(authenticationManager.authenticate(authenticationToken));
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 //        if (!authentication.isAuthenticated()) {
-//            throw new UsernameNotFoundException("Invalid user or password");//////////////exception
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username or password incorrect");//////////////exception
 //        }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
         String token = jwtTokenUtil.generateToken(userDetails);
-        User user = userService.findByUserName(jwtRequestUser.getUserName());
         Token tokenObj = new Token();
         tokenObj.setAccess_token(token);
-        tokenObj.setUsername(user.getName());
         return ResponseEntity.ok(tokenObj);
     }
 

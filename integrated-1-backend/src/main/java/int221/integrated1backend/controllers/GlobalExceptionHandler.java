@@ -1,17 +1,15 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.exceptions.myErrorResponse;
-import org.springframework.dao.DataAccessException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -54,9 +52,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ResponseStatusException.class})
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<myErrorResponse> handleItemNotFoundException(
             ResponseStatusException exception, WebRequest request) {
-        return buildErrorResponse(exception, HttpStatus.BAD_REQUEST, request);
+        return buildErrorResponse(exception, (HttpStatus) exception.getStatusCode(), request);
+    }
+
+    @ExceptionHandler({AuthenticationException.class})
+    public ResponseEntity<myErrorResponse> handleAuthenticationException(
+            AuthenticationException exception, WebRequest request) {
+        return buildErrorResponse(exception, "username or password incorrect", HttpStatus.UNAUTHORIZED, request);
     }
 }

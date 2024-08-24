@@ -23,6 +23,8 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(userName);
+//        if (user == null)
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username or password incorrect");//////////////exception
         List<GrantedAuthority> roles = new ArrayList<>();
         GrantedAuthority grantedAuthority = new GrantedAuthority() {
             @Override
@@ -34,6 +36,7 @@ public class JwtUserDetailsService implements UserDetailsService {
         UserDetails userDetails = new AuthUser(userName, user.getPassword(), roles);
         return userDetails;
     }
+
     public UserDetails loadUserByOid(String oid) throws UsernameNotFoundException {
         User user = userRepository.findByOid(oid);
         List<GrantedAuthority> roles = new ArrayList<>();
