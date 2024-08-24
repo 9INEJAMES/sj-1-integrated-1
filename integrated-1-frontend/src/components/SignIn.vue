@@ -78,7 +78,7 @@ const submitSignIn = async () => {
                             class="itbkk-password mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10"
                         />
                         <img
-                            :src="isPasswordVisible ? '/eye_off_icon.png' : '/eye_icon.png'"
+                            :src="`${base ? base : ''}${isPasswordVisible ? '/eye_off_icon.png' : '/eye_icon.png'}`"
                             @click="togglePasswordVisibility"
                             class="absolute inset-y-2 right-3 ml-2 h-5 w-5 cursor-pointercursor-pointer"
                         />
