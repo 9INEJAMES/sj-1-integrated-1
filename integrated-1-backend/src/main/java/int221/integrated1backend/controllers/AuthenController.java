@@ -35,7 +35,6 @@ public class AuthenController {
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
-        System.out.println(authenticationManager.authenticate(authenticationToken));
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
 //        if (!authentication.isAuthenticated()) {
 //            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username or password incorrect");//////////////exception
