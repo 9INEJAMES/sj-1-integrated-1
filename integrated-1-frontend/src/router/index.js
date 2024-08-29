@@ -5,6 +5,8 @@ import StatusView from "@/views/StatusView.vue"
 import StatusModal from "@/components/StatusModal.vue"
 import SignIn from "@/components/SignIn.vue"
 import HomePage from "@/components/HomePage.vue"
+import { useAuthStore } from "@/stores/auth"
+
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -67,6 +69,13 @@ const router = createRouter({
             ],
         },
     ],
+})
+
+router.beforeEach(async (to, from) => {
+    const auth = useAuthStore()
+    if (!auth.checkToken() && to.name !== "signIn") {
+        return { name: "signIn" }
+    }
 })
 
 export default router
