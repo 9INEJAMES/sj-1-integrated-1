@@ -20,26 +20,23 @@ export const useAuthStore = defineStore('auth', () => {
             if (!token.value) {
                 localStorage.removeItem('authData')
                 router.push('/login')
+            } else {
+                if (isTokenExpired()) {
+                    toastStore.changeToast(false, 'Your token is expired. Please log in again')
+                    localStorage.removeItem('authData')
+                    router.push('/login')
+                } else {
+                    await taskStore.fetchTasks()
+                    await statusStore.fetchStatuses()
+                    await limitStore.fetchLimit()
+                }
             }
-            const decodedToken = getAuthData()
-            if (decodedToken.exp < Date.now() / 1000) {
-                toastStore.changeToast(false, 'Your token is expired. Please log in again')
-                localStorage.removeItem('authData')
-                router.push('/login')
-            }
-
-            console.log(decodedToken.exp < Date.now() / 1000)
-            console.log(Date.now() / 1000)
-            console.log(decodedToken.exp)
-            await taskStore.fetchTasks()
-            await statusStore.fetchStatuses()
-            await limitStore.fetchLimit()
         }
-        // await taskStore.fetchTasks()
-        // await statusStore.fetchStatuses()
-        // await limitStore.fetchLimit()
     }
-
+    const isTokenExpired = () => {
+        const decodedToken = getAuthData()
+        return decodedToken.exp < Date.now() / 1000
+    }
     const addToken = (newToken) => {
         token.value = newToken
         const userTokenObject = {
@@ -56,11 +53,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
     const getAuthData = () => {
         checkToken()
-        const decodedToken = VueJwtDecode.decode(token.value)
-        return decodedToken
+        if (!token.value) {
+            return null
+        } else {
+            return VueJwtDecode.decode(token.value)
+        }
     }
     // Return the store properties and methods
-    return { getAuthData, addToken, getToken, checkToken }
+    return { getAuthData, addToken, getToken, checkToken, isTokenExpired }
 })
 
 if (import.meta.hot) {
