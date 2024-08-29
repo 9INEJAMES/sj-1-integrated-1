@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
     const limitStore = useLimitStore()
 
     const token = ref('')
-    const checkToken = async () => {
+    const checkToken = () => {
         if (!token.value) {
             const auth = JSON.parse(localStorage.getItem('authData'))
             token.value = auth ? auth.token : null
@@ -31,13 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
             console.log(decodedToken.exp < Date.now() / 1000)
             console.log(Date.now() / 1000)
             console.log(decodedToken.exp)
-            await taskStore.fetchTasks()
-            await statusStore.fetchStatuses()
-            await limitStore.fetchLimit()
         }
-        // await taskStore.fetchTasks()
-        // await statusStore.fetchStatuses()
-        // await limitStore.fetchLimit()
     }
 
     const addToken = (newToken) => {
@@ -47,7 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
             token: newToken,
         }
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
-        checkToken()
         return userTokenObject
     }
     const getToken = () => {

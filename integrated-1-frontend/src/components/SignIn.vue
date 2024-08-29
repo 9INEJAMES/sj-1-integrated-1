@@ -30,9 +30,9 @@ const submitSignIn = async () => {
         const token = await authApi.signIn(loginField.value)
         if (token) {
             router.push('/task')
-            await taskStore.fetchTasks()
-            await statusStore.fetchStatuses()
-            await limitStore.fetchLimit()
+            if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+            if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+            if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
         }
     } catch (error) {
         console.error('Sign in error:', error)
