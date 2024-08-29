@@ -26,7 +26,7 @@ const router = createRouter({
         },
         {
             path: '/:pathMatch(.*)*',
-            redirect: '/task',
+            redirect: '/login',
         },
         {
             path: '/status',
