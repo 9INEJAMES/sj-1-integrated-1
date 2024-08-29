@@ -1,15 +1,16 @@
-import { useStatusesStore } from '../stores/status.js'
+import { useStatusesStore } from '@/stores/status.js'
 import { useToast } from '@/stores/toast'
+import { useAuthStore } from '@/stores/auth.js'
+import router from '@/router'
 
 export const useTaskApi = () => {
     const toastStore = useToast()
     const statusesStore = useStatusesStore()
-
+    const authStore = useAuthStore()
     const url = import.meta.env.VITE_BASE_URL
 
     async function fetchWithToken(endpoint, options = {}) {
-        const auth = JSON.parse(localStorage.getItem('authData'))
-        const token = auth ? auth.token : null
+        const token = authStore.getToken()
 
         const headers = {
             'Content-Type': 'application/json',
@@ -25,10 +26,15 @@ export const useTaskApi = () => {
             headers,
         })
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`)
+        if (response.status === 401) {
+            toastStore.changeToast(false, 'Your token is expired. Please log in again')
+            localStorage.removeItem('authData')
+            router.push('/login')
         }
 
+        // if (!response.ok) {
+        //     throw new Error(`HTTP error! status: ${response.status}`)
+        // }
         return response
     }
 
@@ -41,7 +47,8 @@ export const useTaskApi = () => {
                     return acc + prefix + status
                 }, '')
             }
-            return (await fetchWithToken(`/tasks${filter}`)).json()
+            const response = await fetchWithToken(`/tasks${filter}`)
+            return response.json()
         } catch (error) {
             console.error(`Error fetching tasks: ${error}`)
         }

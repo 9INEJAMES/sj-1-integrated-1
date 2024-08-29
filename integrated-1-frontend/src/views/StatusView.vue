@@ -9,6 +9,7 @@ import { useStatusesStore } from '@/stores/status'
 import { useLimitStore } from '@/stores/limitTask'
 import { onMounted } from 'vue'
 import { useTasksStore } from '@/stores/task'
+import { useAuthStore } from '@/stores/auth'
 
 const base = import.meta.env.VITE_BASE
 const isSettingOpen = ref(false)
@@ -17,12 +18,14 @@ const statusApi = useStatusApi()
 const statusStore = useStatusesStore()
 const limitStore = useLimitStore()
 const taskStore = useTasksStore()
+const authStore = useAuthStore()
 
 const chosenStatus = async (id) => {
     selectedStatus.value = await statusApi.getStatusById(id)
     isSelectStatus.value = true
 }
 onMounted(async () => {
+    authStore.checkToken()
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
     if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
@@ -32,7 +35,7 @@ onMounted(async () => {
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`"/>
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
             <RouterLink to="/task"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
         </div>
         <RouterLink :to="{ name: 'statusAdd' }">

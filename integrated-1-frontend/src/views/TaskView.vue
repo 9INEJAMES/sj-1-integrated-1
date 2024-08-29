@@ -15,13 +15,14 @@ import { onMounted } from 'vue'
 const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
+const statusStore = useStatusesStore()
+const limitStore = useLimitStore()
 const isSelectTask = ref(false)
 const themeStore = useTheme()
 const selectedTask = ref({})
 const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
-const statusStore = useStatusesStore()
-const limitStore = useLimitStore()
+
 const authStore = useAuthStore()
 
 const chosenTask = async (id) => {
@@ -29,6 +30,7 @@ const chosenTask = async (id) => {
     isSelectTask.value = true
 }
 onMounted(async () => {
+    authStore.checkToken()
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
     if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()

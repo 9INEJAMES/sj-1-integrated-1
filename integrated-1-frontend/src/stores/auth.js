@@ -1,23 +1,59 @@
-import { defineStore, acceptHMRUpdate } from "pinia"
-import { ref, computed } from "vue"
+import router from '@/router'
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { ref } from 'vue'
+import VueJwtDecode from 'vue-jwt-decode'
+import { useToast } from '@/stores/toast.js'
+import { useTasksStore } from '@/stores/task.js'
+import { useStatusesStore } from '@/stores/status.js'
+import { useLimitStore } from '@/stores/limitTask'
+export const useAuthStore = defineStore('auth', () => {
+    const toastStore = useToast()
+    const taskStore = useTasksStore()
+    const statusStore = useStatusesStore()
+    const limitStore = useLimitStore()
 
-export const useAuthStore = defineStore("auth", () => {
-    const user = ref({
-        value: {
-            role: "",
-            name: "",
-            oid: "",
-            email: "",
-        },
-    })
-    
-    const role = computed(() => user.value.value.role || "")
-    const name = computed(() => user.value.value.name || "")
-    const oid = computed(() => user.value.value.oid || "")
-    const email = computed(() => user.value.value.email || "")
+    const token = ref('')
+    const checkToken = () => {
+        if (!token.value) {
+            const auth = JSON.parse(localStorage.getItem('authData'))
+            token.value = auth ? auth.token : null
+            if (!token.value) {
+                localStorage.removeItem('authData')
+                router.push('/login')
+            }
+            const decodedToken = getAuthData()
+            if (decodedToken.exp < Date.now() / 1000) {
+                toastStore.changeToast(false, 'Your token is expired. Please log in again')
+                localStorage.removeItem('authData')
+                router.push('/login')
+            }
 
+            console.log(decodedToken.exp < Date.now() / 1000)
+            console.log(Date.now() / 1000)
+            console.log(decodedToken.exp)
+        }
+    }
+
+    const addToken = (newToken) => {
+        token.value = newToken
+        const userTokenObject = {
+            username: getAuthData().username, // Assuming the token contains a field 'userName'
+            token: newToken,
+        }
+        localStorage.setItem('authData', JSON.stringify(userTokenObject))
+        return userTokenObject
+    }
+    const getToken = () => {
+        checkToken()
+        return token.value
+    }
+    const getAuthData = () => {
+        checkToken()
+        const decodedToken = VueJwtDecode.decode(token.value)
+        return decodedToken
+    }
     // Return the store properties and methods
-    return { user, role, name, oid, email }
+    return { getAuthData, addToken, getToken, checkToken }
 })
 
 if (import.meta.hot) {
