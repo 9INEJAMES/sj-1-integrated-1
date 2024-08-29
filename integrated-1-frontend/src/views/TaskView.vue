@@ -29,12 +29,6 @@ const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
     isSelectTask.value = true
 }
-onMounted(async () => {
-    authStore.checkToken()
-    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
-})
 </script>
 
 <template>

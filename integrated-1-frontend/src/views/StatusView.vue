@@ -24,12 +24,6 @@ const chosenStatus = async (id) => {
     selectedStatus.value = await statusApi.getStatusById(id)
     isSelectStatus.value = true
 }
-onMounted(async () => {
-    authStore.checkToken()
-    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
-})
 </script>
 
 <template>
