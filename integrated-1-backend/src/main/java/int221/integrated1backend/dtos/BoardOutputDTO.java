@@ -10,5 +10,15 @@ import lombok.Setter;
 public class BoardOutputDTO {
     private String id;
     private String name;
-    private Owner owner;
+    @JsonIgnore
+    private String oid;
+    @JsonIgnore
+    private String oName;
+
+    public Owner getOwner() {
+        Owner owner = new Owner();
+        owner.setOid(this.oid);
+        owner.setName(this.oName);
+        return owner;
+    }
 }

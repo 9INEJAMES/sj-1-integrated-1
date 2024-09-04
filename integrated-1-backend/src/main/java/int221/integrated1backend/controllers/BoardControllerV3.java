@@ -39,7 +39,6 @@ public class BoardControllerV3 {
         String token = authorizationHeader.substring(7);
         String oid = jwtTokenUtil.getClaimValueFromToken(token,"oid");
         List<Board> boardList = service.getBoardByOId(oid);
-        System.out.println(boardList);
         return ResponseEntity.ok(boardList);
     }
 
@@ -47,11 +46,7 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getBoard(@PathVariable String id) {
         Board board = service.getBoard(id);
         BoardOutputDTO boardOutputDTO = modelMapper.map(board, BoardOutputDTO.class);
-        Owner owner = new Owner();
-        owner.setOid(board.getOid());
-        String uName = userService.findByOid(board.getOid()).getName();
-        owner.setName(uName);
-        boardOutputDTO.setOwner(owner);
+        boardOutputDTO.setOName(userService.findByOid(board.getOid()).getName());
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -65,17 +60,13 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @RequestBody BoardInputDTO boardInput) {
         String token = authorizationHeader.substring(7);
         String oid = jwtTokenUtil.getClaimValueFromToken(token,"oid");
-        String uName = jwtTokenUtil.getClaimValueFromToken(token,"name");
 
         Board board = modelMapper.map(boardInput, Board.class);
         board.setOid(oid);
         Board newBoard = service.createNewBoard(board);
 
         BoardOutputDTO boardOutputDTO = modelMapper.map(board, BoardOutputDTO.class);
-        Owner owner = new Owner();
-        owner.setOid(newBoard.getOid());
-        owner.setName(uName);
-        boardOutputDTO.setOwner(owner);
+        boardOutputDTO.setOName(userService.findByOid(newBoard.getOid()).getName());
 
         return ResponseEntity.ok(boardOutputDTO);
     }
