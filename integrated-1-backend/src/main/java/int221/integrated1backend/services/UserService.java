@@ -25,4 +25,6 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
+    public User findByOid(String oid) { return userRepository.findByOid(oid);}
+
 }

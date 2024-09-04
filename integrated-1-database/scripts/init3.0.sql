@@ -9,13 +9,25 @@ SET time_zone = '+00:00';
 CREATE TABLE boards (
     boardId VARCHAR(10) PRIMARY KEY,
     boardName VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-    ownerId INT,
+    ownerId VARCHAR(36),
     isLimit BOOLEAN DEFAULT FALSE,
     limitMaximumTask INT NOT NULL DEFAULT 10,
     CONSTRAINT CHK_boardName_not_empty CHECK (boardName <> '')
 ) ENGINE=InnoDB;
 
 DELIMITER $$
+
+CREATE TRIGGER trg_before_insert_boards
+BEFORE INSERT ON boards
+FOR EACH ROW
+BEGIN
+     IF NEW.isLimit IS NULL THEN
+        SET NEW.isLimit = false;
+    END IF;
+    IF NEW.limitMaximumTask IS NULL THEN
+        SET NEW.limitMaximumTask = 10;
+    END IF;
+END$$
 
 CREATE TRIGGER limit_task_before_update
 BEFORE UPDATE ON boards
@@ -166,19 +178,18 @@ END$$
 
 DELIMITER ;
 
--- Sample data
 USE integrated;
 
 INSERT INTO boards (boardId, boardName, ownerId) VALUES 
-('1234567890', 'Default', null);
+('kanbanbase', 'Default', null);
 
 INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
-('1234567890','No Status','The default status','#cbd5e1'),
-('1234567890','Done','Finished','#10b981');
+('kanbanbase','No Status','The default status','#cbd5e1'),
+('kanbanbase','Done','Finished','#10b981');
 
-INSERT INTO tasksV2 (boardId, taskTitle, statusId, createdOn, updatedOn) VALUES 
-('1234567890','NS01', 1,'2024-05-14 09:00:00+00:00','2024-05-14 09:00:00+00:00'),
-('1234567890','DN02', 2,'2024-05-14 09:50:00+00:00','2024-05-14 09:50:00+00:00');
+-- INSERT INTO tasksV2 (boardId, taskTitle, statusId, createdOn, updatedOn) VALUES 
+-- ('kanbanbase','NS01', 1,'2024-05-14 09:00:00+00:00','2024-05-14 09:00:00+00:00'),
+-- ('kanbanbase','DN02', 2,'2024-05-14 09:50:00+00:00','2024-05-14 09:50:00+00:00');
 
 SELECT * FROM boards;
 SELECT * FROM tasksV2;

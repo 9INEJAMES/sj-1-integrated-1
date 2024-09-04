@@ -14,6 +14,7 @@ public class TaskInputDTO {
     @Size(min = 0, max = 30)
     private String assignees;
     private String status;
+    private String boardId;
 
     public String getStatus() {
         return status == null ? "0" : status;

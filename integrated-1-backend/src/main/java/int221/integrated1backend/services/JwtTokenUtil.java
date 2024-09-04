@@ -28,18 +28,32 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     @Autowired
     UserService userService;
 
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
-    }
-    public String getOidFromToken(String token) {
+    public String getClaimValueFromToken(String token,String claim) {
         // Parse the JWT token to get the claims
         Claims claims = Jwts.parser()
                 .setSigningKey(SECRET_KEY)
                 .parseClaimsJws(token)
                 .getBody();
-        String oid = claims.get("oid", String.class);
-        return oid;
+        return claims.get(claim, String.class);
     }
+//    public String getNameFromToken(String token) {
+//        // Parse the JWT token to get the claims
+//        Claims claims = Jwts.parser()
+//                .setSigningKey(SECRET_KEY)
+//                .parseClaimsJws(token)
+//                .getBody();
+//        String name = claims.get("name", String.class);
+//        return name;
+//    }
+//    public String getOidFromToken(String token) {
+//        // Parse the JWT token to get the claims
+//        Claims claims = Jwts.parser()
+//                .setSigningKey(SECRET_KEY)
+//                .parseClaimsJws(token)
+//                .getBody();
+//        String oid = claims.get("oid", String.class);
+//        return oid;
+//    }
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
@@ -81,7 +95,7 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String oid = getOidFromToken(token);
+        final String oid = getClaimValueFromToken(token,"oid");
         User user = userService.findByUserName(userDetails.getUsername());
         return (oid.equals(user.getOid()) && !isTokenExpired(token));
     }

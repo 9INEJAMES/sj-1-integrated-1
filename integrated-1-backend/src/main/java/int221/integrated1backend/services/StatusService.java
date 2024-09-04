@@ -19,6 +19,8 @@ public class StatusService {
     private StatusRepository repository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private BoardService boardService;
 
     public List<Status> getAllStatus() {
         return repository.findAll();
@@ -38,9 +40,7 @@ public class StatusService {
     @Transactional("firstTransactionManager")
     public Status createNewStatus(StatusInputDTO statusInputDTO) {
         Status newStatus = modelMapper.map(statusInputDTO, Status.class);
-
         isUnique(newStatus);
-
         return repository.save(newStatus);
     }
 
@@ -58,6 +58,7 @@ public class StatusService {
         return repository.save(newStatus);
     }
 
+    //fixed later
     private void isUnique(Status newStatus) {
         List<Status> statuses = getAllStatus();
         if (newStatus.getName() != null) {

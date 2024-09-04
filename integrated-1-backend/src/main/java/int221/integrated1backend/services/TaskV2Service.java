@@ -2,10 +2,10 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
-import int221.integrated1backend.entities.in.LimitTask;
+import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
 import int221.integrated1backend.entities.in.TaskV2;
-import int221.integrated1backend.repositories.in.LimitTaskRepository;
+import int221.integrated1backend.repositories.in.BoardRepository;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import int221.integrated1backend.repositories.in.TaskV2Repository;
 import org.modelmapper.ModelMapper;
@@ -30,7 +30,7 @@ public class TaskV2Service {
     @Autowired
     private StatusService statusService;
     @Autowired
-    private LimitTaskRepository limitRepository;
+    private BoardService boardService;
     @Autowired
     private StatusRepository statusRepository;
 
@@ -55,9 +55,9 @@ public class TaskV2Service {
 
     @Transactional("firstTransactionManager")
     public TaskV2 createNewTask(TaskInputDTO taskDTO) {
-        LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Board board = boardService.getBoard(taskDTO.getBoardId());
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
-        if (limitTask.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
+        if (board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT ADD TASK MORE THAN STATUS LIMIT");
         }
         TaskV2 tmp = modelMapper.map(taskDTO, TaskV2.class);
@@ -74,13 +74,13 @@ public class TaskV2Service {
 
     @Transactional("firstTransactionManager")
     public TaskV2 updateTask(Integer taskId, TaskInputDTO taskDTO) {
-        LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         TaskV2 task = modelMapper.map(taskDTO, TaskV2.class);
         task.setId(taskId);
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
         TaskV2 existingTask = findByID(taskId);
-
-        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && limitTask.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= limitTask.getLimitMaximumTask()) {
+        Board board = boardService.getBoard(existingTask.getBoard().getId());
+        
+        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");
         }
         existingTask.setTitle(task.getTitle());
@@ -93,14 +93,14 @@ public class TaskV2Service {
 
     @Transactional("firstTransactionManager")
     public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
-        LimitTask limitTask = limitRepository.findById(1).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (Objects.equals(statusId, newId))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "destination status for task transfer must be different from current status");
         Status status = statusService.findByID(statusId);
         List<TaskV2> taskV2List = repository.findAllByStatus(status);
         Status newStatus = statusRepository.findById(newId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "the specified status for task transfer does not exist"));
+        Board board = boardService.getBoard(newStatus.getBoard().getId());
 
-        if (limitTask.getLimit() && !Objects.equals(newStatus.getName().toLowerCase(), "no status") && !Objects.equals(newStatus.getName().toLowerCase(), "done") && newStatus.getNoOfTasks() + taskV2List.size() > limitTask.getLimitMaximumTask()) {
+        if (board.getLimit() && !Objects.equals(newStatus.getName().toLowerCase(), "no status") && !Objects.equals(newStatus.getName().toLowerCase(), "done") && newStatus.getNoOfTasks() + taskV2List.size() > board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT MOVE ALL TASKS TO NEW STATUS BECAUSE ITS OVER LIMIT");
         }
         taskV2List.stream().map(task -> task.setStatus(newStatus)).collect(Collectors.toList());

@@ -31,13 +31,17 @@ public class TaskV2 {
     @Column(name = "taskAssignees")
     private String assignees;
     //    @Column(name = "taskStatus")
-//    private String status;
+    //    private String status;
     private Date createdOn;
     private Date updatedOn;
     //    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "statusId")
     private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "boardId")
+    private Board board;
 
 
     private String isStringNull(String string) {

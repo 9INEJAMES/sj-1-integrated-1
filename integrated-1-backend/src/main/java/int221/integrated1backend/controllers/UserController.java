@@ -16,12 +16,11 @@ import java.util.List;
 @CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th"})
 public class UserController {
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @GetMapping("")
     public ResponseEntity<Object> getAllUser(){
         List<User> userList =  userService.getAllUser();
-        System.out.println(userList);
         return ResponseEntity.ok(userList);
     }
 

@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (requestTokenHeader.startsWith("Bearer ")) {
                 jwtToken = requestTokenHeader.substring(7);
                 try {
-                    oid = jwtTokenUtil.getOidFromToken(jwtToken);
+                    oid = jwtTokenUtil.getClaimValueFromToken(jwtToken,"oid");
                 } catch (IllegalArgumentException e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
                 } catch (ExpiredJwtException e) {

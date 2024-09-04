@@ -31,8 +31,8 @@ public class Status {
     private List<TaskV2> noOfTasks;
 
     @ManyToOne
-    @JoinColumn(name = "limitId")
-    private LimitTask limitMaximumTask;
+    @JoinColumn(name = "boardId")
+    private Board board;
 
     public Integer getNoOfTasks() {
         return this.noOfTasks == null ? 0 : (this.noOfTasks.size());
