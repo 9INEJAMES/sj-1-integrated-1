@@ -114,35 +114,51 @@ CREATE TRIGGER before_insert_tasksV2
 BEFORE INSERT ON tasksV2
 FOR EACH ROW
 BEGIN
-	DECLARE isLimitValue INT;
-	DECLARE limit_value INT;
+    DECLARE isLimitValue INT;
+    DECLARE limit_value INT;
     DECLARE tasks_count INT;
-	DECLARE current_status VARCHAR(50);
+    DECLARE current_status VARCHAR(50);
+    DECLARE status_exists INT;
 
-	IF NEW.statusId IS NULL THEN
+    -- Check if statusId exists for the boardId or in the default board 'kanbanbase'
+    SELECT COUNT(*) INTO status_exists
+    FROM statuses
+    WHERE statusId = NEW.statusId AND (boardId = NEW.boardId OR boardId = 'kanbanbase');
+    
+    IF status_exists = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'StatusId does not exist for the specified board or the default board';
+    END IF;
+
+    -- Set default values for NULL fields
+    IF NEW.statusId IS NULL THEN
         SET NEW.statusId = 1;
     END IF;
-    SELECT statusName INTO current_status FROM statuses WHERE statusId =NEW.statusId;
+    
+    SELECT statusName INTO current_status FROM statuses WHERE statusId = NEW.statusId;
+
     IF current_status != 'No Status' AND current_status != 'Done' THEN
-		SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
+        SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
         IF isLimitValue = 1 THEN
-        SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
-        SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
-			IF tasks_count >= limit_value THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
+            SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
+            SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
+            IF tasks_count >= limit_value THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
             END IF;
-		END IF;
+        END IF;
     END IF;
+
     SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
     SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+
     IF NEW.createdOn IS NULL THEN
         SET NEW.createdOn = CURRENT_TIMESTAMP;
     END IF;
+
     IF NEW.updatedOn IS NULL THEN
         SET NEW.updatedOn = CURRENT_TIMESTAMP;
     END IF;
-    
+
 END$$
 
 CREATE TRIGGER before_update_tasksV2
@@ -150,33 +166,48 @@ BEFORE UPDATE ON tasksV2
 FOR EACH ROW
 BEGIN
     DECLARE current_status VARCHAR(50);
-	DECLARE isLimitValue INT;
-	DECLARE limit_value INT;
+    DECLARE isLimitValue INT;
+    DECLARE limit_value INT;
     DECLARE tasks_count INT;
+    DECLARE status_exists INT;
+
+    -- Check if statusId exists for the boardId or in the default board 'kanbanbase'
+    SELECT COUNT(*) INTO status_exists
+    FROM statuses
+    WHERE statusId = NEW.statusId AND (boardId = NEW.boardId OR boardId = 'kanbanbase');
+
+    IF status_exists = 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'StatusId does not exist for the specified board or the default board';
+    END IF;
+
     SET NEW.taskTitle = TRIM(NEW.taskTitle);
     SET NEW.taskDescription = TRIM(NEW.taskDescription);
     SET NEW.taskAssignees = TRIM(NEW.taskAssignees);
+
     IF NEW.statusId IS NULL THEN
         SET NEW.statusId = 1;
     END IF;
 
-    SELECT statusName INTO current_status FROM statuses WHERE statusId =NEW.statusId;
+    SELECT statusName INTO current_status FROM statuses WHERE statusId = NEW.statusId;
+
     IF current_status != 'No Status' AND current_status != 'Done' THEN
-		SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
+        SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
         IF isLimitValue = 1 THEN
-        SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
-        SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
-			IF tasks_count >= limit_value+1 THEN
-				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
+            SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
+            SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
+            IF tasks_count >= limit_value+1 THEN
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
             END IF;
-		END IF;
+        END IF;
     END IF;
+
     IF NEW.updatedOn IS NULL THEN
         SET NEW.updatedOn = CURRENT_TIMESTAMP;
     END IF;
 END$$
 
 DELIMITER ;
+
 
 USE integrated;
 
