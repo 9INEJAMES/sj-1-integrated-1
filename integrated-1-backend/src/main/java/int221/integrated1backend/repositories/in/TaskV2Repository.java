@@ -22,4 +22,6 @@ public interface TaskV2Repository extends JpaRepository<TaskV2, Integer> {
 
     public List<TaskV2> findAllByBoardId(String id);
 
+    public TaskV2 findByIdAndAndBoardId(Integer id,String bid);
+
 }

@@ -10,5 +10,4 @@ public class StatusOutputDTO {
     private String description;
     private String color;
     private Integer noOfTasks;
-
 }

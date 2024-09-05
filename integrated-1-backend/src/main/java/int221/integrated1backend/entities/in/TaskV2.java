@@ -68,7 +68,10 @@ public class TaskV2 {
         this.status = status;
         return this.status;
     }
-
+    public Board setBoard(Board board) {
+        this.board = board;
+        return this.board;
+    }
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();
         SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");
