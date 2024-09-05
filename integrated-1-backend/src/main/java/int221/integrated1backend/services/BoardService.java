@@ -1,5 +1,6 @@
 package int221.integrated1backend.services;
 
+import int221.integrated1backend.dtos.BoardInputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTO;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.repositories.in.BoardRepository;
@@ -39,7 +40,7 @@ public class BoardService {
     }
 
     @Transactional("firstTransactionManager")
-    public Board updateฺBoard(String id,Board boardInput) {
+    public Board updateฺBoard(String id, BoardInputDTO boardInput) {
         Board board = getBoard(id);
         board.setName(boardInput.getName() == null ? board.getName() : boardInput.getName());
         board.setLimit(boardInput.getLimit() == null ? board.getLimit() : boardInput.getLimit());

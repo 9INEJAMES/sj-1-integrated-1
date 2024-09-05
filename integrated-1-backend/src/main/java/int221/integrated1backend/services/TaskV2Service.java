@@ -50,6 +50,7 @@ public class TaskV2Service {
         return taskV2List;
     }
 
+    //เพิ่ม findAllByBoardId in repo
     public List<TaskV2> getAllTaskOfBoard(String bId) {
         return repository.findAllByBoardId(bId);
     }
@@ -59,6 +60,7 @@ public class TaskV2Service {
         if (statuses != null && statuses.length > 0) {
             for (int i = 0; i < statuses.length; i++) {
                 Status status = statusService.findByName(statuses[i]);
+                //เพิ่ม findAllByBoardIdAndStatus in repo
                 taskV2List.addAll(repository.findAllByBoardIdAndStatus(bId,status));
             }
         }

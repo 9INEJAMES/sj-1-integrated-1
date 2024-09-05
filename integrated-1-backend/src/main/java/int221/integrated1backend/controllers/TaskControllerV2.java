@@ -39,18 +39,18 @@ public class TaskControllerV2 {
         }
     }
 
-    @GetMapping("/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
-        TaskV2 task = service.findByID(taskId);
-        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
-        return ResponseEntity.ok(outputDTO);
-    }
-
     //    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
     public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO) {
         TaskV2 task = service.createNewTask(taskDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
+        TaskV2 task = service.findByID(taskId);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        return ResponseEntity.ok(outputDTO);
     }
 
     @PutMapping("/{taskId}")

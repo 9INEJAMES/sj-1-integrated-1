@@ -1,8 +1,6 @@
 package int221.integrated1backend.controllers;
 
-import int221.integrated1backend.dtos.BoardInputDTO;
-import int221.integrated1backend.dtos.BoardOutputDTO;
-import int221.integrated1backend.dtos.TaskOutputDTO;
+import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.services.BoardService;
@@ -56,7 +54,7 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @RequestBody BoardInputDTO boardInput) {
+    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @RequestBody BoardCreateInputDTO boardInput) {
         String oid = getOidFromHeader(authorizationHeader);
 
         Board board = modelMapper.map(boardInput, Board.class);
@@ -78,8 +76,9 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(boardOutputDTO);
     }
 
+    /////////
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @RequestBody Board boardInput) {
+    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @RequestBody BoardInputDTO boardInput) {
         String oid = getOidFromHeader(authorizationHeader);
 
         Board eBoard = boardService.getBoard(id);
@@ -101,6 +100,7 @@ public class BoardControllerV3 {
     }
 
     //Task operation
+
     @GetMapping("/{id}/tasks")
     public ResponseEntity<Object> getTasks(
             @RequestHeader("Authorization") String authorizationHeader,
@@ -108,18 +108,46 @@ public class BoardControllerV3 {
             @RequestParam(defaultValue = "") String[] filterStatuses,
             @RequestParam(defaultValue = "") String[] sortBy,
             @RequestParam(defaultValue = "ASC") String[] sortDirection) {
+        //เพิ่มการ get oid from header
         String oid = getOidFromHeader(authorizationHeader);
-
         Board board = boardService.getBoard(id);
 //        permissionCheck(board.getOid(), oid);
 
         if (filterStatuses.length > 0)
-            return ResponseEntity.ok(taskService.getAllTaskOfBoard(id,filterStatuses, sortBy, sortDirection));
+            //เพิ่มการใช้ id ในการ get task by board id
+            //getAllTaskOfBoard เป็น method ที่สร้างเพิ่มขึ้นมาเพื่อใช้กับ /v3/board
+            return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses, sortBy, sortDirection));
         else {
             List<TaskV2> taskList = taskService.getAllTaskOfBoard(id);
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
             return ResponseEntity.ok(taskDTO);
         }
+    }
+
+    //ยังไม่ได้ทำ ดูข้างบนเป็นตัวอย่างแล้วลองทำดูนะจ้ะ ลองเอาไปเทียบกับ getTasks ใน TaskControllerV2 ได้
+    @PostMapping("/{id}/tasks")
+    public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO) {
+        TaskV2 task = taskService.createNewTask(taskDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+    }
+
+    @GetMapping("/{id}/tasks/{taskId}")
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
+        TaskV2 task = taskService.findByID(taskId);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        return ResponseEntity.ok(outputDTO);
+    }
+
+    @PutMapping("/{id}/tasks/{taskId}")
+    public ResponseEntity<Object> updateTask(@PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
+        TaskV2 task = taskService.updateTask(taskId, taskDTO);
+        return ResponseEntity.ok(task);
+    }
+
+    @DeleteMapping("/{id}/tasks/{taskId}")
+    public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {
+        TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId);
+        return ResponseEntity.ok(taskWithIdDTO);
     }
 
 }
