@@ -130,18 +130,20 @@ public class BoardControllerV3 {
                                              @RequestHeader("Authorization") String authorizationHeader,
                                              @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader);
-        Board board = boardService.getBoard(id);
+        taskDTO.setBoardId(id);
         TaskV2 task = taskService.createNewTask(taskDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(outputDTO);
     }
 
+    //check task id in board is exist? do it later
     @GetMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId,
                                               @RequestHeader("Authorization") String authorizationHeader,
                                               @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader);
-        Board board = boardService.getBoard(id);
-        TaskV2 task = taskService.findByID(taskId);
+
+        TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         return ResponseEntity.ok(outputDTO);
     }
@@ -151,17 +153,18 @@ public class BoardControllerV3 {
                                              @RequestHeader("Authorization") String authorizationHeader,
                                              @PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
         String oid = getOidFromHeader(authorizationHeader);
-        Board board = boardService.getBoard(id);
-
+        taskDTO.setBoardId(id);
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
-        return ResponseEntity.ok(task);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+
+        return ResponseEntity.ok(outputDTO);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable String id,
                                              @RequestHeader("Authorization") String authorizationHeader,
                                              @PathVariable Integer taskId) {
-        TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId);
+        TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId,id);
         return ResponseEntity.ok(taskWithIdDTO);
     }
 

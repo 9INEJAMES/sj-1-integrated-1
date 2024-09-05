@@ -1,5 +1,6 @@
 package int221.integrated1backend.entities.in;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
@@ -27,9 +28,10 @@ public class Status {
     @Column(name = "statusColor")
     private String color;
     //    @JsonIgnore
-    @OneToMany(mappedBy = "status",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "status", fetch = FetchType.EAGER)
     private List<TaskV2> noOfTasks;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "boardId")
     private Board board;

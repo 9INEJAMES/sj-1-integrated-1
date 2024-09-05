@@ -4,6 +4,7 @@ import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.entities.in.Task;
 import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import int221.integrated1backend.repositories.in.TaskV2Repository;
@@ -61,14 +62,22 @@ public class TaskV2Service {
             for (int i = 0; i < statuses.length; i++) {
                 Status status = statusService.findByName(statuses[i]);
                 //เพิ่ม findAllByBoardIdAndStatus in repo
-                taskV2List.addAll(repository.findAllByBoardIdAndStatus(bId,status));
+                taskV2List.addAll(repository.findAllByBoardIdAndStatus(bId, status));
             }
         }
         return taskV2List;
     }
 
+
     public TaskV2 findByID(Integer id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists !!!"));
+    }
+
+    public TaskV2 findByIdAndAndBoardId(Integer id, String bid) {
+        TaskV2 task = repository.findByIdAndAndBoardId(id, bid);
+        if (task == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task id " + id + " does not exists in this board !!!");
+        return task;
     }
 
     @Transactional("firstTransactionManager")
@@ -78,8 +87,10 @@ public class TaskV2Service {
         if (board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT ADD TASK MORE THAN STATUS LIMIT");
         }
+        taskDTO.setBoardId(null);
         TaskV2 tmp = modelMapper.map(taskDTO, TaskV2.class);
         tmp.setStatus(status);
+        tmp.setBoard(board);
         return repository.save(tmp);
     }
 
@@ -91,14 +102,23 @@ public class TaskV2Service {
     }
 
     @Transactional("firstTransactionManager")
+    public TaskOutputDTO removeTask(Integer taskId,String bid) {
+        TaskV2 task = findByIdAndAndBoardId(taskId,bid);
+        repository.delete(task);
+        return modelMapper.map(task, TaskOutputDTO.class);
+    }
+
+    @Transactional("firstTransactionManager")
     public TaskV2 updateTask(Integer taskId, TaskInputDTO taskDTO) {
+        Board board = boardService.getBoard(taskDTO.getBoardId());
+        taskDTO.setBoardId(null);
         TaskV2 task = modelMapper.map(taskDTO, TaskV2.class);
         task.setId(taskId);
+        task.setBoard(board);
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
-        TaskV2 existingTask = findByID(taskId);
-        Board board = boardService.getBoard(existingTask.getBoard().getId());
+        TaskV2 existingTask = findByIdAndAndBoardId(taskId, task.getBoard().getId());
 
-        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
+        if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && existingTask.getBoard().getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= existingTask.getBoard().getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");
         }
         existingTask.setTitle(task.getTitle());
@@ -108,6 +128,7 @@ public class TaskV2Service {
         existingTask.setUpdatedOn(null);
         return repository.save(existingTask);
     }
+
 
     @Transactional("firstTransactionManager")
     public List<TaskV2> updateStatusOfTask(Integer statusId, Integer newId) {
