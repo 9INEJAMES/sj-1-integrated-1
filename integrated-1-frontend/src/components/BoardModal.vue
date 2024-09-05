@@ -1,0 +1,66 @@
+<script setup>
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, ref, watch } from 'vue'
+import { useTheme } from '@/stores/theme.js'
+
+const themeStore = useTheme()
+
+const route = useRoute()
+const router = useRouter()
+
+const isNullStr = (str) => {
+    if (str == null || str.trim().length == 0) {
+        return null
+    } else return str
+}
+const submitPersonalBoard = async (isSave) => {
+    if (isSave) {
+    }
+    router.back()
+}
+</script>
+
+<template>
+    <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 w-full">
+        <div class="itbkk-modal-task bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-lg mx-6">
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Create New Board</p>
+                <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" @click="submitPersonalBoard(false)">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <hr class="my-3 border-gray-300 dark:border-gray-600" />
+
+            <div class="mb-5">
+                <label for="title" class="block text-gray-700 dark:text-gray-300 mb-1 font-medium"> Name <span class="text-red-600">*</span> </label>
+                <input
+                    type="text"
+                    id="title"
+                    class="block w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                    placeholder="Enter your board name"
+                    :disabled="isDisabled"
+                />
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button
+                    class="itbkk-button-cancel px-4 py-2 text-white bg-red-500 hover:bg-red-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-red-300 dark:focus:ring-red-500"
+                    @click="submitPersonalBoard(false)"
+                >
+                    Cancel
+                </button>
+                <button
+                    class="itbkk-button-confirm px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500"
+                    @click="submitPersonalBoard(true)"
+                >
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped></style>

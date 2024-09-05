@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import BoardModal from '@/components/BoardModal.vue'
 import TaskView from '@/views/TaskView.vue'
 import TaskModal from '@/components/TaskModal.vue'
 import StatusView from '@/views/StatusView.vue'
 import StatusModal from '@/components/StatusModal.vue'
 import SignIn from '@/components/SignIn.vue'
+import BoardView from '@/views/BoardView.vue'
 import HomePage from '@/components/HomePage.vue'
 import VueJwtDecode from 'vue-jwt-decode'
 
@@ -29,41 +31,56 @@ const router = createRouter({
             redirect: '/login',
         },
         {
-            path: '/status',
-            name: 'statusView',
-            component: StatusView,
+            path: '/board',
+            name: 'boardView',
+            component: BoardView,
             children: [
+                // Nested Board Routes
                 {
                     path: 'add',
-                    name: 'statusAdd',
-                    component: StatusModal,
+                    name: 'boardAdd',
+                    component: BoardModal,
                 },
+                // Nested Status Routes
                 {
-                    path: ':id/edit',
-                    name: 'statusEdit',
-                    component: StatusModal,
+                    path: 'status',
+                    name: 'statusView',
+                    component: StatusView,
+                    children: [
+                        {
+                            path: 'add',
+                            name: 'statusAdd',
+                            component: StatusModal,
+                        },
+                        {
+                            path: ':id/edit',
+                            name: 'statusEdit',
+                            component: StatusModal,
+                        },
+                    ],
                 },
-            ],
-        },
-        {
-            path: '/task',
-            name: 'taskView',
-            component: TaskView,
-            children: [
+                // Nested Task Routes
                 {
-                    path: ':taskId',
-                    name: 'taskDetails',
-                    component: TaskModal,
-                },
-                {
-                    path: 'add',
-                    name: 'taskAdd',
-                    component: TaskModal,
-                },
-                {
-                    path: ':taskId/edit',
-                    name: 'taskEdit',
-                    component: TaskModal,
+                    path: 'task',
+                    name: 'taskView',
+                    component: TaskView,
+                    children: [
+                        {
+                            path: 'add',
+                            name: 'taskAdd',
+                            component: TaskModal,
+                        },
+                        {
+                            path: ':taskId',
+                            name: 'taskDetails',
+                            component: TaskModal,
+                        },
+                        {
+                            path: ':taskId/edit',
+                            name: 'taskEdit',
+                            component: TaskModal,
+                        },
+                    ],
                 },
             ],
         },

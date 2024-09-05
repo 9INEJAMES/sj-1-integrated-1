@@ -29,10 +29,10 @@ const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
         if (token) {
-            router.push('/task')
-            if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-            if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-            if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
+            router.push('/board')
+            // if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
+            // if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+            // // if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
         }
     } catch (error) {
         console.error('Sign in error:', error)
