@@ -185,6 +185,8 @@ INSERT INTO boards (boardId, boardName, ownerId) VALUES
 
 INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','No Status','The default status','#cbd5e1'),
+('kanbanbase','To Do','The task is included in the project','#99ddff'),
+('kanbanbase','In Progress','The task is being worked on','#fabc3f'),
 ('kanbanbase','Done','Finished','#10b981');
 
 SELECT * FROM boards;
