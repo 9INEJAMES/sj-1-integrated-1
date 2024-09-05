@@ -14,4 +14,12 @@ public interface TaskV2Repository extends JpaRepository<TaskV2, Integer> {
 
     public List<TaskV2> findAllByStatus(Status[] status, Sort sort);
 
+    public List<TaskV2> findAllByBoardIdAndStatus(String id, Status status);
+
+
+    public List<TaskV2> findAllByBoardIdAndStatus(String id, Status[] status, Sort sort);
+
+
+    public List<TaskV2> findAllByBoardId(String id);
+
 }

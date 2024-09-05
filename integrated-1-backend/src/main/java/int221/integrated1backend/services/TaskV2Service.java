@@ -5,7 +5,6 @@ import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
 import int221.integrated1backend.entities.in.TaskV2;
-import int221.integrated1backend.repositories.in.BoardRepository;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import int221.integrated1backend.repositories.in.TaskV2Repository;
 import org.modelmapper.ModelMapper;
@@ -33,6 +32,8 @@ public class TaskV2Service {
     private BoardService boardService;
     @Autowired
     private StatusRepository statusRepository;
+    //String boardId
+    //findAllByBoardId
 
     public List<TaskV2> getAllTask() {
         return repository.findAll();
@@ -44,6 +45,21 @@ public class TaskV2Service {
             for (int i = 0; i < statuses.length; i++) {
                 Status status = statusService.findByName(statuses[i]);
                 taskV2List.addAll(repository.findAllByStatus(status));
+            }
+        }
+        return taskV2List;
+    }
+
+    public List<TaskV2> getAllTaskOfBoard(String bId) {
+        return repository.findAllByBoardId(bId);
+    }
+
+    public List<TaskV2> getAllTaskOfBoard(String bId, String[] statuses, String[] sortBy, String[] direction) {
+        List<TaskV2> taskV2List = new ArrayList<>();
+        if (statuses != null && statuses.length > 0) {
+            for (int i = 0; i < statuses.length; i++) {
+                Status status = statusService.findByName(statuses[i]);
+                taskV2List.addAll(repository.findAllByBoardIdAndStatus(bId,status));
             }
         }
         return taskV2List;
@@ -79,7 +95,7 @@ public class TaskV2Service {
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
         TaskV2 existingTask = findByID(taskId);
         Board board = boardService.getBoard(existingTask.getBoard().getId());
-        
+
         if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");
         }

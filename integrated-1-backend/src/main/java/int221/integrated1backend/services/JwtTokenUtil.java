@@ -36,24 +36,6 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
                 .getBody();
         return claims.get(claim, String.class);
     }
-//    public String getNameFromToken(String token) {
-//        // Parse the JWT token to get the claims
-//        Claims claims = Jwts.parser()
-//                .setSigningKey(SECRET_KEY)
-//                .parseClaimsJws(token)
-//                .getBody();
-//        String name = claims.get("name", String.class);
-//        return name;
-//    }
-//    public String getOidFromToken(String token) {
-//        // Parse the JWT token to get the claims
-//        Claims claims = Jwts.parser()
-//                .setSigningKey(SECRET_KEY)
-//                .parseClaimsJws(token)
-//                .getBody();
-//        String oid = claims.get("oid", String.class);
-//        return oid;
-//    }
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);

@@ -19,8 +19,6 @@ public class StatusService {
     private StatusRepository repository;
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private BoardService boardService;
 
     public List<Status> getAllStatus() {
         return repository.findAll();
@@ -48,7 +46,7 @@ public class StatusService {
     public Status updateStatus(Integer id, StatusInputDTO statusInputDTO) {
         //มันจับ exception ของ cannot be change no status ด้านล่างก่อนจึงต้อง force check name == null
         Status existStatus = findByID(id);
-         Status newStatus =  modelMapper.map(statusInputDTO, Status.class);
+        Status newStatus = modelMapper.map(statusInputDTO, Status.class);
         if (newStatus.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status name must not be null");
         if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))

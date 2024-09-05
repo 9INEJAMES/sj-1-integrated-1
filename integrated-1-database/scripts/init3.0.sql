@@ -104,7 +104,7 @@ CREATE TABLE tasksV2 (
     CONSTRAINT CHK_taskTitle2_not_empty CHECK (taskTitle <> ''),
     CONSTRAINT CHK_taskDescription2_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees2_not_empty CHECK (taskAssignees <> ''),
-    CONSTRAINT FK_status FOREIGN KEY (statusId, boardId) REFERENCES statuses(statusId, boardId) ON DELETE RESTRICT,
+    CONSTRAINT FK_status FOREIGN KEY (statusId) REFERENCES statuses(statusId) ON DELETE RESTRICT,
     CONSTRAINT FK_boardId_tasksV2 FOREIGN KEY (boardId) REFERENCES boards(boardId) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
@@ -186,10 +186,6 @@ INSERT INTO boards (boardId, boardName, ownerId) VALUES
 INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','No Status','The default status','#cbd5e1'),
 ('kanbanbase','Done','Finished','#10b981');
-
--- INSERT INTO tasksV2 (boardId, taskTitle, statusId, createdOn, updatedOn) VALUES 
--- ('kanbanbase','NS01', 1,'2024-05-14 09:00:00+00:00','2024-05-14 09:00:00+00:00'),
--- ('kanbanbase','DN02', 2,'2024-05-14 09:50:00+00:00','2024-05-14 09:50:00+00:00');
 
 SELECT * FROM boards;
 SELECT * FROM tasksV2;
