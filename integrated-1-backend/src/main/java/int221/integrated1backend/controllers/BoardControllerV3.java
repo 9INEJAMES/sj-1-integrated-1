@@ -126,26 +126,41 @@ public class BoardControllerV3 {
 
     //ยังไม่ได้ทำ ดูข้างบนเป็นตัวอย่างแล้วลองทำดูนะจ้ะ ลองเอาไปเทียบกับ getTasks ใน TaskControllerV2 ได้
     @PostMapping("/{id}/tasks")
-    public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO,
+                                             @RequestHeader("Authorization") String authorizationHeader,
+                                             @PathVariable String id) {
+        String oid = getOidFromHeader(authorizationHeader);
+        Board board = boardService.getBoard(id);
         TaskV2 task = taskService.createNewTask(taskDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(task);
     }
 
     @GetMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId) {
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId,
+                                              @RequestHeader("Authorization") String authorizationHeader,
+                                              @PathVariable String id) {
+        String oid = getOidFromHeader(authorizationHeader);
+        Board board = boardService.getBoard(id);
         TaskV2 task = taskService.findByID(taskId);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         return ResponseEntity.ok(outputDTO);
     }
 
     @PutMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> updateTask(@PathVariable String id,
+                                             @RequestHeader("Authorization") String authorizationHeader,
+                                             @PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
+        String oid = getOidFromHeader(authorizationHeader);
+        Board board = boardService.getBoard(id);
+
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
         return ResponseEntity.ok(task);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> deleteTask(@PathVariable Integer taskId) {
+    public ResponseEntity<Object> deleteTask(@PathVariable String id,
+                                             @RequestHeader("Authorization") String authorizationHeader,
+                                             @PathVariable Integer taskId) {
         TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId);
         return ResponseEntity.ok(taskWithIdDTO);
     }
