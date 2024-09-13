@@ -41,46 +41,46 @@ const router = createRouter({
                     name: 'boardAdd',
                     component: BoardModal,
                 },
-                // Nested Status Routes
+            ],
+        },
+        // Nested Status Routes
+        {
+            path: '/board/:bid/status',
+            name: 'statusView',
+            component: StatusView,
+            children: [
                 {
-                    path: 'status',
-                    name: 'statusView',
-                    component: StatusView,
-                    children: [
-                        {
-                            path: 'add',
-                            name: 'statusAdd',
-                            component: StatusModal,
-                        },
-                        {
-                            path: ':id/edit',
-                            name: 'statusEdit',
-                            component: StatusModal,
-                        },
-                    ],
+                    path: 'add',
+                    name: 'statusAdd',
+                    component: StatusModal,
                 },
-                // Nested Task Routes
                 {
-                    path: 'task',
-                    name: 'taskView',
-                    component: TaskView,
-                    children: [
-                        {
-                            path: 'add',
-                            name: 'taskAdd',
-                            component: TaskModal,
-                        },
-                        {
-                            path: ':taskId',
-                            name: 'taskDetails',
-                            component: TaskModal,
-                        },
-                        {
-                            path: ':taskId/edit',
-                            name: 'taskEdit',
-                            component: TaskModal,
-                        },
-                    ],
+                    path: ':id/edit',
+                    name: 'statusEdit',
+                    component: StatusModal,
+                },
+            ],
+        },
+        // Nested Task Routes
+        {
+            path: '/board/:bid/task',
+            name: 'taskView',
+            component: TaskView,
+            children: [
+                {
+                    path: 'add',
+                    name: 'taskAdd',
+                    component: TaskModal,
+                },
+                {
+                    path: ':taskId',
+                    name: 'taskDetails',
+                    component: TaskModal,
+                },
+                {
+                    path: ':taskId/edit',
+                    name: 'taskEdit',
+                    component: TaskModal,
                 },
             ],
         },

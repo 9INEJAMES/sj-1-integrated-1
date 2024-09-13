@@ -4,6 +4,8 @@ import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useBoardStore } from '../stores/board'
 import { useTheme } from '@/stores/theme.js'
+import { useAuthStore } from '@/stores/auth'
+import { useTasksStore } from '@/stores/task'
 
 const base = import.meta.env.VITE_BASE
 const themeStore = useTheme()
@@ -11,10 +13,24 @@ const deleteModal = ref(false)
 const boardStore = useBoardStore()
 const selectedBoard = ref(null)
 const selectedIndex = ref(null)
+const authStore = useAuthStore()
+const taskStore = useTasksStore()
 
 onMounted(async () => {
-    console.log(boardStore.fetchBoard())
+    boardStore.fetchBoard()
 })
+const boardSelector = async (bid) => {
+    authStore.checkToken()
+    boardStore.findBoard(bid)
+    await taskStore.fetchTasks()
+    // await statusStore.fetchStatuses()
+    router.push({
+        name: 'taskView',
+        params: {
+            bid: bid,
+        },
+    })
+}
 </script>
 
 <template>
@@ -38,10 +54,14 @@ onMounted(async () => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title font-bold h-[30px] text-[2vh] break-all hover:cursor-pointer" @click="">
+                    <td
+                        :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
+                        class="itbkk-title font-bold h-[30px] text-[2vh] break-all hover:cursor-pointer"
+                        @click="boardSelector(board.id)"
+                    >
                         {{ board.name }}
                     </td>
-                    
+
                     <td>
                         <div class="flex justify-center items-center h-full">
                             <div class="itbkk-button-action dropdown dropdown-hover">

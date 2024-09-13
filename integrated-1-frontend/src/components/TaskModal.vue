@@ -85,9 +85,9 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    if (boardStore.limitTask.length == 0) await boardStore.fetchLimit()
-    limitTask.value = await boardStore.getLimit()
-    if (statusStore.statuses.length == 0) await statusStore.fetchStatuses()
+    // await boardStore.fetchBoard()
+    // await statusStore.fetchStatuses()
+    limitTask.value = boardStore.findBoard(boardStore.currBid)
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
         isDisibled.value = true
@@ -137,8 +137,8 @@ const checkLimitStatus = (id) => {
 <template>
     <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 w-full">
         <div class="itbkk-modal-task my-[10vh] mx-[10vh] h-fit w-full rounded-lg pb-2" :class="themeStore.getTheme()">
-            <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p>
-            <div v-else class="grid gap-[2vh] border-none p-[2vh]">
+            <!-- <p v-if="route.name == 'taskDetails' && newTask?.id == null">The requested task does not exist</p> -->
+            <div class="grid gap-[2vh] border-none p-[2vh]">
                 <div class="flex justify-between items-center">
                     <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                         {{ route.name != 'taskDetails' ? (route.params.taskId ? 'Edit' : 'New') : '' }}

@@ -14,20 +14,23 @@ const authStore = useAuthStore()
 </script>
 
 <template>
-    <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
-        <div class="flex gap-2">
-            <RouterLink :to="{ name: 'boardAdd' }">
-                <VButton class="itbkk-button-create" msg="Create personal board" />
-            </RouterLink>
+    <div v-show="$route.name == 'boardView' || 'boardAdd'">
+        <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
+            <div class="flex gap-2">
+                <RouterLink :to="{ name: 'boardAdd' }">
+                    <VButton class="itbkk-button-create" msg="Create personal board" />
+                </RouterLink>
+            </div>
         </div>
-    </div>
 
-    <RouterView class="z-30" />
-    <div class="px-[5vh] pt-[1vh]">
-        <div class="">
-            <BoardTable />
+        <div class="px-[5vh] pt-[1vh]">
+            <div class="">
+                <BoardTable />
+            </div>
         </div>
     </div>
+    <RouterView class="z-30" />
+
     <!-- <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
     <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal> -->
 </template>

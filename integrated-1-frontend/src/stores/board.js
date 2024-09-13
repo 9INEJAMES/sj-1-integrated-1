@@ -5,6 +5,7 @@ import { useBoardApi } from '@/composables/board-api'
 export const useBoardStore = defineStore('board', () => {
     const boards = ref([])
     const boardApi = useBoardApi()
+    const currBid = ref('')
 
     const fetchBoard = async () => {
         const data = await boardApi.getAllBoard()
@@ -30,7 +31,12 @@ export const useBoardStore = defineStore('board', () => {
     async function addBoard(newBoard) {
         boards.value.push(newBoard)
     }
-    return { boards, fetchBoard, getBoard, updateBoard, resetBoard, addBoard, addBoards }
+
+    const findBoard = (bid) => {
+        currBid.value = bid
+        return boards.value.find((board) => board.id == bid)
+    }
+    return { currBid, boards, fetchBoard, getBoard, updateBoard, resetBoard, addBoard, addBoards, findBoard }
 })
 
 if (import.meta.hot) {

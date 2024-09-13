@@ -11,7 +11,9 @@ import { useStatusesStore } from '@/stores/status'
 import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
 const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
@@ -24,16 +26,16 @@ const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
 
 const authStore = useAuthStore()
-
+const currBoard = ref({})
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
     isSelectTask.value = true
 }
 onMounted(async () => {
     authStore.checkToken()
-    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (boardStore.limitTask.length <= 0) await boardStore.fetchLimit()
+    const bid = route.params.bid
+    currBoard.value = boardStore.findBoard(bid)
+    taskStore.fetchTasks()
 })
 </script>
 
