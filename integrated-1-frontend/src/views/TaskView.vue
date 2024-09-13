@@ -8,7 +8,7 @@ import { useTheme } from '@/stores/theme'
 import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
 import { useStatusesStore } from '@/stores/status'
-import { useLimitStore } from '@/stores/limitTask'
+import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted } from 'vue'
 
@@ -16,7 +16,7 @@ const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
-const limitStore = useLimitStore()
+const boardStore = useBoardStore()
 const isSelectTask = ref(false)
 const themeStore = useTheme()
 const selectedTask = ref({})
@@ -33,7 +33,7 @@ onMounted(async () => {
     authStore.checkToken()
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
+    if (boardStore.limitTask.length <= 0) await boardStore.fetchLimit()
 })
 </script>
 

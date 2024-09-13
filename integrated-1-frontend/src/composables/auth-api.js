@@ -5,7 +5,7 @@ export const useAuthApi = () => {
     const toastStore = useToast()
     const authStore = useAuthStore()
 
-    const url = import.meta.env.VITE_BASE_URL2
+    const url = import.meta.env.VITE_BASE_URL
 
     async function signIn(user) {
         try {

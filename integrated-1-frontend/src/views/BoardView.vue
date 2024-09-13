@@ -25,11 +25,11 @@ const authStore = useAuthStore()
     <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
-            <BoardTable></BoardTable>
+            <BoardTable />
         </div>
     </div>
-    <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
-    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <!-- <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
+    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal> -->
 </template>
 
 <style scoped></style>

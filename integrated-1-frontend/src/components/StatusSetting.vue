@@ -1,13 +1,13 @@
 <script setup>
 import { useTheme } from '@/stores/theme'
-import { useLimitStore } from '@/stores/limitTask'
+import { useBoardStore } from '@/stores/board'
 import { onMounted, ref, watch } from 'vue'
 import { useLimitApi } from '@/composables/limit-api'
 import { useStatusesStore } from '@/stores/status'
 
 const limitApi = useLimitApi()
 const themeStore = useTheme()
-const limitStore = useLimitStore()
+const boardStore = useBoardStore()
 const oldLimit = ref({ limit: false, limitMaximumTask: 10 })
 const newLimit = ref({ limit: false, limitMaximumTask: 10 })
 const isChanged = ref(false)
@@ -17,8 +17,8 @@ const statusReachedLimit = ref([])
 
 onMounted(async () => {
     await status.fetchStatuses()
-    oldLimit.value = { ...limitStore.getLimit() }
-    newLimit.value = { ...limitStore.getLimit() }
+    oldLimit.value = { ...boardStore.getLimit() }
+    newLimit.value = { ...boardStore.getLimit() }
     checkStatusLimit() // Ensure the check is run on mount
 })
 
@@ -35,7 +35,7 @@ const submitSetting = async (isSave) => {
     if (isSave) {
         const updated = await limitApi.updateLimit(newLimit.value)
         if (updated) {
-            limitStore.updateLimit({ ...updated })
+            boardStore.updateLimit({ ...updated })
         }
     }
     emit('close')
@@ -93,7 +93,11 @@ const checkStatusLimit = () => {
                     </div>
                 </div>
                 <div class="flex gap-[2vh] justify-end py-[2vh]">
-                    <button @click="submitSetting(true)" :disabled="!isChanged || newLimit.limitMaximumTask <= 0" class="itbkk-button-confirm btn btn-success btn-xs sm:btn-md text-white rounded-md p-2">
+                    <button
+                        @click="submitSetting(true)"
+                        :disabled="!isChanged || newLimit.limitMaximumTask <= 0"
+                        class="itbkk-button-confirm btn btn-success btn-xs sm:btn-md text-white rounded-md p-2"
+                    >
                         Save
                     </button>
                     <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error btn-xs sm:btn-md text-white rounded-md p-2">Cancel</button>

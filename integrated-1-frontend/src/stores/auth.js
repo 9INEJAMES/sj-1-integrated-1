@@ -5,12 +5,12 @@ import VueJwtDecode from 'vue-jwt-decode'
 import { useToast } from '@/stores/toast.js'
 import { useTasksStore } from '@/stores/task.js'
 import { useStatusesStore } from '@/stores/status.js'
-import { useLimitStore } from '@/stores/limitTask'
+import { useBoardStore } from '@/stores/board'
 export const useAuthStore = defineStore('auth', () => {
     const toastStore = useToast()
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
-    const limitStore = useLimitStore()
+    const boardStore = useBoardStore()
 
     const token = ref('')
     const checkToken = async () => {
@@ -26,9 +26,9 @@ export const useAuthStore = defineStore('auth', () => {
                     localStorage.removeItem('authData')
                     router.push('/login')
                 } else {
-                    await taskStore.fetchTasks()
-                    await statusStore.fetchStatuses()
-                    await limitStore.fetchLimit()
+                    // await taskStore.fetchTasks()
+                    // await statusStore.fetchStatuses()
+                    await boardStore.fetchBoard()
                 }
             }
         }

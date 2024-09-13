@@ -5,14 +5,14 @@ import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 import { useTaskApi } from '@/composables/task-api'
 import { useStatusesStore } from '../stores/status.js'
-import { useLimitStore } from '@/stores/limitTask'
+import { useBoardStore } from '@/stores/board'
 
 const statusStore = useStatusesStore()
 const statusList = ref([])
 const themeStore = useTheme()
 const taskStore = useTasksStore()
 const taskApi = useTaskApi()
-const limitStore = useLimitStore()
+const boardStore = useBoardStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -85,8 +85,8 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    if (limitStore.limitTask.length == 0) await limitStore.fetchLimit()
-    limitTask.value = await limitStore.getLimit()
+    if (boardStore.limitTask.length == 0) await boardStore.fetchLimit()
+    limitTask.value = await boardStore.getLimit()
     if (statusStore.statuses.length == 0) await statusStore.fetchStatuses()
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {

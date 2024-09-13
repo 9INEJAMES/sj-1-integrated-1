@@ -47,7 +47,7 @@ export const useTaskApi = () => {
                     return acc + prefix + status
                 }, '')
             }
-            const response = await fetchWithToken(`/tasks${filter}`)
+            const response = await fetchWithToken(`/v3/boards/tasks${filter}`)
             return response.json()
         } catch (error) {
             console.error(`Error fetching tasks: ${error}`)
@@ -56,7 +56,7 @@ export const useTaskApi = () => {
 
     async function getTaskById(id) {
         try {
-            const result = await fetchWithToken(`/tasks/${id}`)
+            const result = await fetchWithToken(`/v3/boards/tasks/${id}`)
             return result.json()
         } catch (error) {
             toastStore.changeToast(false, 'The requested task does not exist')
@@ -66,7 +66,7 @@ export const useTaskApi = () => {
 
     async function addTask(task) {
         try {
-            const response = await fetchWithToken(`/tasks`, {
+            const response = await fetchWithToken(`/v3/boards/tasks`, {
                 method: 'POST',
                 body: JSON.stringify({ ...task }),
             })
@@ -92,7 +92,7 @@ export const useTaskApi = () => {
 
     async function updateTask(task) {
         try {
-            const response = await fetchWithToken(`/tasks/${task.id}`, {
+            const response = await fetchWithToken(`/v3/boards/tasks/${task.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...task }),
             })
@@ -118,7 +118,7 @@ export const useTaskApi = () => {
 
     async function deleteTask(id) {
         try {
-            const response = await fetchWithToken(`/tasks/${id}`, {
+            const response = await fetchWithToken(`/v3/boards/tasks/${id}`, {
                 method: 'DELETE',
             })
 

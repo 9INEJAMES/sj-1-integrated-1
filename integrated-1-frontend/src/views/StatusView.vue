@@ -6,7 +6,7 @@ import VButton from '@/ui/VButton.vue'
 import StatusSetting from '@/components/StatusSetting.vue'
 import { ref } from 'vue'
 import { useStatusesStore } from '@/stores/status'
-import { useLimitStore } from '@/stores/limitTask'
+import { useBoardStore } from '@/stores/board'
 import { onMounted } from 'vue'
 import { useTasksStore } from '@/stores/task'
 import { useAuthStore } from '@/stores/auth'
@@ -16,7 +16,7 @@ const isSettingOpen = ref(false)
 const themeStore = useTheme()
 const statusApi = useStatusApi()
 const statusStore = useStatusesStore()
-const limitStore = useLimitStore()
+const boardStore = useBoardStore()
 const taskStore = useTasksStore()
 const authStore = useAuthStore()
 
@@ -28,7 +28,7 @@ onMounted(async () => {
     authStore.checkToken()
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (limitStore.limitTask.length <= 0) await limitStore.fetchLimit()
+    if (boardStore.limitTask.length <= 0) await boardStore.fetchLimit()
 })
 </script>
 
