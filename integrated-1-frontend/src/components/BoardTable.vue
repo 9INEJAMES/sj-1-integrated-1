@@ -20,7 +20,7 @@ onMounted(async () => {
 <template>
     <div>
         <ConfirmDelete v-if="deleteModal" mode="board" :object="selectedBoard" :number="selectedIndex" @closeModal="handleDeleteModal" />
-        <table class="myTable table-pin-rows shadow-lg">
+        <table class="myTable table-lg table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>
@@ -41,9 +41,7 @@ onMounted(async () => {
                     <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title font-bold h-[30px] text-[2vh] break-all hover:cursor-pointer" @click="">
                         {{ board.name }}
                     </td>
-                    <td>
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black">{{}}</button>
-                    </td>
+                    
                     <td>
                         <div class="flex justify-center items-center h-full">
                             <div class="itbkk-button-action dropdown dropdown-hover">
