@@ -20,9 +20,9 @@ const selectedIndex = ref(null)
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>
-                    <th style="width: 55%">No</th>
+                    <th style="width: 10%">No</th>
                     <th style="width: 25%">Name</th>
-                    <th style="width: 10%" class="text-center">
+                    <th style="width: 65%" class="text-center">
                         action
                         
                     </th>
