@@ -38,56 +38,80 @@ const submitSignIn = async () => {
 </script>
 
 <template>
-    <div>
-        <div class="flex justify-center items-center mt-[25vh] col-span-2">
-            <div class="w-[90vh] p-[6vh] bg-pink-300 rounded-lg shadow-lg" :class="themeStore.getModalTheme()">
-                <h1 class="text-2xl font-bold text-center">Welcome To ITB-KK</h1>
+    <div class="min-h-screen  max-h-full flex items-center justify-center  bg-pink-100" :class="themeStore.getBackgroundTheme()">
+        <div class="flex w-[80vw] h-[80vh] bg-white rounded-3xl shadow-lg overflow-hidden">
+            <!-- Left Side - Information Section -->
+            <div class="w-1/2 bg-pink-300 p-10 flex flex-col justify-center text-white" :class="themeStore.getModalTheme()">
+                <h1 class="text-4xl font-bold mb-6">Welcome To ITB-KK</h1>
+                <p class="text-lg leading-relaxed">This website is a Kanban board platform designed to empower you to easily visualize your tasks, manage work-in-progress, and enhance workflow efficiency.</p>
+            </div>
 
-                <div class="mb-4">
-                    <div class="flex justify-between items-center">
-                        <label for="username" :class="themeStore.getTextTheme()" class="block text-sm font-medium text-gray-700">Username</label>
-                        <p v-show="loginField.userName.length > 0" :class="themeStore.getTextTheme()" class="block text-[0.75rem] font-medium text-gray-700">{{ loginField.userName.length }} /50</p>
-                    </div>
-                    <input
-                        type="text"
-                        id="text"
-                        name="username"
-                        v-model="loginField.userName"
-                        maxlength="50"
-                        :class="themeStore.getTheme()"
-                        class="itbkk-username mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    />
-                </div>
-                <div class="mb-4">
-                    <div class="flex justify-between items-center">
-                        <label for="password" :class="themeStore.getTextTheme()" class="block text-sm font-medium text-gray-700">Password</label>
+            <!-- Right Side - Sign In Form -->
+            <div class="w-1/2 p-10 flex flex-col justify-center">
+                <h2 class="text-3xl font-bold text-center mb-8 text-black">SIGN IN</h2>
 
-                        <p v-show="loginField.password.length > 0" :class="themeStore.getTextTheme()" class="block text-[0.75rem] font-medium text-gray-500">{{ loginField.password.length }} /14</p>
-                    </div>
+                <!-- Username Input with Icon -->
+                <div class="mb-6 relative">
                     <div class="relative">
+                        <i class="fa fa-user-circle absolute inset-y-0 left-4 flex items-center text-gray-500"></i>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            v-model="loginField.userName"
+                            maxlength="50"
+                            placeholder="Username"
+                            :class="themeStore.getTheme()"
+                            class="itbkk-username w-full pl-12 py-4 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500"
+                        />
+                        <p
+                            v-show="loginField.userName.length > 0"
+                            :class="themeStore.getTextTheme()"
+                            class="absolute right-12 top-1/2 transform -translate-y-1/2 text-[0.75rem] font-medium text-gray-400"
+                        >
+                            {{ loginField.userName.length }} /50
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Password Input with Icon -->
+                <div class="mb-6">
+                    <div class="relative">
+                        <i class="fa fa-lock absolute inset-y-0 left-4 flex items-center text-gray-500"></i>
                         <input
                             :type="isPasswordVisible ? 'text' : 'password'"
                             id="password"
                             name="password"
                             v-model="loginField.password"
                             maxlength="14"
+                            placeholder="Password"
                             :class="themeStore.getTheme()"
-                            class="itbkk-password mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-10"
+                            class="itbkk-password w-full pl-12 py-4 border border-gray-300 rounded-full shadow-sm focus:ring-2 focus:ring-pink-500 focus:border-pink-500 pr-10"
                         />
                         <img
                             :src="`${base ? base : ''}${isPasswordVisible ? '/eye_off_icon.png' : '/eye_icon.png'}`"
                             @click="togglePasswordVisibility"
-                            class="absolute inset-y-2 right-3 ml-2 h-5 w-5 cursor-pointercursor-pointer"
+                            class="absolute mt-2 inset-y-2 right-4 ml-3 h-6 w-6 cursor-pointercursor-pointer"
                         />
+                        <i class="absolute inset-y-0 right-4 mt-4 cursor-pointer" @click="togglePasswordVisibility"></i>
+                        <p
+                            v-show="loginField.password.length > 0"
+                            :class="themeStore.getTextTheme()"
+                            class="absolute right-12 top-1/2 transform -translate-y-1/2 text-[0.75rem] font-medium text-gray-400"
+                        >
+                            {{ loginField.password.length }} /14
+                        </p>
                     </div>
                 </div>
+
+                <!-- Sign In Button -->
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
-                    :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'disabled' : ''"
-                    class="itbkk-button-signin btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg w-full"
-                    @click="submitSignIn()"
+                    :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'opacity-50 cursor-not-allowed' : themeStore.getButtonTheme()"
+                    class="itbkk-button-signin w-full text-white font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300"
+                    @click="submitSignIn"
                 >
-                    Sign In
+                    LOGIN
                 </button>
             </div>
         </div>
