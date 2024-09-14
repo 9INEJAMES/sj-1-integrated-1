@@ -38,7 +38,7 @@ export const useStatusApi = () => {
 
     async function getAllStatuses() {
         try {
-            return (await fetchWithToken(`/v2/statuses`)).json()
+            return (await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses`)).json()
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }
@@ -46,7 +46,7 @@ export const useStatusApi = () => {
 
     async function getStatusById(id) {
         try {
-            return (await fetchWithToken(`/v2/statuses/${id}`)).json()
+            return (await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}`)).json()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error fetching status by ID: ${error}`)
@@ -55,7 +55,7 @@ export const useStatusApi = () => {
 
     async function addStatus(status) {
         try {
-            const result = await fetchWithToken(`/v2/statuses`, {
+            const result = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses`, {
                 method: 'POST',
                 body: JSON.stringify({ ...status }),
             })
@@ -69,7 +69,7 @@ export const useStatusApi = () => {
 
     async function updateStatus(status) {
         try {
-            const updatedStatus = await fetchWithToken(`/v2/statuses/${status.id}`, {
+            const updatedStatus = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${status.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...status }),
             })
@@ -83,7 +83,7 @@ export const useStatusApi = () => {
 
     async function deleteStatus(id) {
         try {
-            const deleted = await fetchWithToken(`/v2/statuses/${id}`, {
+            const deleted = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}`, {
                 method: 'DELETE',
             })
             toastStore.changeToast(true, 'The status has been deleted.')
@@ -96,7 +96,7 @@ export const useStatusApi = () => {
 
     async function deleteStatusAndTransfer(id, newStatus, tasks) {
         try {
-            const deleted = await fetchWithToken(`/v2/statuses/${id}/${newStatus.id}`, {
+            const deleted = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
             toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
