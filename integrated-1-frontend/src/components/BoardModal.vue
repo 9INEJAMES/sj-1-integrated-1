@@ -1,9 +1,9 @@
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
-import { useTheme } from '@/stores/theme.js'
-import { useBoardApi } from '@/composables/board-api'
-import { useBoardStore } from '@/stores/board'
+import { useRoute, useRouter } from "vue-router"
+import { onMounted, ref, watch } from "vue"
+import { useTheme } from "@/stores/theme.js"
+import { useBoardApi } from "@/composables/board-api"
+import { useBoardStore } from "@/stores/board"
 const themeStore = useTheme()
 
 const route = useRoute()
@@ -11,39 +11,65 @@ const router = useRouter()
 const boardApi = useBoardApi()
 const boardStore = useBoardStore()
 const isDisabled = ref(false)
+const isChanged = ref(false)
 
-const isNullStr = (str) => {
-    if (str == null || str.trim().length == 0) {
-        return null
-    } else return str
-}
 const newBoard = ref({
+    boardId: '',
+    name: ''
+})
+const oldBoard = ref({
+    boardId: '',
     name: '',
 })
+
+
 const submitBoard = async (isSave) => {
     if (isSave) {
-        if (route.params.id) {
+        if (route.params.bid) {
             const updated = await boardApi.updateBoard(newBoard.value)
+            boardStore.updateBoard({
+                ...updated,
+            })
             if (updated)
                 boardStore.updateBoard({
                     ...updated,
                 })
+                 console.log(updated)
         } else {
             const board = await boardApi.createBoard(newBoard.value)
 
             if (board) boardStore.addBoard(board)
         }
-        newBoard.value.name = ''
+        newBoard.value.name = ""
     }
     router.back()
 }
+
+onMounted(async () => {
+    if (route.name == "boardEdit") {
+        const board = await boardStore.getBoard(route.params.bid)
+        oldBoard.value = { ...boardStore.getBoard() }
+        newBoard.value = { ...boardStore.getBoard() }
+    }
+})
+
+watch(
+    newBoard,
+    () => {
+        if (JSON.stringify(newBoard.value) === JSON.stringify(oldBoard.value)) isChanged.value = false
+        else isChanged.value = true
+    },
+    { deep: true }
+)
 </script>
 
 <template>
     <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 w-full">
         <div class="itbkk-modal-task bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-lg mx-6">
             <div class="flex justify-between items-center mb-4">
-                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Create New Board</p>
+                <p v-if="$route.name == 'boardAdd'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Create New Board</p>
+                <p v-if="$route.name == 'boardDelete'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Delete Board</p>
+                <p v-if="$route.name == 'boardEdit'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Edit Board</p>
                 <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" @click="router.back()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -53,8 +79,19 @@ const submitBoard = async (isSave) => {
 
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
 
-            <div class="mb-5">
+            <div class="mb-5" v-if="$route.name == 'boardAdd'">
                 <label for="title" class="block text-gray-700 dark:text-gray-300 mb-1 font-medium"> Name <span class="text-red-600">*</span> </label>
+                <input
+                    v-model="newBoard.name"
+                    type="text"
+                    id="title"
+                    class="block w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                    placeholder="Enter your board name"
+                    :disabled="isDisabled"
+                />
+            </div>
+            <div class="mb-5" v-if="$route.name == 'boardEdit'">
+                <label for="title" class="block text-gray-700 dark:text-gray-300 mb-1 font-medium"> Change board name <span class="text-red-600">*</span> </label>
                 <input
                     v-model="newBoard.name"
                     type="text"
@@ -73,13 +110,27 @@ const submitBoard = async (isSave) => {
                     Cancel
                 </button>
                 <button
+                    v-if="$route.name == 'boardEdit'"
+                    class="itbkk-button-confirm px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500 disabled:bg-slate-300"
+                    :class="newBoard.name.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'taskAdd')
+                            ? 'disabled'
+                            : ''
+                        "
+                    @click="submitBoard(true)"
+                >
+                    Save
+                </button>
+
+                <button
+                    v-if="$route.name == 'boardAdd'"
                     class="itbkk-button-confirm px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500 disabled:bg-slate-300"
                     :class="newBoard.name.length <= 0 ? 'disabled' : ''"
                     :disabled="newBoard.name.length <= 0"
                     @click="submitBoard(true)"
                 >
-                    Save
+                    Create
                 </button>
+
             </div>
         </div>
     </div>

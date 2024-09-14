@@ -29,11 +29,12 @@ const goBackHome = () => {
             <div class="flex">
                 <div class="flex-col">
                     <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
-                    <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.path === '/task' || $route.path === '/status'">
+                    <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" >
                         {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
                     </p>
                 </div>
-                <div v-if="$route.name !== 'login' && $route.name !== 'homepage' && $route.name !== 'boardView' && $route.name !== 'boardAdd'" class="btn" @click="goBackHome()">
+                <div v-if="$route.name !== 'login' && $route.name !== 'homepage' && $route.name !== 'boardView' && $route.name !== 'boardAdd' 
+                && $route.name !== 'boardEdit' && $route.name !== 'boardDelete'" class="btn ml-[10vh]" @click="goBackHome()">
                     home
                 </div>
             </div>

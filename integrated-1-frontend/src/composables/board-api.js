@@ -73,15 +73,19 @@ export const useBoardApi = () => {
 
     async function deleteBoard(id) {
         try {
-            const updatedStatus = await fetchWithToken(`/v3/boards/${board.id}`, {
-                method: 'DELETE',
-                body: JSON.stringify({ ...board }),
+            const response = await fetchWithToken(`/v3/boards/${id}`, {
+                method: "DELETE",
             })
-            toastStore.changeToast(true, 'The board has been deleted.')
-            return updatedStatus.json()
+            if (response.ok) {
+                toastStore.changeToast(true, "The board has been deleted.")
+                return response.json()
+            } else {
+                toastStore.changeToast(false, "An error has occurred, the board could not be deleted.")
+                console.error(`Error deleting board: ${response.statusText}`)
+            }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the board does not exist.')
-            console.error(`Error updating board: ${error}`)
+            toastStore.changeToast(false, "An error has occurred, the board could not be deleted.")
+            console.error(`Error deleting board: ${error}`)
         }
     }
 
