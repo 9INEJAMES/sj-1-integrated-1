@@ -35,12 +35,21 @@ const router = createRouter({
             name: 'boardView',
             component: BoardView,
             children: [
-                // Nested Board Routes
                 {
                     path: 'add',
                     name: 'boardAdd',
                     component: BoardModal,
                 },
+                {
+                    path: 'delete',
+                    name: 'boardDelete',
+                    component: BoardModal,
+                },
+                {
+                    path: ':bid/edit',
+                    name: 'boardEdit',
+                    component: BoardModal,
+                }
             ],
         },
         // Nested Status Routes
