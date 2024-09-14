@@ -46,7 +46,7 @@ const handleDeleteModal = () => {
 <template>
     <div>
         <ConfirmDelete v-if="deleteModal" mode="task" :object="selectedTask" :number="selectedIndex" @closeModal="handleDeleteModal" />
-        <table class="myTable table-pin-rows shadow-lg">
+        <table class="myTable table-pin-rows shadow-lg ">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>

@@ -38,7 +38,7 @@ const submitSignIn = async () => {
 </script>
 
 <template>
-    <div class="min-h-screen  max-h-full flex items-center justify-center  bg-pink-100" :class="themeStore.getBackgroundTheme()">
+    <div class="min-h-screen  max-h-full flex items-center justify-center" :class="themeStore.getBackgroundTheme()">
         <div class="flex w-[80vw] h-[80vh] bg-white rounded-3xl shadow-lg overflow-hidden">
             <!-- Left Side - Information Section -->
             <div class="w-1/2 bg-pink-300 p-10 flex flex-col justify-center text-white" :class="themeStore.getModalTheme()">

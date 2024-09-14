@@ -34,7 +34,6 @@ const submitBoard = async (isSave) => {
                 boardStore.updateBoard({
                     ...updated,
                 })
-                 console.log(updated)
         } else {
             const board = await boardApi.createBoard(newBoard.value)
 
