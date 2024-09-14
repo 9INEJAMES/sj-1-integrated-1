@@ -2,11 +2,24 @@
 import { ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth.js'
+import { useTasksStore } from '@/stores/task'
+import { useStatusesStore } from '@/stores/status'
+import { useRouter } from 'vue-router'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
 const authStore = useAuthStore()
 const base = import.meta.env.VITE_BASE
+const taskStore = useTasksStore()
+const status = useStatusesStore()
+const router = useRouter()
+
+const goBackHome = () => {
+    router.push({ name: 'boardView' })
+    taskStore.resetTasks()
+    status.resetStatuses()
+    
+}
 </script>
 
 <template>
@@ -14,14 +27,15 @@ const base = import.meta.env.VITE_BASE
         <div class="flex gap-3 items-center">
             <img :src="`${base ? base : ''}/pig${themeStore.isLight ? '' : '2'}.png`" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce" />
             <div class="flex">
-            <div class="flex-col">
-                <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
-                <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.path === '/task' || $route.path === '/status'">
-                    {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
-                </p>
-                
-            </div>
-            <div v-if="$route.name !== 'login' && $route.name !== 'homepage' && $route.name !== 'boardView'" class="btn" @click="$router.push({ name: 'boardView' })">home</div>
+                <div class="flex-col">
+                    <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
+                    <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.path === '/task' || $route.path === '/status'">
+                        {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
+                    </p>
+                </div>
+                <div v-if="$route.name !== 'login' && $route.name !== 'homepage' && $route.name !== 'boardView' && $route.name !== 'boardAdd'" class="btn" @click="goBackHome()">
+                    home
+                </div>
             </div>
         </div>
         <div class="flex items-center">

@@ -1,14 +1,12 @@
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
 import router from '@/router'
-import { useBoardStore } from '@/stores/board'
 import { useRoute } from 'vue-router'
 
 export const useStatusApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
-    const boardStore = useBoardStore()
     const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
@@ -33,10 +31,6 @@ export const useStatusApi = () => {
             localStorage.removeItem('authData')
             router.push('/login')
         }
-
-        // if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`)
-        // }
         return response
     }
 
@@ -63,6 +57,10 @@ export const useStatusApi = () => {
                 method: 'POST',
                 body: JSON.stringify({ ...status }),
             })
+            if (result.status >= 400) {
+                toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
+                return
+            }
             toastStore.changeToast(true, 'The status has been added.')
             return result.json()
         } catch (error) {

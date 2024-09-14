@@ -7,6 +7,7 @@ export const useToast = defineStore('toast', () => {
     const currToast = ref({ style: '', msg: '' })
     let myTimeout = null
     const changeToast = async (isSuccess, msg) => {
+        resetToast()
         clearTimeout(myTimeout)
         isSuccess ? (currToast.value.style = 'alert-success') : (currToast.value.style = 'alert-error')
         if (!isSuccess || msg.toLowerCase().includes('tranferred') || msg.toLowerCase().includes('the status has been updated.')) {

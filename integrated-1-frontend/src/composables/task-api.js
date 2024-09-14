@@ -1,7 +1,6 @@
 import { useStatusesStore } from '@/stores/status.js'
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
-import { useBoardStore } from '@/stores/board'
 import { useRoute, useRouter } from 'vue-router'
 
 export const useTaskApi = () => {
@@ -9,7 +8,6 @@ export const useTaskApi = () => {
     const statusesStore = useStatusesStore()
     const authStore = useAuthStore()
     const url = import.meta.env.VITE_BASE_URL
-    const boardStore = useBoardStore()
     const route = useRoute()
     const router = useRouter()
 
@@ -35,10 +33,6 @@ export const useTaskApi = () => {
             localStorage.removeItem('authData')
             router.push('/login')
         }
-
-        // if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`)
-        // }
         return response
     }
 

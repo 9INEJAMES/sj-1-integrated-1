@@ -8,7 +8,6 @@ export const useBoardApi = () => {
     const authStore = useAuthStore()
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
-    const boardStore = useBoardStore()
     const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
@@ -33,10 +32,6 @@ export const useBoardApi = () => {
             localStorage.removeItem('authData')
             router.push('/login')
         }
-
-        // if (!response.ok) {
-        //     throw new Error(`HTTP error! status: ${response.status}`)
-        // }
         return response
     }
 
@@ -82,10 +77,10 @@ export const useBoardApi = () => {
                 method: 'DELETE',
                 body: JSON.stringify({ ...board }),
             })
-            toastStore.changeToast(true, 'The board has been updated.')
+            toastStore.changeToast(true, 'The board has been deleted.')
             return updatedStatus.json()
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the board could not be updated.')
+            toastStore.changeToast(false, 'An error has occurred, the board does not exist.')
             console.error(`Error updating board: ${error}`)
         }
     }

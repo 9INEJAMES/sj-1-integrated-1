@@ -34,7 +34,8 @@ onMounted(async () => {
     authStore.checkToken()
     const bid = route.params.bid
     boardStore.findBoard(bid)
-    taskStore.fetchTasks()
+    if (taskStore.tasks.length === 0) taskStore.fetchTasks()
+    if (statusStore.statuses.length === 0) statusStore.fetchStatuses()
 })
 </script>
 

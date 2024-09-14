@@ -3,7 +3,6 @@ package int221.integrated1backend.services;
 import int221.integrated1backend.dtos.StatusInputDTO;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
-import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +25,12 @@ public class StatusService {
     public List<Status> getAllStatus() {
         return repository.findAll();
     }
+
     public List<Status> getDefaultStatus() {
         return repository.findAllByBoardId("kanbanbase");
     }
 
-    public List<Status> getAllStatusByBoardId(String id){
+    public List<Status> getAllStatusByBoardId(String id) {
         List<Status> statusList = new ArrayList<>();
         statusList.addAll(getDefaultStatus());
         statusList.addAll(repository.findAllByBoardId(id));
@@ -48,10 +48,10 @@ public class StatusService {
     }
 
     @Transactional("firstTransactionManager")
-    public Status createNewStatus(StatusInputDTO statusInputDTO,Board board) {
+    public Status createNewStatus(StatusInputDTO statusInputDTO, Board board) {
         Status newStatus = modelMapper.map(statusInputDTO, Status.class);
-        isUnique(newStatus);
         newStatus.setBoard(board);
+        isUnique(newStatus);
         return repository.save(newStatus);
     }
 
@@ -75,7 +75,7 @@ public class StatusService {
         List<Status> statuses = getAllStatus();
         if (newStatus.getName() != null) {
             for (Status status : statuses) {
-                if (!Objects.equals(status.getId(), newStatus.getId()) && Objects.equals(status.getName().toLowerCase(), newStatus.getName().toLowerCase())) {
+                if (!Objects.equals(status.getId(), newStatus.getId()) && Objects.equals(status.getBoard().getId(), newStatus.getBoard().getId()) && Objects.equals(status.getName().toLowerCase(), newStatus.getName().toLowerCase())) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name must be unique");
                 }
             }

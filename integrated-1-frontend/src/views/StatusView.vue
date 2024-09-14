@@ -30,17 +30,17 @@ onMounted(async () => {
     authStore.checkToken()
     const bid = route.params.bid
     boardStore.findBoard(bid)
-    taskStore.fetchTasks()
-    statusStore.fetchStatuses()
+    // statusStore.fetchStatuses()
+    if (taskStore.tasks.length === 0) taskStore.fetchTasks()
+    if (statusStore.statuses.length === 0) statusStore.fetchStatuses()
 })
 </script>
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting"
-                :iconurl="`${base ? base : ''}/settings.png`" />
-            <VButton msg="Manage Task" class="itbkk-button-home" @click="$router.push({name:'taskView'})"/>
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
+            <VButton msg="Manage Task" class="itbkk-button-home" @click="$router.push({ name: 'taskView' })" />
         </div>
         <RouterLink :to="{ name: 'statusAdd' }">
             <VButton class="itbkk-button-add" msg="Add Status" />
