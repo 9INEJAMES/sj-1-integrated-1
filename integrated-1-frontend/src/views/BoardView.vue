@@ -11,6 +11,10 @@ const isSelectTask = ref(false)
 const themeStore = useTheme()
 
 const authStore = useAuthStore()
+
+onMounted(async () => {
+    authStore.checkToken()
+})
 </script>
 
 <template>

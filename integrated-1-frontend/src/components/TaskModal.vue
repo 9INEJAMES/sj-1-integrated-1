@@ -85,9 +85,9 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    // await boardStore.fetchBoard()
-    // await statusStore.fetchStatuses()
-    limitTask.value = boardStore.findBoard(boardStore.currBid)
+    await boardStore.fetchBoard()
+    await statusStore.fetchStatuses()
+    limitTask.value = boardStore.findBoard(route.params.bid)
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
         isDisibled.value = true

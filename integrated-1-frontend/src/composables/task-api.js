@@ -2,7 +2,7 @@ import { useStatusesStore } from '@/stores/status.js'
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
 import { useBoardStore } from '@/stores/board'
-import router from '@/router'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useTaskApi = () => {
     const toastStore = useToast()
@@ -10,6 +10,8 @@ export const useTaskApi = () => {
     const authStore = useAuthStore()
     const url = import.meta.env.VITE_BASE_URL
     const boardStore = useBoardStore()
+    const route = useRoute()
+    const router = useRouter()
 
     async function fetchWithToken(endpoint, options = {}) {
         const token = authStore.getToken()
@@ -23,7 +25,7 @@ export const useTaskApi = () => {
             headers['Authorization'] = `Bearer ${token}`
         }
 
-        const response = await fetch(`${url}${endpoint}`, {
+        const response = await fetch(`${url}/v3/boards/${route.params.bid}${endpoint}`, {
             ...options,
             headers,
         })
@@ -49,7 +51,7 @@ export const useTaskApi = () => {
                     return acc + prefix + status
                 }, '')
             }
-            const response = await fetchWithToken(`/v3/boards/${boardStore.currBid}/tasks${filter}`)
+            const response = await fetchWithToken(`/tasks${filter}`)
             return response.json()
         } catch (error) {
             console.error(`Error fetching tasks: ${error}`)
@@ -58,7 +60,7 @@ export const useTaskApi = () => {
 
     async function getTaskById(id) {
         try {
-            const result = await fetchWithToken(`/v3/boards/${boardStore.currBid}/tasks/${id}`)
+            const result = await fetchWithToken(`/tasks/${id}`)
             return result.json()
         } catch (error) {
             toastStore.changeToast(false, 'The requested task does not exist')
@@ -68,7 +70,7 @@ export const useTaskApi = () => {
 
     async function addTask(task) {
         try {
-            const response = await fetchWithToken(`/v3/boards/${boardStore.currBid}/tasks`, {
+            const response = await fetchWithToken(`/tasks`, {
                 method: 'POST',
                 body: JSON.stringify({ ...task }),
             })
@@ -94,7 +96,7 @@ export const useTaskApi = () => {
 
     async function updateTask(task) {
         try {
-            const response = await fetchWithToken(`/v3/boards/${boardStore.currBid}/tasks/${task.id}`, {
+            const response = await fetchWithToken(`/tasks/${task.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...task }),
             })
@@ -120,7 +122,7 @@ export const useTaskApi = () => {
 
     async function deleteTask(id) {
         try {
-            const response = await fetchWithToken(`/v3/boards/${boardStore.currBid}/tasks/${id}`, {
+            const response = await fetchWithToken(`/tasks/${id}`, {
                 method: 'DELETE',
             })
 

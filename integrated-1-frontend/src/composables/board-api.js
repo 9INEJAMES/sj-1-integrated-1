@@ -2,12 +2,14 @@ import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
 import router from '@/router'
 import { useBoardStore } from '@/stores/board'
+import { useRoute } from 'vue-router'
 
 export const useBoardApi = () => {
     const authStore = useAuthStore()
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const boardStore = useBoardStore()
+    const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
         const token = authStore.getToken()
@@ -88,17 +90,17 @@ export const useBoardApi = () => {
         }
     }
 
-        async function getLimit() {
+    async function getCurrentBoard() {
         try {
-            return (await fetchWithToken(`/v3/boards/${boardStore.currBid}`)).json()
+            return (await fetchWithToken(`/v3/boards/${route.params.bid}`)).json()
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
     }
-
-    async function updateLimit(obj) {
+    
+    async function updateBoardLimit(board) {
         try {
-            const response = await fetchWithToken(`/limit`, {
+            const response = await fetchWithToken(`/v3/boards/${route.params.bid}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...obj }),
             })
@@ -110,8 +112,8 @@ export const useBoardApi = () => {
 
             const result = await response.json()
 
-            if (obj.limit) {
-                toastStore.changeToast(true, `The Kanban board now limits ${obj.limitMaximumTask} tasks in each status`)
+            if (board.limit) {
+                toastStore.changeToast(true, `The Kanban board now limits ${board.limitMaximumTask} tasks in each status`)
             } else {
                 toastStore.changeToast(true, `The Kanban board has disabled the task limit in each status`)
             }
@@ -123,5 +125,5 @@ export const useBoardApi = () => {
         }
     }
 
-    return { getAllBoard, createBoard,deleteBoard,updateBoard, getLimit, updateLimit }
+    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit }
 }

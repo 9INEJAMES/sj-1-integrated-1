@@ -1,24 +1,29 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 import { useBoardApi } from '@/composables/board-api'
+import { useRoute } from 'vue-router'
 
 export const useBoardStore = defineStore('board', () => {
+    const route = useRoute()
     const boards = ref([])
     const boardApi = useBoardApi()
-    const currBid = ref('')
 
-    const fetchBoard = async () => {
+    const fetchBoard = async (bid) => {
         const data = await boardApi.getAllBoard()
         resetBoard()
         addBoards(data)
+        findBoard(bid)
     }
 
-    function updateBoard(updatedLimt) {
-        boards.value = updatedLimt
+    function updateBoard(updatedBoard) {
+        const index = findBoardIndex(updatedBoard.id)
+        if (index !== -1) {
+            boards.value.splice(index, 1, updatedBoard)
+        }
     }
 
     function getBoard() {
-        return boards.value
+        return findBoard(route.params.bid)
     }
     function resetBoard() {
         boards.value = []
@@ -32,11 +37,23 @@ export const useBoardStore = defineStore('board', () => {
         boards.value.push(newBoard)
     }
 
+    function removeBoard(removeId) {
+        const index = findBoardIndex(removeId)
+        if (index !== -1) {
+            boards.value.splice(index, 1)
+        }
+    }
+
     const findBoard = (bid) => {
-        currBid.value = bid
         return boards.value.find((board) => board.id == bid)
     }
-    return { currBid, boards, fetchBoard, getBoard, updateBoard, resetBoard, addBoard, addBoards, findBoard }
+    const findBoardIndex = (bid) => {
+        return boards.value.findIndex((board) => board.id == bid)
+    }
+    const resetBoards = () => {
+        boards.value = []
+    }
+    return { boards, fetchBoard, addBoard, updateBoard, removeBoard, findBoard, findBoardIndex, resetBoards, getBoard }
 })
 
 if (import.meta.hot) {

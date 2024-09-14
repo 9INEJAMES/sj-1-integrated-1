@@ -10,7 +10,9 @@ import { useBoardStore } from '@/stores/board'
 import { onMounted } from 'vue'
 import { useTasksStore } from '@/stores/task'
 import { useAuthStore } from '@/stores/auth'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
 const base = import.meta.env.VITE_BASE
 const isSettingOpen = ref(false)
 const themeStore = useTheme()
@@ -26,8 +28,10 @@ const chosenStatus = async (id) => {
 }
 onMounted(async () => {
     authStore.checkToken()
-    if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
+    const bid = route.params.bid
+    boardStore.findBoard(bid)
+    taskStore.fetchTasks()
+    statusStore.fetchStatuses()
 })
 </script>
 

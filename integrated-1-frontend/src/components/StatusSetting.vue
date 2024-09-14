@@ -2,10 +2,9 @@
 import { useTheme } from '@/stores/theme'
 import { useBoardStore } from '@/stores/board'
 import { onMounted, ref, watch } from 'vue'
-import { useLimitApi } from '@/composables/limit-api'
 import { useStatusesStore } from '@/stores/status'
+import { useBoardApi } from '@/composables/board-api'
 
-const limitApi = useLimitApi()
 const themeStore = useTheme()
 const boardStore = useBoardStore()
 const oldLimit = ref({ limit: false, limitMaximumTask: 10 })
@@ -14,11 +13,12 @@ const isChanged = ref(false)
 const status = useStatusesStore()
 const emit = defineEmits(['close'])
 const statusReachedLimit = ref([])
+const boardApi = useBoardApi()
 
 onMounted(async () => {
     await status.fetchStatuses()
-    oldLimit.value = { ...boardStore.getLimit() }
-    newLimit.value = { ...boardStore.getLimit() }
+    oldLimit.value = { ...boardStore.getBoard() }
+    newLimit.value = { ...boardStore.getBoard() }
     checkStatusLimit() // Ensure the check is run on mount
 })
 
@@ -33,9 +33,9 @@ watch(
 
 const submitSetting = async (isSave) => {
     if (isSave) {
-        const updated = await limitApi.updateLimit(newLimit.value)
+        const updated = await boardApi.updateBoard(newLimit.value)
         if (updated) {
-            boardStore.updateLimit({ ...updated })
+            boardStore.updateBoard({ ...updated })
         }
     }
     emit('close')

@@ -22,8 +22,6 @@ onMounted(async () => {
 const boardSelector = async (bid) => {
     authStore.checkToken()
     boardStore.findBoard(bid)
-    await taskStore.fetchTasks()
-    // await statusStore.fetchStatuses()
     router.push({
         name: 'taskView',
         params: {

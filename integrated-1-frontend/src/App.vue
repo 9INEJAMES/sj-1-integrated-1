@@ -3,11 +3,15 @@
 import NavHeader from './components/NavHeader.vue'
 import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
+import { onMounted } from 'vue'
+import { useAuthStore } from '@/stores/auth.js'
 
-
+const authStore = useAuthStore()
 const themeStore = useTheme()
 
-
+onMounted(async () => {
+    authStore.checkToken()
+})
 </script>
 
 <template>

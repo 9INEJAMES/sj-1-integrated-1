@@ -1,11 +1,15 @@
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
 import router from '@/router'
+import { useBoardStore } from '@/stores/board'
+import { useRoute } from 'vue-router'
 
 export const useStatusApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
+    const boardStore = useBoardStore()
+    const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
         const token = authStore.getToken()
@@ -19,7 +23,7 @@ export const useStatusApi = () => {
             headers['Authorization'] = `Bearer ${token}`
         }
 
-        const response = await fetch(`${url}${endpoint}`, {
+        const response = await fetch(`${url}/v3/boards/${route.params.bid}${endpoint}`, {
             ...options,
             headers,
         })
@@ -38,7 +42,7 @@ export const useStatusApi = () => {
 
     async function getAllStatuses() {
         try {
-            return (await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses`)).json()
+            return (await fetchWithToken(`/statuses`)).json()
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }
@@ -46,7 +50,7 @@ export const useStatusApi = () => {
 
     async function getStatusById(id) {
         try {
-            return (await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}`)).json()
+            return (await fetchWithToken(`/statuses/${id}`)).json()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error fetching status by ID: ${error}`)
@@ -55,7 +59,7 @@ export const useStatusApi = () => {
 
     async function addStatus(status) {
         try {
-            const result = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses`, {
+            const result = await fetchWithToken(`/statuses`, {
                 method: 'POST',
                 body: JSON.stringify({ ...status }),
             })
@@ -69,7 +73,7 @@ export const useStatusApi = () => {
 
     async function updateStatus(status) {
         try {
-            const updatedStatus = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${status.id}`, {
+            const updatedStatus = await fetchWithToken(`/statuses/${status.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...status }),
             })
@@ -83,7 +87,7 @@ export const useStatusApi = () => {
 
     async function deleteStatus(id) {
         try {
-            const deleted = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}`, {
+            const deleted = await fetchWithToken(`/statuses/${id}`, {
                 method: 'DELETE',
             })
             toastStore.changeToast(true, 'The status has been deleted.')
@@ -96,7 +100,7 @@ export const useStatusApi = () => {
 
     async function deleteStatusAndTransfer(id, newStatus, tasks) {
         try {
-            const deleted = await fetchWithToken(`/v3/boards/${boardStore.currBid}/statuses/${id}/${newStatus.id}`, {
+            const deleted = await fetchWithToken(`/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
             toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)

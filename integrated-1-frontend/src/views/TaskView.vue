@@ -26,7 +26,6 @@ const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
 
 const authStore = useAuthStore()
-const currBoard = ref({})
 const chosenTask = async (id) => {
     selectedTask.value = await taskApi.getTaskById(id)
     isSelectTask.value = true
@@ -34,7 +33,7 @@ const chosenTask = async (id) => {
 onMounted(async () => {
     authStore.checkToken()
     const bid = route.params.bid
-    currBoard.value = boardStore.findBoard(bid)
+    boardStore.findBoard(bid)
     taskStore.fetchTasks()
 })
 </script>
