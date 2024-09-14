@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class StatusInputDTO {
-    @NotNull
     private String boardId;
     @Size(min = 0, max = 50)
     @NotNull

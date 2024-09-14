@@ -1,7 +1,9 @@
 package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
+import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +26,16 @@ public class StatusService {
     public List<Status> getAllStatus() {
         return repository.findAll();
     }
+    public List<Status> getDefaultStatus() {
+        return repository.findAllByBoardId("kanbanbase");
+    }
 
+    public List<Status> getAllStatusByBoardId(String id){
+        List<Status> statusList = new ArrayList<>();
+        statusList.addAll(getDefaultStatus());
+        statusList.addAll(repository.findAllByBoardId(id));
+        return statusList;
+    }
 
     public Status findByID(Integer id) {
         return repository.findById(id).orElseThrow(
@@ -36,9 +48,10 @@ public class StatusService {
     }
 
     @Transactional("firstTransactionManager")
-    public Status createNewStatus(StatusInputDTO statusInputDTO) {
+    public Status createNewStatus(StatusInputDTO statusInputDTO,Board board) {
         Status newStatus = modelMapper.map(statusInputDTO, Status.class);
         isUnique(newStatus);
+        newStatus.setBoard(board);
         return repository.save(newStatus);
     }
 
@@ -52,6 +65,7 @@ public class StatusService {
         if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name " + existStatus.getName() + " cannot be change");
         newStatus.setId(id);
+        newStatus.setBoard(existStatus.getBoard());
         isUnique(newStatus);
         return repository.save(newStatus);
     }

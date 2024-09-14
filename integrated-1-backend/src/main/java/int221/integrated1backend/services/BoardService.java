@@ -2,6 +2,7 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.BoardInputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTO;
+import int221.integrated1backend.dtos.BoardOutputDTOwithLimit;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.repositories.in.BoardRepository;
 import org.modelmapper.ModelMapper;
@@ -24,13 +25,19 @@ public class BoardService {
     private UserService userService;
 
 
-    public BoardOutputDTO mapOutputDTO(Board board) {//input board must have oid!!
+    public BoardOutputDTOwithLimit mapOutputDTO(Board board) {//input board must have oid!!
+        BoardOutputDTOwithLimit boardOutputDTO = modelMapper.map(board, BoardOutputDTOwithLimit.class);
+        boardOutputDTO.setOName(userService.findByOid(board.getOid()).getName());
+        return boardOutputDTO;
+    }
+
+    public BoardOutputDTO mapOutputDTONoLimit(Board board) {//input board must have oid!!
         BoardOutputDTO boardOutputDTO = modelMapper.map(board, BoardOutputDTO.class);
         boardOutputDTO.setOName(userService.findByOid(board.getOid()).getName());
         return boardOutputDTO;
     }
 
-    public List<BoardOutputDTO> mapOutputDTOList(List<Board> source) {
+    public List<BoardOutputDTOwithLimit> mapOutputDTOList(List<Board> source) {
         return source.stream().map(entity -> mapOutputDTO(entity)).collect(Collectors.toList());
     }
 
@@ -50,6 +57,8 @@ public class BoardService {
 
     @Transactional("firstTransactionManager")
     public Board createNewBoard(Board newBoard) {
+        newBoard.setLimit(false);
+        newBoard.setLimitMaximumTask(10);
         return repository.save(newBoard);
     }
 

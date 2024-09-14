@@ -2,11 +2,9 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.Board;
+import int221.integrated1backend.entities.in.Status;
 import int221.integrated1backend.entities.in.TaskV2;
-import int221.integrated1backend.services.BoardService;
-import int221.integrated1backend.services.JwtTokenUtil;
-import int221.integrated1backend.services.ListMapper;
-import int221.integrated1backend.services.TaskV2Service;
+import int221.integrated1backend.services.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,9 +23,11 @@ public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-    @Autowired
     private TaskV2Service taskService;
+    @Autowired
+    private StatusService statusService;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -49,7 +50,7 @@ public class BoardControllerV3 {
         String oid = getOidFromHeader(authorizationHeader);
 
         List<Board> boardList = boardService.getBoardByOId(oid);
-        List<BoardOutputDTO> boardOutputDTOList = boardService.mapOutputDTOList(boardList);
+        List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTOList(boardList);
         return ResponseEntity.ok(boardOutputDTOList);
     }
 
@@ -61,7 +62,7 @@ public class BoardControllerV3 {
         board.setOid(oid);
 
         Board newBoard = boardService.createNewBoard(board);
-        BoardOutputDTO boardOutputDTO = boardService.mapOutputDTO(newBoard);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(newBoard);
 
         return ResponseEntity.ok(boardOutputDTO);
     }
@@ -72,7 +73,7 @@ public class BoardControllerV3 {
 
         Board board = boardService.getBoard(id);
 //        permissionCheck(board.getOid(), oid);
-        BoardOutputDTO boardOutputDTO = boardService.mapOutputDTO(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -102,20 +103,12 @@ public class BoardControllerV3 {
     //Task operation
 
     @GetMapping("/{id}/tasks")
-    public ResponseEntity<Object> getTasks(
-            @RequestHeader("Authorization") String authorizationHeader,
-            @PathVariable String id,
-            @RequestParam(defaultValue = "") String[] filterStatuses,
-            @RequestParam(defaultValue = "") String[] sortBy,
-            @RequestParam(defaultValue = "ASC") String[] sortDirection) {
-        //เพิ่มการ get oid from header
+    public ResponseEntity<Object> getTasks(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses, @RequestParam(defaultValue = "") String[] sortBy, @RequestParam(defaultValue = "ASC") String[] sortDirection) {
         String oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
 //        permissionCheck(board.getOid(), oid);
 
         if (filterStatuses.length > 0)
-            //เพิ่มการใช้ id ในการ get task by board id
-            //getAllTaskOfBoard เป็น method ที่สร้างเพิ่มขึ้นมาเพื่อใช้กับ /v3/board
             return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses, sortBy, sortDirection));
         else {
             List<TaskV2> taskList = taskService.getAllTaskOfBoard(id);
@@ -124,11 +117,8 @@ public class BoardControllerV3 {
         }
     }
 
-    //ยังไม่ได้ทำ ดูข้างบนเป็นตัวอย่างแล้วลองทำดูนะจ้ะ ลองเอาไปเทียบกับ getTasks ใน TaskControllerV2 ได้
     @PostMapping("/{id}/tasks")
-    public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO,
-                                             @RequestHeader("Authorization") String authorizationHeader,
-                                             @PathVariable String id) {
+    public ResponseEntity<Object> addNewTask(@RequestBody TaskInputDTO taskDTO, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader);
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.createNewTask(taskDTO);
@@ -138,20 +128,15 @@ public class BoardControllerV3 {
 
     //check task id in board is exist? do it later
     @GetMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId,
-                                              @RequestHeader("Authorization") String authorizationHeader,
-                                              @PathVariable String id) {
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader);
-
         TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         return ResponseEntity.ok(outputDTO);
     }
 
     @PutMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@PathVariable String id,
-                                             @RequestHeader("Authorization") String authorizationHeader,
-                                             @PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> updateTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId, @RequestBody TaskInputDTO taskDTO) {
         String oid = getOidFromHeader(authorizationHeader);
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
@@ -161,12 +146,56 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> deleteTask(@PathVariable String id,
-                                             @RequestHeader("Authorization") String authorizationHeader,
-                                             @PathVariable Integer taskId) {
-        TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId,id);
+    public ResponseEntity<Object> deleteTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId) {
+        TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId, id);
         return ResponseEntity.ok(taskWithIdDTO);
     }
 
+    //all statuses (public)
+    @GetMapping("/{id}/statuses")
+    public ResponseEntity<Object> getAllStatus(@PathVariable String id) {
+        List<Status> statusList = statusService.getAllStatusByBoardId(id);
+        List<StatusOutputDTO> outputDTOList = listMapper.mapList(statusList, StatusOutputDTO.class, modelMapper);
+        return ResponseEntity.ok(outputDTOList);
+    }
+
+    @PostMapping("/{id}/statuses")
+    public ResponseEntity<Object> addNewStatus(@PathVariable String id, @RequestBody StatusInputDTO statusInputDTO) {
+        Status status = statusService.createNewStatus(statusInputDTO,boardService.getBoard(id));
+        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
+    }
+
+    @GetMapping("/{id}/statuses/{statusId}")
+    public ResponseEntity<Object> getStatusById(@PathVariable String id, @PathVariable Integer statusId) {
+        Status status = statusService.findByID(statusId);
+        return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
+    }
+
+    @PutMapping("/{id}/statuses/{statusId}")
+    public ResponseEntity<Object> updateStatus(@PathVariable String id, @PathVariable Integer statusId, @RequestBody StatusInputDTO statusDTO) {
+        Status status = statusService.updateStatus(statusId, statusDTO);
+        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        return ResponseEntity.ok(statusOutputDTO);
+    }
+
+    @DeleteMapping("/{id}/statuses/{statusId}")
+    public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId) {
+        Status status = statusService.removeStatus(statusId);
+        return ResponseEntity.ok().body(new HashMap<>());
+    }
+
+    @DeleteMapping("/{id}/statuses/{statusId}/{newStatusId}")
+    public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
+        List<TaskV2> taskV2List = taskService.updateStatusOfTask(statusId, newStatusId);
+        Status status = statusService.removeStatus(statusId);
+        return ResponseEntity.ok().body(new HashMap<>());
+    }
+
+    @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
+    public ResponseEntity<Object> updateMaximumTask(@PathVariable String id, @PathVariable Integer statusId, @RequestBody StatusInputDTO statusDTO) {
+        Status status = statusService.findByID(statusId);
+        return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
+    }
 }
 

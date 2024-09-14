@@ -37,12 +37,12 @@ public class StatusControllerV2 {
         return ResponseEntity.ok(outputDTOList);
     }
 
-    @PostMapping("")
-    public ResponseEntity<Object> addNewStatus(@RequestBody StatusInputDTO statusInputDTO) {
-        Status status = service.createNewStatus(statusInputDTO);
-        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
-        return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
-    }
+//    @PostMapping("")
+//    public ResponseEntity<Object> addNewStatus(@RequestBody StatusInputDTO statusInputDTO) {
+//        Status status = service.createNewStatus(statusInputDTO);
+//        StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateStatus(@PathVariable Integer id, @RequestBody StatusInputDTO statusDTO) {

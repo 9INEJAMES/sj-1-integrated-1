@@ -1,17 +1,16 @@
 package int221.integrated1backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
-public class BoardOutputDTO {
+public class BoardOutputDTOwithLimit {
     private String id;
     private String name;
-
+    private Boolean limit;
+    @Positive
+    private Integer limitMaximumTask;
     @JsonIgnore
     private String oid;
     @JsonIgnore
