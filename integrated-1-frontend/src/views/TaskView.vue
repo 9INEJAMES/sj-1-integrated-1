@@ -43,9 +43,7 @@ onMounted(async () => {
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
             <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
-            <RouterLink to="/status">
-                <VButton msg="Manage Status" class="itbkk-manage-status" />
-            </RouterLink>
+                <VButton msg="Manage Status" class="itbkk-manage-status" @click="$router.push({name: 'statusView'})"/>
         </div>
         <div class="flex gap-2">
             <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-status-filter" :iconurl="`${base ? base : ''}/filter.png`" />

@@ -28,15 +28,15 @@ onMounted(async () => {
     authStore.checkToken()
     if (taskStore.tasks.length <= 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length <= 0) await statusStore.fetchStatuses()
-    if (boardStore.limitTask.length <= 0) await boardStore.fetchLimit()
 })
 </script>
 
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
-            <RouterLink to="/task"><VButton msg="Manage Task" class="itbkk-button-home" /></RouterLink>
+            <VButton @click="isSettingOpen = true" class="itbkk-status-setting"
+                :iconurl="`${base ? base : ''}/settings.png`" />
+            <VButton msg="Manage Task" class="itbkk-button-home" @click="$router.push({name:'taskView'})"/>
         </div>
         <RouterLink :to="{ name: 'statusAdd' }">
             <VButton class="itbkk-button-add" msg="Add Status" />
