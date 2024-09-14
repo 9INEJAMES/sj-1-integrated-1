@@ -51,7 +51,7 @@ const submitStatus = async (isSave) => {
             if (status) statusesStore.addStatus(status)
         }
     }
-    router.back()
+    router.push({ name: 'statusView' })
 }
 
 const checkLength = (name, value, length) => {
