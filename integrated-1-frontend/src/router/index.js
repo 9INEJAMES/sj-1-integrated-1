@@ -111,20 +111,16 @@ router.beforeEach((to, from, next) => {
         }
     }
 
-    // If the user is trying to access the login page and is already authenticated, redirect to the taskView
     if (to.name === 'login' && !isTokenExpired) {
         next({ name: 'boardView' })
     }
-    // If the user is trying to access a protected page but the token is expired, redirect to the login page
-    else if (to.meta.requiresAuth && isTokenExpired) {
+    else if (isTokenExpired) {
         if (to.name !== 'login') {
-            // Ensure we are not already trying to go to the login page
             next({ name: 'login' })
         } else {
-            next() // If already trying to go to login, proceed
+            next() 
         }
     }
-    // For all other cases, proceed as normal
     else {
         next()
     }

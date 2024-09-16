@@ -5,8 +5,6 @@ services:
     restart: unless-stopped
     networks:
       - integrated_net
-    volumes:
-      - myapp:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
@@ -53,5 +51,3 @@ services:
 networks:
   integrated_net:
 
-volumes:
-  myapp:

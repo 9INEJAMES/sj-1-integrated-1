@@ -40,17 +40,14 @@ const submitSignIn = async () => {
 <template>
     <div class="min-h-screen  max-h-full flex items-center justify-center" :class="themeStore.getBackgroundTheme()">
         <div class="flex w-[80vw] h-[80vh] bg-white rounded-3xl shadow-lg overflow-hidden">
-            <!-- Left Side - Information Section -->
             <div class="w-1/2 bg-pink-300 p-10 flex flex-col justify-center text-white" :class="themeStore.getModalTheme()">
                 <h1 class="text-4xl font-bold mb-6">Welcome To ITB-KK</h1>
                 <p class="text-lg leading-relaxed">This website is a Kanban board platform designed to empower you to easily visualize your tasks, manage work-in-progress, and enhance workflow efficiency.</p>
             </div>
 
-            <!-- Right Side - Sign In Form -->
             <div class="w-1/2 p-10 flex flex-col justify-center">
                 <h2 class="text-3xl font-bold text-center mb-8 text-black">SIGN IN</h2>
 
-                <!-- Username Input with Icon -->
                 <div class="mb-6 relative">
                     <div class="relative">
                         <i class="fa fa-user-circle absolute inset-y-0 left-4 flex items-center text-gray-500"></i>
@@ -74,7 +71,6 @@ const submitSignIn = async () => {
                     </div>
                 </div>
 
-                <!-- Password Input with Icon -->
                 <div class="mb-6">
                     <div class="relative">
                         <i class="fa fa-lock absolute inset-y-0 left-4 flex items-center text-gray-500"></i>
@@ -104,7 +100,6 @@ const submitSignIn = async () => {
                     </div>
                 </div>
 
-                <!-- Sign In Button -->
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
                     :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'opacity-50 cursor-not-allowed' : themeStore.getButtonTheme()"
