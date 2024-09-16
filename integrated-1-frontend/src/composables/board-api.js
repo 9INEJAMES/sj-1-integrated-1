@@ -27,11 +27,7 @@ export const useBoardApi = () => {
             headers,
         })
 
-        if (response.status === 401) {
-            toastStore.changeToast(false, 'Your token is expired. Please log in again')
-            localStorage.removeItem('authData')
-            router.push('/login')
-        }
+        authStore.checkToken()
         return response
     }
 
@@ -45,12 +41,14 @@ export const useBoardApi = () => {
 
     async function createBoard(board) {
         try {
-            const result = await fetchWithToken(`/v3/boards`, {
+            const response = await fetchWithToken(`/v3/boards`, {
                 method: 'POST',
                 body: JSON.stringify({ ...board }),
             })
-            toastStore.changeToast(true, 'The board has been created.')
-            return result.json()
+            if (response.ok) {
+                toastStore.changeToast(true, 'The board has been created.')
+                return response.json()
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be created.')
             console.error(`Error adding board: ${error}`)
@@ -59,12 +57,14 @@ export const useBoardApi = () => {
 
     async function updateBoard(board) {
         try {
-            const updatedStatus = await fetchWithToken(`/v3/boards/${board.id}`, {
+            const response = await fetchWithToken(`/v3/boards/${board.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...board }),
             })
-            toastStore.changeToast(true, 'The board has been updated.')
-            return updatedStatus.json()
+            if (response.ok) {
+                toastStore.changeToast(true, 'The board has been updated.')
+                return response.json()
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be updated.')
             console.error(`Error updating board: ${error}`)
@@ -74,17 +74,14 @@ export const useBoardApi = () => {
     async function deleteBoard(id) {
         try {
             const response = await fetchWithToken(`/v3/boards/${id}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The board has been deleted.")
+                toastStore.changeToast(true, 'The board has been deleted.')
                 return response.json()
-            } else {
-                toastStore.changeToast(false, "An error has occurred, the board could not be deleted.")
-                console.error(`Error deleting board: ${response.statusText}`)
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the board could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
         }
     }
@@ -96,7 +93,7 @@ export const useBoardApi = () => {
             console.error(`Error fetching limit: ${error}`)
         }
     }
-    
+
     async function updateBoardLimit(board) {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}`, {
@@ -109,15 +106,13 @@ export const useBoardApi = () => {
                 return
             }
 
-            const result = await response.json()
-
             if (board.limit) {
                 toastStore.changeToast(true, `The Kanban board now limits ${board.limitMaximumTask} tasks in each status`)
             } else {
                 toastStore.changeToast(true, `The Kanban board has disabled the task limit in each status`)
             }
 
-            return result
+            return response.json()
         } catch (error) {
             toastStore.changeToast(false, 'The update was unsuccessful')
             console.error(`Error updating limit: ${error}`)

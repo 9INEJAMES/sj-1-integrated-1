@@ -1,10 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTasksStore } from '@/stores/task'
 import { useStatusesStore } from '@/stores/status'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { useBoardStore } from '@/stores/board'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
@@ -13,40 +14,87 @@ const base = import.meta.env.VITE_BASE
 const taskStore = useTasksStore()
 const status = useStatusesStore()
 const router = useRouter()
+const route = useRoute()
+const boardStore = useBoardStore()
 
 const goBackHome = () => {
     router.push({ name: 'boardView' })
     taskStore.resetTasks()
     status.resetStatuses()
-    
+}
+const checkPage = () => {
+    const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete']
+    return !excludedRoutes.includes(route.name)
+}
+const getBName = () => {
+    if (route.params.bid && boardStore.boards.length != 0) {
+        return boardStore.findBoard(route.params.bid).name
+    }
 }
 </script>
-
 <template>
-    <div class="poetsen-one-regular justify-between pt-[3vh] flex px-[5vh]">
-        <div class="flex gap-3 items-center">
-            <img :src="`${base ? base : ''}/pig${themeStore.isLight ? '' : '2'}.png`" alt="pig" class="w-[50px] h-[50px] hover:animate-bounce" />
-            <div class="flex">
-                <div class="flex-col">
-                    <p class="font-bold text-[4vh]" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">SJ-1</p>
-                    <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.name != 'login'" >
-                        {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
-                    </p>
-                </div>
-                <div v-if="$route.name !== 'login' && $route.name !== 'homepage' && $route.name !== 'boardView' && $route.name !== 'boardAdd' 
-                && $route.name !== 'boardEdit' && $route.name !== 'boardDelete'" class="btn ml-[10vh]" @click="goBackHome()">
-                    home
-                </div>
+    <div class="poetsen-one-regular justify-between pt-[3vh] flex px-[5vh] items-center">
+        <div class="flex gap-5 items-center">
+            <img
+                v-if="checkPage()"
+                @click="goBackHome"
+                :src="`${base ? base : ''}/pHome${themeStore.isLight ? '1' : '2'}.png`"
+                alt="pig"
+                class="w-[50px] h-[50px] hover:cursor-pointer transition-transform duration-300 transform hover:scale-105"
+            />
+
+            <img
+                v-else
+                :src="`${base ? base : ''}/pig${themeStore.isLight ? '1' : '2'}.png`"
+                alt="pig"
+                class="w-[50px] h-[50px] hover:animate-bounce transition-transform duration-300 transform hover:scale-105"
+            />
+            <div class="flex flex-col">
+                <p class="font-bold text-[4vh] leading-none itbkk-boardname" :class="themeStore.isLight ? 'text-pink-400' : 'text-cyan-500'">
+                    {{ checkPage() ? getBName() : 'SJ-1' }}
+                </p>
+
+                <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.name !== 'login'">
+                    {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
+                </p>
             </div>
         </div>
+
         <div class="flex items-center">
-            <label class="flex cursor-pointer gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    :class="themeStore.getTheme"
+                >
                     <circle cx="12" cy="12" r="5" />
                     <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
                 </svg>
-                <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller" @click="themeStore.changeTheme(isChecked)" v-model="isChecked" />
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+                <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="themeStore.changeTheme(isChecked)" v-model="isChecked" />
+                <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
+                    <span class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform" :class="{ 'translate-x-full': isChecked }"></span>
+                </div>
+
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    :class="themeStore.getTheme"
+                >
                     <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
             </label>

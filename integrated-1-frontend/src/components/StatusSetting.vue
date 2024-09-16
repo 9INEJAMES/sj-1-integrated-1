@@ -52,59 +52,58 @@ const checkStatusLimit = () => {
 </script>
 
 <template>
-    <div class="py-[20vh] px-[56vh] fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 w-full">
-        <div class="h-fit w-full rounded-lg" :class="themeStore.getTheme()">
-            <div class="itbkk-modal-status grid gap-[2vh] rounded-md border-none p-[2vh]">
-                <p class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Status Settings</p>
-                <hr />
-                <div class="text-sm sm:text-lg px-[2vh]">
-                    <p class="font-medium">Users can limit the task in a status by setting maximum tasks in each status (except "No Status" and "Done" statuses).</p>
-                    <br />
-                    <div v-if="statusReachedLimit.length > 0" class="p-[2vh] rounded-lg text-black bg-amber-200 border border-yellow-900 pb-[3vh]">
-                        <p class="text-sm">
-                            <span class="font-semibold" v-for="status in statusReachedLimit" :key="status.id"
-                                >{{ status.name }}({{ status.noOfTasks }} task{{ status.noOfTasks > 1 ? 's' : '' }})
-                            </span>
-                            These statuses have reached the task limit. No additional tasks can be added to these statuses
-                        </p>
-                        <!-- <details class="dropdown w-[20vh] h-[3vh]">
-                            <summary class="m-1 btn text-sm">list of statuses</summary>
-                            <ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-60">
-                                <li v-for="status in statusReachedLimit" :key="status.id">{{ status.name }}({{ status.noOfTasks }} task{{ status.noOfTasks > 1 ? 's' : '' }})</li>
-                            </ul>
-                        </details> -->
-                    </div>
-                    <div class="flex items-center gap-2 mt-[1vh]">
-                        <label class="flex cursor-pointer gap-2">
-                            <input type="checkbox" class="itbkk-limit-task toggle theme-controller" @change="checkStatusLimit" v-model="newLimit.limit" />
-                        </label>
-                        <span class="text-base">Limit tasks in this status</span>
-                    </div>
-                    <br />
-                    <div class="flex items-center gap-2">
-                        <p for="statusName">Maximum tasks</p>
-                        <input
-                            type="number"
-                            v-model="newLimit.limitMaximumTask"
-                            min="1"
-                            :disabled="!newLimit.limit"
-                            class="itbkk-max-task block w-[vh] p-[2vh] resize-none text-sm rounded-lg border text-gray-900 bg-gray-50 border-gray-300"
-                        />
-                    </div>
-                </div>
-                <div class="flex gap-[2vh] justify-end py-[2vh]">
-                    <button
-                        @click="submitSetting(true)"
-                        :disabled="!isChanged || newLimit.limitMaximumTask <= 0"
-                        class="itbkk-button-confirm btn btn-success btn-xs sm:btn-md text-white rounded-md p-2"
-                    >
-                        Save
-                    </button>
-                    <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error btn-xs sm:btn-md text-white rounded-md p-2">Cancel</button>
-                </div>
-            </div>
+  <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 w-full">
+    <div class="h-fit w-full max-w-lg p-4 sm:p-6 rounded-lg" :class="themeStore.getTheme()">
+      <div class="itbkk-modal-status grid gap-3 rounded-md border-none p-4">
+        <p class="text-xl font-semibold" :class="themeStore.getTextHeaderTheme()">Status Settings</p>
+        <hr />
+        <div class="text-sm px-1">
+          <p class="font-medium">
+            Users can limit the task in a status by setting maximum tasks in each status (except "No Status" and "Done" statuses).
+          </p>
+          <br />
+          <div v-if="statusReachedLimit.length > 0" class="p-3 rounded-lg text-black bg-amber-200 border border-yellow-900">
+            <p class="text-sm">
+              <span class="font-semibold" v-for="status in statusReachedLimit" :key="status.id">
+                {{ status.name }} ({{ status.noOfTasks }} task{{ status.noOfTasks > 1 ? 's' : '' }})
+              </span>
+              These statuses have reached the task limit. No additional tasks can be added to these statuses.
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 mt-3">
+            <label class="flex cursor-pointer gap-2">
+              <input type="checkbox" class="itbkk-limit-task toggle theme-controller" @change="checkStatusLimit" v-model="newLimit.limit" />
+            </label>
+            <span class="text-base">Limit tasks in this status</span>
+          </div>
+
+          <div class="flex items-center gap-2 mt-3">
+            <label for="statusName" class="text-base">Maximum tasks</label>
+            <input
+              type="number"
+              v-model="newLimit.limitMaximumTask"
+              min="1"
+              :disabled="!newLimit.limit"
+              class="itbkk-max-task block w-full p-2 text-sm rounded-lg border text-gray-900 bg-gray-50 border-gray-300"
+            />
+          </div>
         </div>
+
+        <div class="flex gap-3 justify-end py-3">
+          <button
+            @click="submitSetting(true)"
+            :disabled="!isChanged || newLimit.limitMaximumTask <= 0"
+            class="itbkk-button-confirm btn btn-success text-white rounded-md px-4 py-2"
+          >
+            Save
+          </button>
+          <button @click="submitSetting(false)" class="itbkk-button-cancel btn btn-error text-white rounded-md px-4 py-2">Cancel</button>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
+
 
 <style scoped></style>

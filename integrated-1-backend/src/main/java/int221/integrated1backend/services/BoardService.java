@@ -52,6 +52,14 @@ public class BoardService {
         board.setName(boardInput.getName() == null ? board.getName() : boardInput.getName());
         board.setLimit(boardInput.getLimit() == null ? board.getLimit() : boardInput.getLimit());
         board.setLimitMaximumTask(boardInput.getLimitMaximumTask() == null ? board.getLimitMaximumTask() : boardInput.getLimitMaximumTask());
+        board.setUpdatedOn(null);
+        return repository.save(board);
+    }
+
+    @Transactional("firstTransactionManager")
+    public Board updateฺInBoard(String id) {
+        Board board = getBoard(id);
+        board.setUpdatedOn(null);
         return repository.save(board);
     }
 

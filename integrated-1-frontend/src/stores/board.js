@@ -50,6 +50,10 @@ export const useBoardStore = defineStore('board', () => {
     const findBoardIndex = (bid) => {
         return boards.value.findIndex((board) => board.id == bid)
     }
+    const findBoardName = (bid) => {
+        const board = findBoard(bid)
+        return board.name
+    }
     const resetBoards = () => {
         boards.value = []
     }

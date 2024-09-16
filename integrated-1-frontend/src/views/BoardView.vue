@@ -5,15 +5,22 @@ import BoardTable from '@/components/BoardTable.vue'
 import { useTheme } from '@/stores/theme'
 import { useAuthStore } from '@/stores/auth'
 import { onMounted } from 'vue'
-
+import { useBoardStore } from '@/stores/board'
+import { useRouter, useRoute } from 'vue-router'
+const boardStore = useBoardStore()
 const base = import.meta.env.VITE_BASE
 const isSelectTask = ref(false)
 const themeStore = useTheme()
+const router = useRouter()
 
 const authStore = useAuthStore()
 
 onMounted(async () => {
     authStore.checkToken()
+    if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+    // if (boardStore.boards.length === 1) {
+    //     router.push({ name: "taskView", params: { bid: boardStore.boards[0].id } })
+    // }
 })
 </script>
 

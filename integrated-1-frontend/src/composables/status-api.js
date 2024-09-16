@@ -26,11 +26,7 @@ export const useStatusApi = () => {
             headers,
         })
 
-        if (response.status === 401) {
-            toastStore.changeToast(false, 'Your token is expired. Please log in again')
-            localStorage.removeItem('authData')
-            router.push('/login')
-        }
+        authStore.checkToken()
         return response
     }
 
@@ -53,16 +49,18 @@ export const useStatusApi = () => {
 
     async function addStatus(status) {
         try {
-            const result = await fetchWithToken(`/statuses`, {
+            const response = await fetchWithToken(`/statuses`, {
                 method: 'POST',
                 body: JSON.stringify({ ...status }),
             })
-            if (result.status >= 400) {
-                toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
-                return
+            // if (response.status >= 400) {
+            //     toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
+            //     return
+            // }
+            if (response.ok) {
+                toastStore.changeToast(true, 'The status has been added.')
+                return response.json()
             }
-            toastStore.changeToast(true, 'The status has been added.')
-            return result.json()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
             console.error(`Error adding status: ${error}`)
@@ -71,12 +69,14 @@ export const useStatusApi = () => {
 
     async function updateStatus(status) {
         try {
-            const updatedStatus = await fetchWithToken(`/statuses/${status.id}`, {
+            const response = await fetchWithToken(`/statuses/${status.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...status }),
             })
-            toastStore.changeToast(true, 'The status has been updated.')
-            return updatedStatus.json()
+            if (response.ok) {
+                toastStore.changeToast(true, 'The status has been updated.')
+                return response.json()
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status could not be updated.')
             console.error(`Error updating status: ${error}`)
@@ -85,11 +85,13 @@ export const useStatusApi = () => {
 
     async function deleteStatus(id) {
         try {
-            const deleted = await fetchWithToken(`/statuses/${id}`, {
+            const response = await fetchWithToken(`/statuses/${id}`, {
                 method: 'DELETE',
             })
-            toastStore.changeToast(true, 'The status has been deleted.')
-            return deleted.json()
+            if (response.ok) {
+                toastStore.changeToast(true, 'The status has been deleted.')
+                return response.json()
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error deleting status: ${error}`)
@@ -98,11 +100,13 @@ export const useStatusApi = () => {
 
     async function deleteStatusAndTransfer(id, newStatus, tasks) {
         try {
-            const deleted = await fetchWithToken(`/statuses/${id}/${newStatus.id}`, {
+            const response = await fetchWithToken(`/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
-            toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
-            return deleted.json()
+            if (response.ok) {
+                toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
+                return response.json()
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error deleting status and transferring tasks: ${error}`)

@@ -28,11 +28,12 @@ const chosenStatus = async (id) => {
 }
 onMounted(async () => {
     authStore.checkToken()
+    if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+    if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
+    if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()
+
     const bid = route.params.bid
     boardStore.findBoard(bid)
-    // statusStore.fetchStatuses()
-    if (taskStore.tasks.length === 0) taskStore.fetchTasks()
-    if (statusStore.statuses.length === 0) statusStore.fetchStatuses()
 })
 </script>
 

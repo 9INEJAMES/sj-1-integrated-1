@@ -28,11 +28,7 @@ export const useTaskApi = () => {
             headers,
         })
 
-        if (response.status === 401) {
-            toastStore.changeToast(false, 'Your token is expired. Please log in again')
-            localStorage.removeItem('authData')
-            router.push('/login')
-        }
+        authStore.checkToken()
         return response
     }
 
@@ -54,8 +50,8 @@ export const useTaskApi = () => {
 
     async function getTaskById(id) {
         try {
-            const result = await fetchWithToken(`/tasks/${id}`)
-            return result.json()
+            const response = await fetchWithToken(`/tasks/${id}`)
+            return response.json()
         } catch (error) {
             toastStore.changeToast(false, 'The requested task does not exist')
             console.error(`Error fetching task by ID: ${error}`)
@@ -78,10 +74,11 @@ export const useTaskApi = () => {
                 toastStore.changeToast(false, 'An error has occurred, the task could not be added.')
                 return
             }
-
-            const result = await response.json()
-            toastStore.changeToast(true, 'The task has been successfully added')
-            return result
+            if (response.ok) {
+                const result = await response.json()
+                toastStore.changeToast(true, 'The task has been successfully added')
+                return result
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the task could not be added.')
             console.error(`Error adding task: ${error}`)
@@ -104,10 +101,11 @@ export const useTaskApi = () => {
                 toastStore.changeToast(false, 'The update was unsuccessful')
                 return
             }
-
-            const updatedTask = await response.json()
-            toastStore.changeToast(true, 'The task has been updated')
-            return updatedTask
+            if (response.ok) {
+                const updatedTask = await response.json()
+                toastStore.changeToast(true, 'The task has been updated')
+                return updatedTask
+            }
         } catch (error) {
             toastStore.changeToast(false, 'The update was unsuccessful')
             console.error(`Error updating task: ${error}`)
@@ -124,10 +122,11 @@ export const useTaskApi = () => {
                 toastStore.changeToast(false, 'An error has occurred, the task does not exist.')
                 return
             }
-
-            const deleted = await response.json()
-            toastStore.changeToast(true, 'The task has been deleted')
-            return deleted
+            if (response.ok) {
+                const deleted = await response.json()
+                toastStore.changeToast(true, 'The task has been deleted')
+                return deleted
+            }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the task does not exist.')
             console.error(`Error deleting task: ${error}`)

@@ -67,10 +67,12 @@ INSERT INTO tasks (taskTitle, taskDescription, taskAssignees, taskStatus, create
 
 CREATE TABLE boards (
     boardId VARCHAR(10) PRIMARY KEY,
-    boardName VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+    boardName VARCHAR(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     ownerId VARCHAR(36),
     isLimit BOOLEAN DEFAULT FALSE,
     limitMaximumTask INT NOT NULL DEFAULT 10,
+    createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT CHK_boardName_not_empty CHECK (boardName <> '')
 ) ENGINE=InnoDB;
 
@@ -86,6 +88,12 @@ BEGIN
     IF NEW.limitMaximumTask IS NULL THEN
         SET NEW.limitMaximumTask = 10;
     END IF;
+    IF NEW.createdOn IS NULL THEN
+        SET NEW.createdOn = CURRENT_TIMESTAMP;
+    END IF;
+    IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
 END$$
 
 CREATE TRIGGER limit_task_before_update
@@ -97,6 +105,9 @@ BEGIN
     END IF;
     IF NEW.limitMaximumTask IS NULL THEN
         SET NEW.limitMaximumTask = OLD.limitMaximumTask;
+    END IF;
+	IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
     END IF;
 END$$
 
@@ -271,12 +282,14 @@ DELIMITER ;
 USE integrated;
 
 INSERT INTO boards (boardId, boardName, ownerId) VALUES 
-('kanbanbase', 'Default', null);
+('kanbanbase', 'Default', null),
+('Pt09x_E7Pz','Software Development Kanban Board for the course INT222 Integrated Project II at School of Information Technology in 202','e392a1a4-77a7-4bb4-8353-3cc05ae61c4b');
+;
 
 INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','No Status','The default status','#cbd5e1'),
 ('kanbanbase','To Do','The task is included in the project','#99ddff'),
-('kanbanbase','In Progress','The task is being worked on','#fabc3f'),
+('kanbanbase','Doing','The task is being worked on','#fabc3f'),
 ('kanbanbase','Done','Finished','#10b981');
 
 SELECT * FROM boards;

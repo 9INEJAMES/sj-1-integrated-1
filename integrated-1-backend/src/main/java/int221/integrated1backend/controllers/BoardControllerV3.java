@@ -84,7 +84,6 @@ public class BoardControllerV3 {
 
         Board eBoard = boardService.getBoard(id);
         permissionCheck(eBoard.getOid(), oid);
-
         Board board = boardService.updateฺBoard(id, boardInput);
         return ResponseEntity.ok(board);
     }
@@ -123,6 +122,7 @@ public class BoardControllerV3 {
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.createNewTask(taskDTO);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(outputDTO);
     }
 
@@ -132,6 +132,7 @@ public class BoardControllerV3 {
         String oid = getOidFromHeader(authorizationHeader);
         TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
     }
 
@@ -141,13 +142,14 @@ public class BoardControllerV3 {
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
-
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId) {
         TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId, id);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(taskWithIdDTO);
     }
 
@@ -156,6 +158,7 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getAllStatus(@PathVariable String id) {
         List<Status> statusList = statusService.getAllStatusByBoardId(id);
         List<StatusOutputDTO> outputDTOList = listMapper.mapList(statusList, StatusOutputDTO.class, modelMapper);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTOList);
     }
 
@@ -163,12 +166,14 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> addNewStatus(@PathVariable String id, @RequestBody StatusInputDTO statusInputDTO) {
         Status status = statusService.createNewStatus(statusInputDTO,boardService.getBoard(id));
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
     }
 
     @GetMapping("/{id}/statuses/{statusId}")
     public ResponseEntity<Object> getStatusById(@PathVariable String id, @PathVariable Integer statusId) {
         Status status = statusService.findByID(statusId);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 
@@ -176,12 +181,14 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> updateStatus(@PathVariable String id, @PathVariable Integer statusId, @RequestBody StatusInputDTO statusDTO) {
         Status status = statusService.updateStatus(statusId, statusDTO);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(statusOutputDTO);
     }
 
     @DeleteMapping("/{id}/statuses/{statusId}")
     public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId) {
         Status status = statusService.removeStatus(statusId);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
@@ -189,12 +196,14 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
         List<TaskV2> taskV2List = taskService.updateStatusOfTask(statusId, newStatusId);
         Status status = statusService.removeStatus(statusId);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
     public ResponseEntity<Object> updateMaximumTask(@PathVariable String id, @PathVariable Integer statusId, @RequestBody StatusInputDTO statusDTO) {
         Status status = statusService.findByID(statusId);
+        boardService.updateฺInBoard(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 }

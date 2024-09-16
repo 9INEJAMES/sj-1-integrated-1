@@ -9,40 +9,38 @@ export const useAuthStore = defineStore('auth', () => {
     const token = ref('')
     const checkToken = async () => {
         if (!token.value) {
-            const auth = JSON.parse(localStorage.getItem('authData'))
-            token.value = auth ? auth.token : null
+            getToken()
             if (!token.value) {
                 localStorage.removeItem('authData')
                 router.push('/login')
-            } else {
-                if (isTokenExpired()) {
-                    toastStore.changeToast(false, 'Your token is expired. Please log in again')
-                    localStorage.removeItem('authData')
-                    router.push('/login')
-                } else {
-                }
             }
+        }
+        if (isTokenExpired()) {
+            toastStore.changeToast(false, 'Your token is expired. Please log in again')
+            localStorage.removeItem('authData')
+            console.log('expired')
+            router.push('/login')
         }
     }
     const isTokenExpired = () => {
         const decodedToken = getAuthData()
-        return decodedToken.exp < Date.now() / 1000
+        if (decodedToken) return decodedToken.exp < Date.now() / 1000
     }
     const addToken = (newToken) => {
         token.value = newToken
         const userTokenObject = {
-            username: getAuthData().username, // Assuming the token contains a field 'userName'
+            username: getAuthData().username,
             token: newToken,
         }
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
         return userTokenObject
     }
     const getToken = () => {
-        checkToken()
+        const auth = JSON.parse(localStorage.getItem('authData'))
+        token.value = auth ? auth.token : null
         return token.value
     }
     const getAuthData = () => {
-        checkToken()
         if (!token.value) {
             return null
         } else {

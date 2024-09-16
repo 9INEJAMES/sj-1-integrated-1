@@ -46,7 +46,7 @@ const handleDeleteModal = () => {
 <template>
     <div>
         <ConfirmDelete v-if="deleteModal" mode="task" :object="selectedTask" :number="selectedIndex" @closeModal="handleDeleteModal" />
-        <table class="myTable table-pin-rows shadow-lg ">
+        <table class="myTable table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>
@@ -78,10 +78,10 @@ const handleDeleteModal = () => {
                     >
                         {{ task.title }}
                     </td>
-                    <td class="break-all" :class="[$route.name !== 'home' ? '' : 'itbkk-assignees', task.assignees ? '' : 'italic text-gray-500']">
+                    <td class="break-all itbkk-assignees" :class="[task.assignees ? '' : 'italic text-gray-500']">
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                     </td>
-                    <td :class="$route.name != 'home' ? '' : 'itbkk-status'">
+                    <td class="itbkk-status">
                         <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black" :style="{ backgroundColor: task.status.color }">
                             {{ task.status.name }}
                         </button>
