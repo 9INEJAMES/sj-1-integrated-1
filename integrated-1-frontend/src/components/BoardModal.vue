@@ -67,7 +67,7 @@ watch(
 
 <template>
     <div class="itbkk-modal-new fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 w-full">
-        <div class="itbkk-modal-task bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-lg mx-6">
+        <div class="itbkk-modal-task shadow-lg rounded-lg p-6 w-full max-w-lg mx-6" :class="themeStore.getTheme()">
             <div class="flex justify-between items-center mb-4">
                 <p v-if="$route.name == 'boardAdd'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Create New Board</p>
                 <p v-if="$route.name == 'boardDelete'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Delete Board</p>
@@ -81,25 +81,17 @@ watch(
 
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
 
-            <div class="mb-5" v-if="$route.name == 'boardAdd'">
-                <label for="title" class="block text-gray-700 dark:text-gray-300 mb-1 font-medium"> Name <span class="text-red-600">*</span> </label>
+            <div class="mb-5">
+                <label for="title" class="block mb-1 font-medium">
+                    {{ $route.name == 'boardAdd' ? 'Name' : 'Change board name' }}<span class="text-red-600">*</span>
+                </label>
                 <input
                     v-model="newBoard.name"
                     type="text"
                     id="title"
                     class="itbkk-board-name block w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                     placeholder="Enter your board name"
-                    :disabled="isDisabled"
-                />
-            </div>
-            <div class="mb-5" v-if="$route.name == 'boardEdit'">
-                <label for="title" class="block text-gray-700 dark:text-gray-300 mb-1 font-medium"> Change board name <span class="text-red-600">*</span> </label>
-                <input
-                    v-model="newBoard.name"
-                    type="text"
-                    id="title"
-                    class="block w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
-                    placeholder="Enter your board name"
+                    :class="themeStore.getTheme()"
                     :disabled="isDisabled"
                 />
             </div>
