@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from "vue"
 import { useTheme } from "@/stores/theme.js"
 import { useBoardApi } from "@/composables/board-api"
 import { useBoardStore } from "@/stores/board"
+import { useAuthStore } from "@/stores/auth"
 const themeStore = useTheme()
 
 const route = useRoute()
@@ -12,10 +13,13 @@ const boardApi = useBoardApi()
 const boardStore = useBoardStore()
 const isDisabled = ref(false)
 const isChanged = ref(false)
+const authStore = useAuthStore()
+const user = authStore.getAuthData()
 
+console.log(user.name)
 const newBoard = ref({
     boardId: '',
-    name: ''
+    name: user.name + ' personal board'
 })
 const oldBoard = ref({
     boardId: '',
