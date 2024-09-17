@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', () => {
     const addToken = (newToken) => {
         token.value = newToken
         const userTokenObject = {
-            username: getAuthData().username,
+            username: decodeToken(newToken).username,
             token: newToken,
         }
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
@@ -51,8 +51,11 @@ export const useAuthStore = defineStore('auth', () => {
         if (!token.value) {
             return null
         } else {
-            return VueJwtDecode.decode(token.value)
+            return decodeToken(t)
         }
+    }
+    const decodeToken = (t) => {
+        return VueJwtDecode.decode(t)
     }
     const logout = () => {
         localStorage.removeItem('authData')
