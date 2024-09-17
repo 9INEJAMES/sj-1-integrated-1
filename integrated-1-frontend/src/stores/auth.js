@@ -48,10 +48,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
     const getAuthData = () => {
         if (!token.value) {
-            return null
-        } else {
-            return VueJwtDecode.decode(token.value)
+            getToken()
+            if (!token.value) {
+                logout()
+            }
         }
+        return VueJwtDecode.decode(token.value)
     }
     const logout = () => {
         localStorage.removeItem('authData')
