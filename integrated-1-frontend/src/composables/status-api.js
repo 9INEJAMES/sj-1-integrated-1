@@ -33,6 +33,7 @@ export const useStatusApi = () => {
     async function getAllStatuses() {
         try {
             return (await fetchWithToken(`/statuses`)).json()
+            
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }
