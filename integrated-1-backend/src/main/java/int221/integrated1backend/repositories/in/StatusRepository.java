@@ -10,4 +10,5 @@ import java.util.List;
 public interface StatusRepository extends JpaRepository<Status, Integer> {
     public Status findByName(String name);
     public List<Status> findAllByBoardId(String bid);
+    public void deleteAllByBoardId(String id);
 }

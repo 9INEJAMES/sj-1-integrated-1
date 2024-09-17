@@ -94,6 +94,9 @@ public class BoardControllerV3 {
 
         Board eBoard = boardService.getBoard(id);
         permissionCheck(eBoard.getOid(), oid);
+        //delete all task and status in board!!
+        taskService.removeAllTaskOfBoard(id);
+        statusService.removeAllStatusOfBoard(id);
 
         Board board = boardService.deleteBoard(id);
         return ResponseEntity.ok(board);

@@ -91,4 +91,8 @@ public class StatusService {
         return status;
     }
 
+    @Transactional("firstTransactionManager")
+    public void removeAllStatusOfBoard(String bid) {
+        repository.deleteAllByBoardId(bid);
+    }
 }

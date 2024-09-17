@@ -109,6 +109,12 @@ public class TaskV2Service {
     }
 
     @Transactional("firstTransactionManager")
+    public void removeAllTaskOfBoard(String bid) {
+        List<TaskV2> tasks= getAllTaskOfBoard(bid);
+        repository.deleteAllByBoardId(bid);
+    }
+
+    @Transactional("firstTransactionManager")
     public TaskV2 updateTask(Integer taskId, TaskInputDTO taskDTO) {
         Board board = boardService.getBoard(taskDTO.getBoardId());
         taskDTO.setBoardId(null);
