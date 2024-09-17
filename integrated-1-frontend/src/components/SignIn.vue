@@ -103,7 +103,7 @@ const submitSignIn = async () => {
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
                     :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'opacity-50 cursor-not-allowed' : themeStore.getButtonTheme()"
-                    class="itbkk-button-signin w-full text-white font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300"
+                    class="itbkk-button-signin w-full  font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300 text-black hover:text-white"
                     @click="submitSignIn"
                 >
                     LOGIN
