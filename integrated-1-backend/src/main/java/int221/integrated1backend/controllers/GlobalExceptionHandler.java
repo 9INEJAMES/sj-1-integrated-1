@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -61,5 +62,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<myErrorResponse> handleAuthenticationException(
             AuthenticationException exception, WebRequest request) {
         return buildErrorResponse(exception, "username or password incorrect", HttpStatus.UNAUTHORIZED, request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<myErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException exception, WebRequest request) {
+        return buildErrorResponse(exception, "Request body is missing or unreadable", HttpStatus.BAD_REQUEST, request);
     }
 }
