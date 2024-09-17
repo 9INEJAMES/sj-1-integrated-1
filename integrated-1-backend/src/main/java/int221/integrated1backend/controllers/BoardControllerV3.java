@@ -64,7 +64,7 @@ public class BoardControllerV3 {
         Board newBoard = boardService.createNewBoard(board);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(newBoard);
 
-        return ResponseEntity.ok(boardOutputDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(boardOutputDTO);
     }
 
     @GetMapping("/{id}")
