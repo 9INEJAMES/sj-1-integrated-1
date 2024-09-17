@@ -1,7 +1,5 @@
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
-import router from '@/router'
-import { useBoardStore } from '@/stores/board'
 import { useRoute } from 'vue-router'
 
 export const useBoardApi = () => {
@@ -49,6 +47,7 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been created.')
                 return response.json()
             }
+            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be created.')
             console.error(`Error adding board: ${error}`)
@@ -65,6 +64,7 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been updated.')
                 return response.json()
             }
+            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be updated.')
             console.error(`Error updating board: ${error}`)
@@ -80,6 +80,7 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been deleted.')
                 return response.json()
             }
+            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
@@ -92,6 +93,7 @@ export const useBoardApi = () => {
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
+        authStore.checkToken()
     }
 
     async function updateBoardLimit(board) {
@@ -111,6 +113,7 @@ export const useBoardApi = () => {
             } else {
                 toastStore.changeToast(true, `The Kanban board has disabled the task limit in each status`)
             }
+            authStore.checkToken()
 
             return response.json()
         } catch (error) {

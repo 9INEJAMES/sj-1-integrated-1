@@ -7,6 +7,7 @@ import { useStatusesStore } from '@/stores/status'
 import { useStatusApi } from '@/composables/status-api'
 import { useBoardApi } from '@/composables/board-api'
 import { useBoardStore } from '@/stores/board'
+import { useAuthStore } from '@/stores/auth'
 
 const taskApi = useTaskApi()
 const statusApi = useStatusApi()
@@ -17,6 +18,7 @@ const boardApi = useBoardApi()
 const isInUsed = ref(false)
 const isSelectNewStatus = ref(false)
 const boardStore = useBoardStore()
+const authStore = useAuthStore()
 
 const props = defineProps({
     mode: {
@@ -40,6 +42,7 @@ const emit = defineEmits(['closeModal'])
 
 const submitDelete = async () => {
     try {
+        authStore.checkToken()
         if (props.mode == 'task') {
             const result = await taskApi.deleteTask(props.object.id)
             if (result) {
