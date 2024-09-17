@@ -18,14 +18,12 @@ export const useAuthStore = defineStore('auth', () => {
         if (!token.value) {
             getToken()
             if (!token.value) {
-                localStorage.removeItem('authData')
-                router.push('/login')
+                logout()
             }
         }
         if (isTokenExpired()) {
             toastStore.changeToast(false, 'Your token is expired. Please log in again')
-            localStorage.removeItem('authData')
-            router.push('/login')
+            logout()
         }
     }
     const isTokenExpired = () => {
