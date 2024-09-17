@@ -76,7 +76,7 @@ const handleDeleteModal = (confirmed) => {
                     <img
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
-                        class="w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1"
+                        class="w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"
                         @click="logout()"
                     />
                 </div>
