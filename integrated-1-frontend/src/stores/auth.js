@@ -41,8 +41,10 @@ export const useAuthStore = defineStore('auth', () => {
         return userTokenObject
     }
     const getToken = () => {
-        const auth = JSON.parse(localStorage.getItem('authData'))
-        token.value = auth ? auth.token : null
+        if (!token.value) {
+            const auth = JSON.parse(localStorage.getItem('authData'))
+            token.value = auth ? auth.token : null
+        }
         return token.value
     }
     const getAuthData = () => {
