@@ -43,7 +43,11 @@ const submitBoard = async (isSave) => {
         }
         newBoard.value.name = ''
     }
-    router.back()
+    //onlyone board
+    if (boardStore.boards.length === 1) {
+        router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
+    }
+    // router.back()
 }
 
 onMounted(async () => {
@@ -82,9 +86,7 @@ watch(
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
 
             <div class="mb-5">
-                <label for="title" class="block mb-1 font-medium">
-                    {{ $route.name == 'boardAdd' ? 'Name' : 'Change board name' }}<span class="text-red-600">*</span>
-                </label>
+                <label for="title" class="block mb-1 font-medium"> {{ $route.name == 'boardAdd' ? 'Name' : 'Change board name' }}<span class="text-red-600">*</span> </label>
                 <input
                     v-model="newBoard.name"
                     type="text"

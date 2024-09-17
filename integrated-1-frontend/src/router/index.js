@@ -49,7 +49,7 @@ const router = createRouter({
                     path: ':bid/edit',
                     name: 'boardEdit',
                     component: BoardModal,
-                }
+                },
             ],
         },
         // Nested Status Routes
@@ -113,15 +113,13 @@ router.beforeEach((to, from, next) => {
 
     if (to.name === 'login' && !isTokenExpired) {
         next({ name: 'boardView' })
-    }
-    else if (isTokenExpired) {
+    } else if (isTokenExpired) {
         if (to.name !== 'login') {
             next({ name: 'login' })
         } else {
-            next() 
+            next()
         }
-    }
-    else {
+    } else {
         next()
     }
 })

@@ -3,8 +3,15 @@ import { defineStore, acceptHMRUpdate } from 'pinia'
 import { ref } from 'vue'
 import VueJwtDecode from 'vue-jwt-decode'
 import { useToast } from '@/stores/toast.js'
+import { useBoardStore } from '@/stores/board.js'
+import { useTasksStore } from '@/stores/task.js'
+import { useStatusesStore } from '@/stores/status.js'
+
 export const useAuthStore = defineStore('auth', () => {
     const toastStore = useToast()
+    const boardStore = useBoardStore()
+    const statusStore = useStatusesStore()
+    const taskStore = useTasksStore()
 
     const token = ref('')
     const checkToken = async () => {
@@ -18,7 +25,6 @@ export const useAuthStore = defineStore('auth', () => {
         if (isTokenExpired()) {
             toastStore.changeToast(false, 'Your token is expired. Please log in again')
             localStorage.removeItem('authData')
-            console.log('expired')
             router.push('/login')
         }
     }
@@ -47,8 +53,16 @@ export const useAuthStore = defineStore('auth', () => {
             return VueJwtDecode.decode(token.value)
         }
     }
+    const logout = () => {
+        localStorage.removeItem('authData')
+        token.value = ''
+        router.push('/login')
+        boardStore.resetBoards()
+        statusStore.resetStatuses()
+        taskStore.resetTasks()
+    }
     // Return the store properties and methods
-    return { getAuthData, addToken, getToken, checkToken, isTokenExpired }
+    return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout }
 })
 
 if (import.meta.hot) {
