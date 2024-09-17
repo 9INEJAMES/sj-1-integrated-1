@@ -65,6 +65,8 @@ const submitDelete = async () => {
         } else if (props.mode == 'board') {
             await boardApi.deleteBoard(props.object.id)
             boardStore.removeBoard(props.object.id)
+            statusStore.resetStatuses()
+            taskStore.resetTasks()
             emit('closeModal', true)
         }
 
