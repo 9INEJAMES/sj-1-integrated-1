@@ -1,19 +1,19 @@
-import router from '@/router'
-import { defineStore, acceptHMRUpdate } from 'pinia'
-import { ref } from 'vue'
-import VueJwtDecode from 'vue-jwt-decode'
-import { useToast } from '@/stores/toast.js'
-import { useBoardStore } from '@/stores/board.js'
-import { useTasksStore } from '@/stores/task.js'
-import { useStatusesStore } from '@/stores/status.js'
+import router from "@/router"
+import { defineStore, acceptHMRUpdate } from "pinia"
+import { ref } from "vue"
+import VueJwtDecode from "vue-jwt-decode"
+import { useToast } from "@/stores/toast.js"
+import { useBoardStore } from "@/stores/board.js"
+import { useTasksStore } from "@/stores/task.js"
+import { useStatusesStore } from "@/stores/status.js"
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
     const toastStore = useToast()
     const boardStore = useBoardStore()
     const statusStore = useStatusesStore()
     const taskStore = useTasksStore()
 
-    const token = ref('')
+    const token = ref("")
     const checkToken = async () => {
         if (!token.value) {
             getToken()
@@ -22,7 +22,7 @@ export const useAuthStore = defineStore('auth', () => {
             }
         }
         if (isTokenExpired()) {
-            toastStore.changeToast(false, 'Your token is expired. Please log in again')
+            toastStore.changeToast(false, "Your token is expired. Please log in again")
             logout()
         }
     }
@@ -37,12 +37,12 @@ export const useAuthStore = defineStore('auth', () => {
             username: decodeToken(newToken).username,
             token: newToken,
         }
-        localStorage.setItem('authData', JSON.stringify(userTokenObject))
+        localStorage.setItem("authData", JSON.stringify(userTokenObject))
         return userTokenObject
     }
     const getToken = () => {
         if (!token.value) {
-            const auth = JSON.parse(localStorage.getItem('authData'))
+            const auth = JSON.parse(localStorage.getItem("authData"))
             token.value = auth ? auth.token : null
         }
         return token.value
@@ -51,16 +51,16 @@ export const useAuthStore = defineStore('auth', () => {
         if (!token.value) {
             return null
         } else {
-            return decodeToken(t)
+            return decodeToken(token.value)
         }
     }
     const decodeToken = (t) => {
         return VueJwtDecode.decode(t)
     }
     const logout = () => {
-        localStorage.removeItem('authData')
-        token.value = ''
-        router.push('/login')
+        localStorage.removeItem("authData")
+        token.value = ""
+        router.push("/login")
         boardStore.resetBoards()
         statusStore.resetStatuses()
         taskStore.resetTasks()
