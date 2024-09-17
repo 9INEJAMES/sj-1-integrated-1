@@ -27,6 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
     const isTokenExpired = () => {
+        getToken()
         const decodedToken = getAuthData()
         if (decodedToken) return decodedToken.exp < Date.now() / 1000
     }
@@ -40,20 +41,16 @@ export const useAuthStore = defineStore('auth', () => {
         return userTokenObject
     }
     const getToken = () => {
-        if (!token.value) {
-            const auth = JSON.parse(localStorage.getItem('authData'))
-            token.value = auth ? auth.token : null
-        }
+        const auth = JSON.parse(localStorage.getItem('authData'))
+        token.value = auth ? auth.token : null
         return token.value
     }
     const getAuthData = () => {
         if (!token.value) {
-            getToken()
-            if (!token.value) {
-                logout()
-            }
+            return null
+        } else {
+            return VueJwtDecode.decode(token.value)
         }
-        return VueJwtDecode.decode(token.value)
     }
     const logout = () => {
         localStorage.removeItem('authData')
