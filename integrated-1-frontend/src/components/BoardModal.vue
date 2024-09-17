@@ -43,11 +43,7 @@ const submitBoard = async (isSave) => {
         }
         newBoard.value.name = ''
     }
-    //onlyone board
-    if (boardStore.boards.length === 1) {
-        router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
-    }
-    // router.back()
+    router.back()
 }
 
 onMounted(async () => {

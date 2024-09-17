@@ -282,9 +282,7 @@ DELIMITER ;
 USE integrated;
 
 INSERT INTO boards (boardId, boardName, ownerId) VALUES 
-('kanbanbase', 'Default', null),
-('Pt09x_E7Pz','Software Development Kanban Board for the course INT222 Integrated Project II at School of Information Technology in 202','e392a1a4-77a7-4bb4-8353-3cc05ae61c4b');
-;
+('kanbanbase', 'Default', null);
 
 INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','No Status','The default status','#cbd5e1'),
