@@ -26,6 +26,9 @@ public class Board {
     @Column(name = "ownerId")
     private String oid;
     @Setter
+    @Column(name = "isPublic")
+    private Boolean isPublic;
+    @Setter
     @Column(name = "isLimit")
     private Boolean limit;
     @Setter

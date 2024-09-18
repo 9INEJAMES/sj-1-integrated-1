@@ -50,6 +50,7 @@ public class BoardService {
     public Board updateฺBoard(String id, BoardInputDTO boardInput) {
         Board board = getBoard(id);
         board.setName(boardInput.getName() == null ? board.getName() : boardInput.getName());
+        board.setIsPublic(boardInput.getIsPublic() == null ? board.getIsPublic() : boardInput.getIsPublic());
         board.setLimit(boardInput.getLimit() == null ? board.getLimit() : boardInput.getLimit());
         board.setLimitMaximumTask(boardInput.getLimitMaximumTask() == null ? board.getLimitMaximumTask() : boardInput.getLimitMaximumTask());
         board.setUpdatedOn(null);
@@ -65,6 +66,7 @@ public class BoardService {
 
     @Transactional("firstTransactionManager")
     public Board createNewBoard(Board newBoard) {
+        newBoard.setIsPublic(false);
         newBoard.setLimit(false);
         newBoard.setLimitMaximumTask(10);
         return repository.save(newBoard);

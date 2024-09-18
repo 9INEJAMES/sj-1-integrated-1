@@ -19,10 +19,12 @@ const user = authStore.getAuthData()
 const newBoard = ref({
     boardId: '',
     name: user.name + ' personal board',
+    isPublic: false,
 })
 const oldBoard = ref({
     boardId: '',
-    name: '',
+    name: user.name + ' personal board',
+    isPublic: false,
 })
 
 const submitBoard = async (isSave) => {
@@ -41,21 +43,31 @@ const submitBoard = async (isSave) => {
 
             if (board) boardStore.addBoard(board)
         }
-        newBoard.value.name = ''
     }
+    console.log('newBoard', newBoard.value)
+    newBoard.value = {
+        boardId: '',
+        name: user.name + ' personal board',
+        isPublic: false,
+    }
+
     //onlyone board
-    if (boardStore.boards.length === 1) {
-        router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
-    }
-    // router.back()
+    // if (boardStore.boards.length === 1) {
+    //     router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
+    // }
+    router.back()
+}
+const changeBoardVisibility = () => {
+    newBoard.value.isPublic = !newBoard.value.isPublic
 }
 
 onMounted(async () => {
     authStore.checkToken()
+
     if (route.name == 'boardEdit') {
-        const board = await boardStore.getBoard(route.params.bid)
-        oldBoard.value = { ...boardStore.getBoard() }
-        newBoard.value = { ...boardStore.getBoard() }
+        if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+        oldBoard.value = { ...boardStore.findBoard(route.params.bid) }
+        newBoard.value = { ...boardStore.findBoard(route.params.bid) }
     }
 })
 
@@ -96,6 +108,17 @@ watch(
                     :class="themeStore.getTheme()"
                     :disabled="isDisabled"
                 />
+            </div>
+
+            <div class="flex items-center">
+                <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
+                    private
+                    <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="changeBoardVisibility()" v-model="newBoard.isPublic" />
+                    <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
+                        <span class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform" :class="{ 'translate-x-full': newBoard.isPublic }"></span>
+                    </div>
+                    public
+                </label>
             </div>
 
             <div class="flex justify-end space-x-4">

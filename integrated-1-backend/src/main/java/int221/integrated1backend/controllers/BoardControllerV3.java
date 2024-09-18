@@ -85,7 +85,8 @@ public class BoardControllerV3 {
         Board eBoard = boardService.getBoard(id);
         permissionCheck(eBoard.getOid(), oid);
         Board board = boardService.updateฺBoard(id, boardInput);
-        return ResponseEntity.ok(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        return ResponseEntity.ok(boardOutputDTO);
     }
 
     @DeleteMapping("/{id}")
@@ -99,7 +100,8 @@ public class BoardControllerV3 {
         statusService.removeAllStatusOfBoard(id);
 
         Board board = boardService.deleteBoard(id);
-        return ResponseEntity.ok(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        return ResponseEntity.ok(boardOutputDTO);
     }
 
     //Task operation

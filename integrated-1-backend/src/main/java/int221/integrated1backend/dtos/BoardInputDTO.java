@@ -10,6 +10,7 @@ import lombok.Setter;
 @Data
 public class BoardInputDTO {
     private String name;
+    private Boolean isPublic;
     private Boolean limit;
     @Positive
     private Integer limitMaximumTask;

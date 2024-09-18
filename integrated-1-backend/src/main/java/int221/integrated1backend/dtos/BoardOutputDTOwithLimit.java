@@ -8,6 +8,7 @@ import lombok.Data;
 public class BoardOutputDTOwithLimit {
     private String id;
     private String name;
+    private Boolean isPublic;
     private Boolean limit;
     @Positive
     private Integer limitMaximumTask;
