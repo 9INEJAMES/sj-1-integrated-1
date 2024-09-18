@@ -7,6 +7,7 @@ export const useBoardStore = defineStore('board', () => {
     const route = useRoute()
     const boards = ref([])
     const boardApi = useBoardApi()
+    const filterBoardList = ref([])
 
     const fetchBoard = async (bid) => {
         const data = await boardApi.getAllBoard()
@@ -43,6 +44,10 @@ export const useBoardStore = defineStore('board', () => {
             boards.value.splice(index, 1)
         }
     }
+    const filterBoards = (oid) => {
+        filterBoardList.value = boards.value.filter((board) => board.owner.oid === oid)
+        return filterBoardList.value
+    }
 
     const findBoard = (bid) => {
         return boards.value.find((board) => board.id == bid)
@@ -50,14 +55,10 @@ export const useBoardStore = defineStore('board', () => {
     const findBoardIndex = (bid) => {
         return boards.value.findIndex((board) => board.id == bid)
     }
-    const findBoardName = (bid) => {
-        const board = findBoard(bid)
-        return board.name
-    }
     const resetBoards = () => {
         boards.value = []
     }
-    return { boards, fetchBoard, addBoard, updateBoard, removeBoard, findBoard, findBoardIndex, resetBoards, getBoard }
+    return { boards, filterBoardList, fetchBoard, addBoard, updateBoard, removeBoard, findBoard, findBoardIndex, resetBoards, getBoard, filterBoards }
 })
 
 if (import.meta.hot) {

@@ -86,8 +86,8 @@ const handleDeleteModal = (confirmed) => {
             <div class="flex justify-center items-center h-full">
                 <img v-if="checkPage()" @click="deleteBoard()" :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" class="w-[20px] h-[20px] hover:cursor-pointer" alt="list img" />
             </div>
-            
-            <div class="flex items-center">
+
+            <!-- <div class="flex items-center">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -125,7 +125,7 @@ const handleDeleteModal = (confirmed) => {
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </label>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

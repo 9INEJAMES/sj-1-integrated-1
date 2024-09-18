@@ -4,6 +4,7 @@ import int221.integrated1backend.dtos.BoardInputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTOwithLimit;
 import int221.integrated1backend.entities.in.Board;
+import int221.integrated1backend.entities.in.Status;
 import int221.integrated1backend.repositories.in.BoardRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,17 +68,19 @@ public class BoardService {
 
     @Transactional("firstTransactionManager")
     public Board createNewBoard(Board newBoard) {
-        newBoard.setIsPublic(false);
         newBoard.setLimit(false);
         newBoard.setLimitMaximumTask(10);
         return repository.save(newBoard);
     }
 
+//    @Transactional("firstTransactionManager")
+//    public List<Board> getBoardByOId(String oid) {
+//        return repository.findAllByOid(oid);
+//    }
     @Transactional("firstTransactionManager")
     public List<Board> getBoardByOId(String oid) {
-        return repository.findAllByOid(oid);
+        return repository.findAllByOidOrIsPublic(oid,true);
     }
-
     @Transactional("firstTransactionManager")
     public Board deleteBoard(String id) {
         Board board = getBoard(id);

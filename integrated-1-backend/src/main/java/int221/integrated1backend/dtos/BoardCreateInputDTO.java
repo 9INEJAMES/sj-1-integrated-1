@@ -10,6 +10,7 @@ public class BoardCreateInputDTO {
     @NotNull
     @Size(min = 0, max = 120)
     private String name;
+    private Boolean isPublic;
 
     public String getId() {
         return NanoIdUtils.randomNanoId(NanoIdUtils.DEFAULT_NUMBER_GENERATOR, NanoIdUtils.DEFAULT_ALPHABET, 10);

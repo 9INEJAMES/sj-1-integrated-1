@@ -16,11 +16,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 onMounted(async () => {
-    authStore.checkToken()
+    // authStore.checkToken()
     if (boardStore.boards.length === 0) await boardStore.fetchBoard()
     // onlyone board
-    // if (boardStore.boards.length === 1) {
-    //     router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
+
+    // if (boardStore.filterBoards(authStore.getAuthData().oid).length >= 1) {
+    //     router.push({ name: 'taskView', params: { bid: boardStore.filterBoards(authStore.getAuthData().oid)[0] } })
     // }
 })
 </script>

@@ -24,7 +24,7 @@ const toEditPage = (bid) => {
     router.push({
         name: 'boardEdit',
         params: {
-            bid: bid
+            bid: bid,
         },
     })
 }
@@ -57,16 +57,17 @@ const handleDeleteModal = (confirmed) => {
 
 <template>
     <div>
-        <ConfirmDelete v-if="deleteModal" mode="board" :object="selectedBoard" :number="selectedIndex"
-            @closeModal="handleDeleteModal" />
+        <ConfirmDelete v-if="deleteModal" mode="board" :object="selectedBoard" :number="selectedIndex" @closeModal="handleDeleteModal" />
 
         <table class="myTable table-lg table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>
                     <th style="width: 10%">No</th>
-                    <th style="width: 25%">Name</th>
-                    <th style="width: 64%" class="text-center">Action</th>
+                    <th style="width: 65%">Name</th>
+                    <th style="width: 10%" class="text-center">Status</th>
+
+                    <th style="width: 14%" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,10 +78,17 @@ const handleDeleteModal = (confirmed) => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
+                    <td
+                        :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
                         class="itbkk-title font-bold h-[30px] text-[2vh] break-all hover:cursor-pointer"
-                        @click="boardSelector(board.id)">
+                        @click="boardSelector(board.id)"
+                    >
                         {{ board.name }}
+                    </td>
+                    <td class="flex justify-center items-center h-full font-bold text-[2vh] break-all text-black">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :class="board.isPublic ? 'bg-green-400' : 'bg-red-400'">
+                            {{ board.isPublic ? 'Public' : 'Private' }}
+                        </button>
                     </td>
                     <td>
                         <div class="flex justify-center items-center h-full">
@@ -88,9 +96,7 @@ const handleDeleteModal = (confirmed) => {
                                 <div tabindex="0" role="button">
                                     <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
                                 </div>
-                                <ul tabindex="0"
-                                    class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box"
-                                    :class="themeStore.getAlterTheme()">
+                                <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="themeStore.getAlterTheme()">
                                     <li>
                                         <p class="itbkk-button-edit" @click="toEditPage(board.id)">Edit</p>
                                     </li>
@@ -106,6 +112,5 @@ const handleDeleteModal = (confirmed) => {
         </table>
     </div>
 </template>
-
 
 <style scoped></style>

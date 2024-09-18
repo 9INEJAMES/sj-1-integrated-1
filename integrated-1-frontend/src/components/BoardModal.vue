@@ -15,6 +15,7 @@ const isDisabled = ref(false)
 const isChanged = ref(false)
 const authStore = useAuthStore()
 const user = authStore.getAuthData()
+const isCanEdit = ref(true)
 
 const newBoard = ref({
     boardId: '',
@@ -44,7 +45,6 @@ const submitBoard = async (isSave) => {
             if (board) boardStore.addBoard(board)
         }
     }
-    console.log('newBoard', newBoard.value)
     newBoard.value = {
         boardId: '',
         name: user.name + ' personal board',
@@ -59,15 +59,17 @@ const submitBoard = async (isSave) => {
 }
 const changeBoardVisibility = () => {
     newBoard.value.isPublic = !newBoard.value.isPublic
+    console.log(newBoard.value.isPublic)
 }
 
 onMounted(async () => {
-    authStore.checkToken()
+    // authStore.checkToken()
 
     if (route.name == 'boardEdit') {
         if (boardStore.boards.length === 0) await boardStore.fetchBoard()
         oldBoard.value = { ...boardStore.findBoard(route.params.bid) }
         newBoard.value = { ...boardStore.findBoard(route.params.bid) }
+        isCanEdit.value = await authStore.isOwner(route.params.bid)
     }
 })
 
@@ -110,7 +112,7 @@ watch(
                 />
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center" v-if="isCanEdit">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
                     <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="changeBoardVisibility()" v-model="newBoard.isPublic" />
@@ -130,8 +132,12 @@ watch(
                 </button>
                 <button
                     class="itbkk-button-ok px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500 disabled:bg-slate-300"
-                    :class="newBoard.name.trim().length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') ? 'disabled' : ''"
-                    :disabled="newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged)"
+                    :class="
+                        newBoard.name.trim().length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') || !isCanEdit
+                            ? 'disabled'
+                            : ''
+                    "
+                    :disabled="newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged) || !isCanEdit"
                     @click="submitBoard(true)"
                 >
                     {{ $route.name == 'boardAdd' ? 'Create' : 'Save' }}

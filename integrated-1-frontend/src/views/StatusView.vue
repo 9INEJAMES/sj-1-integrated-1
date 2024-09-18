@@ -27,7 +27,7 @@ const chosenStatus = async (id) => {
     isSelectStatus.value = true
 }
 onMounted(async () => {
-    authStore.checkToken()
+    // authStore.checkToken()
     if (boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()

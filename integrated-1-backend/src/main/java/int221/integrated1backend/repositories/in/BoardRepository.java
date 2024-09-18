@@ -10,4 +10,7 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, String> {
 
     public List<Board> findAllByOid(String oid);
+    public List<Board> findAllByOidOrIsPublic(String oid,Boolean isPublic);
+    public List<Board> findDistinctByOidAndIsPublic(String oid,Boolean isPublic);
+
 }
