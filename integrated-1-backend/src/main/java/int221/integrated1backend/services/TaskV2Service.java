@@ -4,7 +4,6 @@ import int221.integrated1backend.dtos.TaskInputDTO;
 import int221.integrated1backend.dtos.TaskOutputDTO;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
-import int221.integrated1backend.entities.in.Task;
 import int221.integrated1backend.entities.in.TaskV2;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import int221.integrated1backend.repositories.in.TaskV2Repository;
