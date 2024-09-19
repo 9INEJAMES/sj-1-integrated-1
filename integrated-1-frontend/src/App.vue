@@ -15,6 +15,7 @@ onMounted(async () => {
 </script>
 
 <template >
+    
     <VToast class="z-50" />
     <div class="roboto-light min-h-screen max-h-fit pb-16" :class="themeStore.getTheme()">
         <NavHeader />

@@ -86,7 +86,9 @@ onMounted(async () => {
         }
     }
     if (boardStore.boards.length === 0) await boardStore.fetchBoard()
-    isCanEdit.value = await authStore.isOwner(props.object.id)
+    console.log(props.object)
+    if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
+    if (props.mode == 'task') isCanEdit.value = await authStore.isOwner(props.object.bid)
 })
 
 watch(newStatusId, (newVal) => {

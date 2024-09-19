@@ -80,6 +80,7 @@ const handleDeleteModal = () => {
                         </div>
                     </td>
                 </tr>
+                
             </tbody>
         </table>
     </div>

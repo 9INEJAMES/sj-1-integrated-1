@@ -65,7 +65,7 @@ const changeBoardVisibility = () => {
 onMounted(async () => {
     // authStore.checkToken()
 
-    if (route.name == 'boardEdit') {
+    if (route.name !== 'boardAdd') {
         if (boardStore.boards.length === 0) await boardStore.fetchBoard()
         oldBoard.value = { ...boardStore.findBoard(route.params.bid) }
         newBoard.value = { ...boardStore.findBoard(route.params.bid) }

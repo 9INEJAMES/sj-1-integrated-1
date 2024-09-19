@@ -13,4 +13,10 @@ public class TaskOutputAllFieldDTO {
     private String createdOn;
     private String updatedOn;
     private StatusOutputDTO status;
+    @JsonIgnore
+    private Board board;
+
+    public String getBid(){
+        return board.getId();
+    }
 }

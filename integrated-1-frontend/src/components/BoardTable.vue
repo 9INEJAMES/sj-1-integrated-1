@@ -13,6 +13,9 @@ const boardStore = useBoardStore()
 const selectedBoard = ref(null)
 const selectedIndex = ref(null)
 const authStore = useAuthStore()
+const props = defineProps({
+    isCanEdit: Boolean,
+})
 
 onMounted(async () => {
     await boardStore.fetchBoard()
@@ -98,10 +101,10 @@ const handleDeleteModal = (confirmed) => {
                                 </div>
                                 <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="themeStore.getAlterTheme()">
                                     <li>
-                                        <p class="itbkk-button-edit" @click="toEditPage(board.id)">Edit</p>
+                                        <p :disabled="!isCanEdit" class="itbkk-button-edit" @click="toEditPage(board.id)">Edit</p>
                                     </li>
                                     <li>
-                                        <p class="itbkk-button-delete" @click="deleteBoard(board, index + 1)">Delete</p>
+                                        <p :disabled="!isCanEdit" class="itbkk-button-delete" @click="deleteBoard(board, index + 1)">Delete</p>
                                     </li>
                                 </ul>
                             </div>

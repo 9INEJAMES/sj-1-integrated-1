@@ -15,6 +15,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useBoardApi } from '@/composables/board-api'
 
 const route = useRoute()
+const router = useRouter()
 const base = import.meta.env.VITE_BASE
 const taskApi = useTaskApi()
 const taskStore = useTasksStore()
@@ -40,7 +41,7 @@ onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()
 
-    currentBoard.value = boardStore.findBoard(route.params.bid)
+    currentBoard.value = await boardStore.findBoard(route.params.bid)
     isCanEdit.value = await authStore.isOwner(route.params.bid)
 })
 const changeBoardVisibility = async () => {
@@ -61,7 +62,7 @@ const changeBoardVisibility = async () => {
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <VButton @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
+            <VButton :disabled="!isCanEdit" @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
             <VButton msg="Manage Status" class="itbkk-manage-status" @click="$router.push({ name: 'statusView' })" />
         </div>
         <div class="flex gap-2">
@@ -79,16 +80,14 @@ const changeBoardVisibility = async () => {
                 </label>
             </div>
             <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-status-filter" :iconurl="`${base ? base : ''}/filter.png`" />
-            <RouterLink :to="{ name: 'taskAdd' }">
-                <VButton class="itbkk-button-add" msg="Add Task" />
-            </RouterLink>
+            <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Task" @click="router.push({ name: 'taskAdd' })" />
         </div>
     </div>
 
     <RouterView class="z-30" />
     <div class="px-[5vh] pt-[1vh]">
         <div class="">
-            <TaskTable></TaskTable>
+            <TaskTable :isCanEdit="isCanEdit"></TaskTable>
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>

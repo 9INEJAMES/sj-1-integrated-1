@@ -6,7 +6,8 @@ import { useTheme } from '@/stores/theme.js'
 import { useTaskApi } from '@/composables/task-api'
 import { useStatusesStore } from '../stores/status.js'
 import { useBoardStore } from '@/stores/board'
-
+import { useAuthStore } from '@/stores/auth'
+const authStore = useAuthStore()
 const statusStore = useStatusesStore()
 const statusList = ref([])
 const themeStore = useTheme()
@@ -23,6 +24,7 @@ const localTimeZone = ref('')
 const createdOn = ref('')
 const updatedOn = ref('')
 const limitTask = ref({})
+const isCanEdit = ref(false)
 let task
 const newTask = ref({
     title: '',
@@ -121,6 +123,7 @@ onMounted(async () => {
         }
     }
     checkLimitStatus(oldTask.value.status)
+    isCanEdit.value = await authStore.isOwner(route.params.bid)
 })
 const currStatus = ref(0)
 const isNotDefault = ref(false)
@@ -266,11 +269,13 @@ const checkLimitStatus = (id) => {
                                     class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
                                     @click="submitTask(true)"
                                     :class="
-                                        newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd')
+                                        newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') || !isCanEdit
                                             ? 'disabled'
                                             : ''
                                     "
-                                    :disabled="newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd')"
+                                    :disabled="
+                                        newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') || !isCanEdit
+                                    "
                                 >
                                     save
                                 </button>

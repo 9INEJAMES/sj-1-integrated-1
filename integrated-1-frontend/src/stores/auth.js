@@ -12,7 +12,7 @@ export const useAuthStore = defineStore('auth', () => {
     const boardStore = useBoardStore()
     const statusStore = useStatusesStore()
     const taskStore = useTasksStore()
-
+    const isCanEdit = ref(false)
     const token = ref('')
     const checkToken = async () => {
         if (!token.value) {
@@ -68,9 +68,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     const isOwner = async (bid) => {
         if (boardStore.boards.length === 0) await boardStore.fetchBoard()
-        const board = boardStore.findBoard(bid)
-        const authData = getAuthData()
-        return board.owner.oid === authData.oid
+        const board = await boardStore.findBoard(bid)
+        const authData = await getAuthData()
+        return (await board.owner.oid) === authData.oid
     }
     // Return the store properties and methods
     return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner }
