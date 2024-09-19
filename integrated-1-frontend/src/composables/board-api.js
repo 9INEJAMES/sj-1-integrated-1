@@ -1,12 +1,13 @@
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 export const useBoardApi = () => {
     const authStore = useAuthStore()
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const route = useRoute()
+    const router = useRouter()
 
     async function fetchWithToken(endpoint, options = {}) {
         const token = authStore.getToken()
@@ -89,7 +90,12 @@ export const useBoardApi = () => {
 
     async function getCurrentBoard() {
         try {
-            return (await fetchWithToken(`/v3/boards/${route.params.bid}`)).json()
+            const response = await fetchWithToken(`/v3/boards/${route.params.bid}`)
+            if (response.status == 400) {
+                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                return
+            }
+            return response.json()
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }

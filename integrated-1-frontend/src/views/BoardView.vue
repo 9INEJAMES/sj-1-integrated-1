@@ -17,7 +17,7 @@ const authStore = useAuthStore()
 
 onMounted(async () => {
     // authStore.checkToken()
-    if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+    await boardStore.fetchBoard()
     // onlyone board
 
     // if (boardStore.filterBoards(authStore.getAuthData().oid).length >= 1) {

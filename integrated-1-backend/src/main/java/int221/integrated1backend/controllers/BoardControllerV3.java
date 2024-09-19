@@ -56,7 +56,7 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader,@Valid @RequestBody BoardCreateInputDTO boardInput) {
+    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody BoardCreateInputDTO boardInput) {
         String oid = getOidFromHeader(authorizationHeader);
         Board board = modelMapper.map(boardInput, Board.class);
         board.setOid(oid);
@@ -72,14 +72,14 @@ public class BoardControllerV3 {
         String oid = getOidFromHeader(authorizationHeader);
 
         Board board = boardService.getBoard(id);
-//        permissionCheck(board.getOid(), oid);
+        if (!board.getIsPublic()) permissionCheck(board.getOid(), oid);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
     /////////
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id,@Valid @RequestBody BoardInputDTO boardInput) {
+    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
         String oid = getOidFromHeader(authorizationHeader);
 
         Board eBoard = boardService.getBoard(id);
@@ -142,7 +142,7 @@ public class BoardControllerV3 {
     }
 
     @PutMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId,@Valid  @RequestBody TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> updateTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId, @Valid @RequestBody TaskInputDTO taskDTO) {
         String oid = getOidFromHeader(authorizationHeader);
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
@@ -168,8 +168,8 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/statuses")
-    public ResponseEntity<Object> addNewStatus(@PathVariable String id,@Valid  @RequestBody StatusInputDTO statusInputDTO) {
-        Status status = statusService.createNewStatus(statusInputDTO,boardService.getBoard(id));
+    public ResponseEntity<Object> addNewStatus(@PathVariable String id, @Valid @RequestBody StatusInputDTO statusInputDTO) {
+        Status status = statusService.createNewStatus(statusInputDTO, boardService.getBoard(id));
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
@@ -183,7 +183,7 @@ public class BoardControllerV3 {
     }
 
     @PutMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> updateStatus(@PathVariable String id, @PathVariable Integer statusId,@Valid  @RequestBody StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateStatus(@PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
         Status status = statusService.updateStatus(statusId, statusDTO);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
@@ -206,7 +206,7 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
-    public ResponseEntity<Object> updateMaximumTask(@PathVariable String id, @PathVariable Integer statusId,@Valid  @RequestBody StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateMaximumTask(@PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
         Status status = statusService.findByID(statusId);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));

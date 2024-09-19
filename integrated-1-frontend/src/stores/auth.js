@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (boardStore.boards.length === 0) await boardStore.fetchBoard()
         const board = await boardStore.findBoard(bid)
         const authData = await getAuthData()
-        return (await board.owner.oid) === authData.oid
+        return (await board?.owner.oid) === authData.oid
     }
     // Return the store properties and methods
     return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner }

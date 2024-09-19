@@ -38,7 +38,10 @@ onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()
 
-    currentBoard.value = await boardStore.findBoard(route.params.bid)
+    currentBoard.value = await boardApi.getCurrentBoard()
+    if (!currentBoard.value) {
+        router.push({ name: 'boardView' })
+    }
     isCanEdit.value = await authStore.isOwner(route.params.bid)
 })
 const changeBoardVisibility = async () => {

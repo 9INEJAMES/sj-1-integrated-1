@@ -4,6 +4,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useStatusesStore } from '../stores/status.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusApi } from '@/composables/status-api'
+import { useAuthStore } from '@/stores/auth'
 const themeStore = useTheme()
 const route = useRoute()
 const router = useRouter()
@@ -11,6 +12,9 @@ const statusesStore = useStatusesStore()
 const statusApi = useStatusApi()
 const isDisibled = ref(false)
 const isChanged = ref(false)
+const isCanEdit = ref(false)
+const authStore = useAuthStore()
+
 let status
 const newStatus = ref({
     name: '',
@@ -61,6 +65,8 @@ const checkLength = (name, value, length) => {
     }
 }
 onMounted(async () => {
+    isCanEdit.value = await authStore.isOwner(route.params.bid)
+
     if (route.name !== 'statusAdd') {
         const id = route.params.id
         status = await statusApi.getStatusById(id)
@@ -157,8 +163,8 @@ onMounted(async () => {
                                 <button
                                     class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
                                     @click="submitStatus(true)"
-                                    :class="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 ? 'disabled' : ''"
-                                    :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1"
+                                    :class="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit ? 'disabled' : ''"
+                                    :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit"
                                 >
                                     save
                                 </button>

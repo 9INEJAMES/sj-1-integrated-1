@@ -7,6 +7,7 @@ import { useStatusesStore } from '@/stores/status'
 import { useRouter, useRoute } from 'vue-router'
 import { useBoardStore } from '@/stores/board'
 import ConfirmDelete from './ConfirmDelete.vue'
+import { useBoardApi } from '@/composables/board-api'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
@@ -17,6 +18,7 @@ const status = useStatusesStore()
 const router = useRouter()
 const route = useRoute()
 const boardStore = useBoardStore()
+const boardApi = useBoardApi()
 
 const goBackHome = () => {
     router.push({ name: 'boardView' })
@@ -29,7 +31,7 @@ const checkPage = () => {
 }
 const getBName = () => {
     if (route.params.bid && boardStore.boards.length != 0) {
-        return boardStore.findBoard(route.params.bid).name
+        return boardApi.getCurrentBoard().name
     }
 }
 const logout = () => {
