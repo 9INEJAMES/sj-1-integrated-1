@@ -19,7 +19,7 @@ export const useAuthApi = () => {
 
             if (response.ok) {
                 const token = await response.json()
-                const userTokenObject = authStore.addToken(token.access_token) // Store token
+                const userTokenObject = authStore.addToken(token.access_token,token.refresh_token) // Store token
                 toastStore.changeToast(true, 'You have successfully logged in')
 
                 return userTokenObject

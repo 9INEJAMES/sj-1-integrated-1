@@ -13,53 +13,87 @@ export const useAuthStore = defineStore('auth', () => {
     const statusStore = useStatusesStore()
     const taskStore = useTasksStore()
     const isCanEdit = ref(false)
-    const token = ref('')
+    const accessToken = ref('')
+    const refreshToken = ref('')
+
+    const getToken = () => {
+        if (!accessToken.value || !refreshToken.value) {
+            const auth = JSON.parse(localStorage.getItem('authData'))
+            accessToken.value = auth ? auth.access_token : null
+            refreshToken.value = auth ? auth.refresh_token : null
+        }
+        return accessToken.value
+    }
+
     const checkToken = async () => {
-        if (!token.value) {
+        if (!accessToken.value) {
             getToken()
-            if (!token.value) {
+            if (!accessToken.value) {
                 logout()
+                return
             }
         }
         if (isTokenExpired()) {
-            toastStore.changeToast(false, 'Your token is expired. Please log in again')
-            logout()
+            const success = await refreshAccessToken()
+            if (!success) {
+                toastStore.changeToast(false, 'Your token is expired. Please log in again')
+                logout()
+            }
         }
     }
+
     const isTokenExpired = () => {
         getToken()
         const decodedToken = getAuthData()
         if (decodedToken) return decodedToken.exp < Date.now() / 1000
     }
-    const addToken = (newToken) => {
-        token.value = newToken
+
+    const refreshAccessToken = async () => {
+        try {
+            const response = await fetch('/token', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${refreshToken.value}` },
+            })
+            const data = await response.json()
+            if (response.ok && data.access_token) {
+                addToken(data.access_token, refreshToken.value) // Keep the same refresh token
+                return true
+            }
+            return false
+        } catch (error) {
+            console.error('Error refreshing token:', error)
+            return false
+        }
+    }
+
+    const addToken = (newAccessToken, newRefreshToken) => {
+        accessToken.value = newAccessToken
+        refreshToken.value = newRefreshToken || refreshToken.value // Keep current refresh token if not passed
         const userTokenObject = {
-            username: decodeToken(newToken).username,
-            token: newToken,
+            username: decodeToken(newAccessToken).username,
+            access_token: newAccessToken,
+            refresh_token: refreshToken.value,
         }
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
         return userTokenObject
     }
-    const getToken = () => {
-        if (!token.value) {
-            const auth = JSON.parse(localStorage.getItem('authData'))
-            token.value = auth ? auth.token : null
-        }
-        return token.value
-    }
+
     const getAuthData = () => {
-        if (!token.value) {
+        if (!accessToken.value) {
             return null
         } else {
-            return decodeToken(token.value)
+            return decodeToken(accessToken.value)
         }
     }
-    const decodeToken = (t) => {
-        return VueJwtDecode.decode(t)
+
+    const decodeToken = (token) => {
+        return VueJwtDecode.decode(token)
     }
+
     const logout = () => {
         localStorage.removeItem('authData')
-        token.value = ''
+        accessToken.value = ''
+        refreshToken.value = ''
         router.push('/login')
         boardStore.resetBoards()
         statusStore.resetStatuses()
@@ -73,8 +107,8 @@ export const useAuthStore = defineStore('auth', () => {
         if (!authData || !board) return false
         return (await board?.owner.oid) === authData.oid
     }
-    // Return the store properties and methods
-    return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner }
+
+    return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner, refreshAccessToken }
 })
 
 if (import.meta.hot) {
