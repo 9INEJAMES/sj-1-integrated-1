@@ -98,7 +98,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     const authData = JSON.parse(localStorage.getItem('authData'))
-    const token = authData ? authData.token : null
+    const token = authData ? authData.access_token : null
     let isTokenExpired = true
 
     if (token) {
