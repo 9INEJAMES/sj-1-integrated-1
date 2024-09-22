@@ -1,11 +1,7 @@
 package int221.integrated1backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
-import lombok.Setter;
 
 @Data
 public class BoardOutputDTO {
@@ -16,11 +12,17 @@ public class BoardOutputDTO {
     private String oid;
     @JsonIgnore
     private String oName;
+    @JsonIgnore
+    private boolean isPublic;
 
     public Owner getOwner() {
         Owner owner = new Owner();
         owner.setOid(this.oid);
         owner.setName(this.oName);
         return owner;
+    }
+
+    public String getVisibility() {
+        return isPublic ? "PUBLIC" : "PRIVATE";
     }
 }

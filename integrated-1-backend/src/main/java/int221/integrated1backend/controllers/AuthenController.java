@@ -2,6 +2,7 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.JwtRequestUser;
 import int221.integrated1backend.dtos.Token;
+import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.services.JwtTokenUtil;
 import int221.integrated1backend.services.JwtUserDetailsService;
 import int221.integrated1backend.services.UserService;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("")
 @CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "http://localhost:5173"})
 public class AuthenController {
     @Autowired
@@ -31,7 +32,7 @@ public class AuthenController {
     @Autowired
     UserService userService;
 
-    @PostMapping("")
+    @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword());
@@ -40,20 +41,22 @@ public class AuthenController {
 //            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username or password incorrect");//////////////exception
 //        }
         UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
-        String token = jwtTokenUtil.generateToken(userDetails);
+        String access_token = jwtTokenUtil.generateToken(userDetails.getUsername());
+        String refresh_token = jwtTokenUtil.generateRefreshToken(userDetails.getUsername());
         Token tokenObj = new Token();
-        tokenObj.setAccess_token(token);
+        tokenObj.setAccess_token(access_token);
+        tokenObj.setRefresh_token(refresh_token);
         return ResponseEntity.ok(tokenObj);
     }
 
-    @GetMapping("/validate-token")
+    @PostMapping("/token")
     public ResponseEntity<Object> validateToken(@RequestHeader("Authorization") @Valid String requestTokenHeader) {
         Claims claims = null;
-        String jwtToken = null;
+        String refresh_token = null;
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
-            jwtToken = requestTokenHeader.substring(7);
+            refresh_token = requestTokenHeader.substring(7);
             try {
-                claims = jwtTokenUtil.getAllClaimsFromToken(jwtToken);
+                claims = jwtTokenUtil.getAllClaimsFromToken(refresh_token);
             } catch (IllegalArgumentException e) {
                 System.out.println("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -63,7 +66,13 @@ public class AuthenController {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED,
                     "JWT Token does not begin with Bearer String");
         }
-        return ResponseEntity.ok(claims);
+        User user = userService.findByOid(jwtTokenUtil.getClaimValueFromToken(refresh_token,"oid"));
+        String access_token = jwtTokenUtil.generateToken(user.getUsername());
+        Token tokenObj = new Token();
+        tokenObj.setAccess_token(access_token);
+        tokenObj.setRefresh_token(refresh_token);
+
+        return ResponseEntity.ok(tokenObj);
     }
 }
 
