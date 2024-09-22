@@ -38,6 +38,14 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
                 .getBody();
         return claims.get(claim, String.class);
     }
+    public String getClaimValueFromRefreshToken(String token, String claim) {
+        // Parse the JWT token to get the claims
+        Claims claims = Jwts.parser()
+                .setSigningKey(SECRET_REFRESH_KEY)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(claim, String.class);
+    }
 
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
@@ -52,6 +60,11 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
         Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
         return claims;
     }
+    public Claims getAllClaimsFromRefreshToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(SECRET_REFRESH_KEY).parseClaimsJws(token).getBody();
+        return claims;
+    }
+
 
     private Boolean isTokenExpired(String token) {
         final Date expiration = getExpirationDateFromToken(token);

@@ -56,7 +56,7 @@ public class AuthenController {
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             refresh_token = requestTokenHeader.substring(7);
             try {
-                claims = jwtTokenUtil.getAllClaimsFromToken(refresh_token);
+                claims = jwtTokenUtil.getAllClaimsFromRefreshToken(refresh_token);
             } catch (IllegalArgumentException e) {
                 System.out.println("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -66,7 +66,7 @@ public class AuthenController {
             throw new ResponseStatusException(HttpStatus.EXPECTATION_FAILED,
                     "JWT Token does not begin with Bearer String");
         }
-        User user = userService.findByOid(jwtTokenUtil.getClaimValueFromToken(refresh_token,"oid"));
+        User user = userService.findByOid(jwtTokenUtil.getClaimValueFromRefreshToken(refresh_token,"oid"));
         String access_token = jwtTokenUtil.generateToken(user.getUsername());
         Token tokenObj = new Token();
         tokenObj.setAccess_token(access_token);

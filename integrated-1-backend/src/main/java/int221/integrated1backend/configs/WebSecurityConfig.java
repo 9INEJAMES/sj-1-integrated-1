@@ -31,8 +31,8 @@ public class WebSecurityConfig {
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeRequests(
                         authorize -> authorize
                                 .requestMatchers("/login").permitAll()
+                                .requestMatchers("/token").permitAll()
 //                                .requestMatchers("/v2/*").permitAll()
-                                .requestMatchers("/login/validate-token").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
