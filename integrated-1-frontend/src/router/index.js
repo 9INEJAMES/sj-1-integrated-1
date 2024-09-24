@@ -5,6 +5,7 @@ import TaskModal from '@/components/TaskModal.vue'
 import StatusView from '@/views/StatusView.vue'
 import StatusModal from '@/components/StatusModal.vue'
 import SignIn from '@/components/SignIn.vue'
+import AccessDenied from '@/components/AccessDenied.vue'
 import BoardView from '@/views/BoardView.vue'
 import HomePage from '@/components/HomePage.vue'
 import VueJwtDecode from 'vue-jwt-decode'
@@ -97,6 +98,11 @@ const router = createRouter({
                     component: TaskModal,
                 },
             ],
+        },
+        {
+            path: '/access-denied',
+            name: 'accessDenied',
+            component: AccessDenied,
         },
     ],
 })
