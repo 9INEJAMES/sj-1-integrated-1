@@ -33,16 +33,15 @@ const chosenStatus = async (id) => {
     isSelectStatus.value = true
 }
 onMounted(async () => {
-    // authStore.checkToken()
-    if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+    currentBoard.value = await boardApi.getCurrentBoard()
+    // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()
 
-    currentBoard.value = await boardApi.getCurrentBoard()
     if (!currentBoard.value) {
         router.push({ name: 'boardView' })
     }
-    isCanEdit.value = await authStore.isOwner(route.params.bid)
+    isCanEdit.value = authStore.checkToken() ? await authStore.isOwner(route.params.bid) : false
 })
 const changeBoardVisibility = async () => {
     if (route.params.bid) {

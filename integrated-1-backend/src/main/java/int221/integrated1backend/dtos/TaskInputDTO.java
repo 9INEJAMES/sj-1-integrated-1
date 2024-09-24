@@ -17,6 +17,6 @@ public class TaskInputDTO {
     private String boardId;
 
     public String getStatus() {
-        return status == null ? "0" : status;
+        return status == null ? "1" : status;
     }
 }

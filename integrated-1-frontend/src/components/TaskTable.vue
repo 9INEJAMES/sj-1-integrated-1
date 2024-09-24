@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
@@ -41,6 +41,10 @@ const handleDeleteModal = () => {
     selectedTask.value = null
     selectedIndex.value = null
 }
+// onMounted(async () => {
+//     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
+//      await taskStore.fetchTasks()
+// })
 </script>
 
 <template>

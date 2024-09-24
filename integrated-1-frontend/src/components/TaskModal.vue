@@ -87,7 +87,7 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    await boardStore.fetchBoard()
+    // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     await statusStore.fetchStatuses()
     limitTask.value = boardStore.findBoard(route.params.bid)
     statusList.value = statusStore.statuses

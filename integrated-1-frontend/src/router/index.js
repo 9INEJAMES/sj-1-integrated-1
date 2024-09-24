@@ -103,7 +103,7 @@ router.beforeEach(async (to, from, next) => {
     const boardApi = useBoardApi()
     const boardStore = useBoardStore()
     const authStore = useAuthStore()
-    const isTokenExpired = !authStore.checkToken()
+    const isTokenExpired = await authStore.checkToken()
 
     // if (to.name === 'login' && !isTokenExpired) {
     //         next({ name: 'boardView' })
@@ -122,23 +122,22 @@ router.beforeEach(async (to, from, next) => {
     // } else {
     //     next()
     // }
+    console.log(isTokenExpired)
     if (to.name === 'taskView' || to.name === 'statusView') {
         try {
             const board = await boardApi.getBoardById(to.params.bid)
-            console.log('board:', board)
 
             // Check if board exists and is accessible
             if (!board || board.visibility === 'PRIVATE') {
                 next({ name: 'login' })
             } else {
-                boardStore.addBoard(board)
                 next()
             }
         } catch (error) {
             console.error('Error fetching board:', error)
             next({ name: 'login' }) // Redirect to login on error
         }
-    } else if (isTokenExpired) {
+    } else if (isTokenExpired && to.name !== 'login') {
         next({ name: 'login' })
     } else {
         next()
