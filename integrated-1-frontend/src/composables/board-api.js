@@ -10,6 +10,7 @@ export const useBoardApi = () => {
     const router = useRouter()
 
     async function fetchWithToken(endpoint, options = {}) {
+        await authStore.checkToken()
         const token = authStore.getToken()
 
         const headers = {
@@ -26,7 +27,6 @@ export const useBoardApi = () => {
             headers,
         })
 
-        authStore.checkToken()
         return response
     }
 
@@ -48,7 +48,6 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been created.')
                 return response.json()
             }
-            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be created.')
             console.error(`Error adding board: ${error}`)
@@ -65,7 +64,6 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been updated.')
                 return response.json()
             }
-            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be updated.')
             console.error(`Error updating board: ${error}`)
@@ -81,7 +79,6 @@ export const useBoardApi = () => {
                 toastStore.changeToast(true, 'The board has been deleted.')
                 return response.json()
             }
-            authStore.checkToken()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
@@ -90,16 +87,28 @@ export const useBoardApi = () => {
 
     async function getCurrentBoard() {
         try {
+            console.log(route.params.bid)
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}`)
             if (response.status == 400) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 return
             }
-            return response.json()
+            if (response.ok) return response.json()
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
-        authStore.checkToken()
+    }
+    async function getBoardById(bid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}`)
+            if (response.status == 400) {
+                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                return
+            }
+            if (response.ok) return response.json()
+        } catch (error) {
+            console.error(`Error fetching limit: ${error}`)
+        }
     }
 
     async function updateBoardLimit(board) {
@@ -119,7 +128,6 @@ export const useBoardApi = () => {
             } else {
                 toastStore.changeToast(true, `The Kanban board has disabled the task limit in each status`)
             }
-            authStore.checkToken()
 
             return response.json()
         } catch (error) {
@@ -128,5 +136,5 @@ export const useBoardApi = () => {
         }
     }
 
-    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit }
+    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit, getBoardById }
 }

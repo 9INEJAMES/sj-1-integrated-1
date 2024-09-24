@@ -43,7 +43,7 @@ const emit = defineEmits(['closeModal'])
 
 const submitDelete = async () => {
     try {
-        authStore.checkToken()
+        // authStore.checkToken()
         if (props.mode == 'task') {
             const result = await taskApi.deleteTask(props.object.id)
             if (result) {

@@ -32,7 +32,8 @@ public class WebSecurityConfig {
                         authorize -> authorize
                                 .requestMatchers("/login").permitAll()
                                 .requestMatchers("/token").permitAll()
-//                                .requestMatchers("/v2/*").permitAll()
+                                .requestMatchers("/v3/boards/*").permitAll()
+                                .requestMatchers("/v3/boards/*/*").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());

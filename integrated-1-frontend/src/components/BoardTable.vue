@@ -22,7 +22,7 @@ onMounted(async () => {
 })
 
 const toEditPage = (bid) => {
-    authStore.checkToken()
+    // authStore.checkToken()
     boardStore.findBoard(bid)
     router.push({
         name: 'boardEdit',

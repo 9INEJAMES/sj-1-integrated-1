@@ -40,11 +40,20 @@ public class BoardControllerV3 {
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
     }
 
-    private void permissionCheck(String oid1, String oid2) {
+    private void oidCheck(String oid1, String oid2) {
         if (!Objects.equals(oid1, oid2)) {//check user oid by token and compare with oid in board
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't have permission on this board");
         }
     }
+
+    private Board permissionCheck(String authorizationHeader, String id) {
+        String oid = null;
+        if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
+        Board board = boardService.getBoard(id);
+        if (!board.getIsPublic()) oidCheck(board.getOid(), oid);
+        return board;
+    }
+
 
     @GetMapping("")
     public ResponseEntity<Object> getAllBoard(@RequestHeader("Authorization") String authorizationHeader) {
@@ -68,22 +77,20 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
-        String oid = getOidFromHeader(authorizationHeader);
+    public ResponseEntity<Object> getBoard(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
 
-        Board board = boardService.getBoard(id);
-        if (!board.getIsPublic()) permissionCheck(board.getOid(), oid);
+        Board board = permissionCheck(authorizationHeader, id);
+
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
+
     /////////
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
-        String oid = getOidFromHeader(authorizationHeader);
+        Board existingBoard = permissionCheck(authorizationHeader, id);
 
-        Board eBoard = boardService.getBoard(id);
-        permissionCheck(eBoard.getOid(), oid);
         Board board = boardService.updateฺBoard(id, boardInput);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
@@ -91,10 +98,8 @@ public class BoardControllerV3 {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
-        String oid = getOidFromHeader(authorizationHeader);
+        Board existingBoard = permissionCheck(authorizationHeader, id);
 
-        Board eBoard = boardService.getBoard(id);
-        permissionCheck(eBoard.getOid(), oid);
         //delete all task and status in board!!
         taskService.removeAllTaskOfBoard(id);
         statusService.removeAllStatusOfBoard(id);
@@ -107,10 +112,8 @@ public class BoardControllerV3 {
     //Task operation
 
     @GetMapping("/{id}/tasks")
-    public ResponseEntity<Object> getTasks(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses, @RequestParam(defaultValue = "") String[] sortBy, @RequestParam(defaultValue = "ASC") String[] sortDirection) {
-        String oid = getOidFromHeader(authorizationHeader);
-        Board board = boardService.getBoard(id);
-//        permissionCheck(board.getOid(), oid);
+    public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses, @RequestParam(defaultValue = "") String[] sortBy, @RequestParam(defaultValue = "ASC") String[] sortDirection) {
+        Board board = permissionCheck(authorizationHeader, id);
 
         if (filterStatuses.length > 0)
             return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses, sortBy, sortDirection));
@@ -123,7 +126,7 @@ public class BoardControllerV3 {
 
     @PostMapping("/{id}/tasks")
     public ResponseEntity<Object> addNewTask(@Valid @RequestBody TaskInputDTO taskDTO, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
-        String oid = getOidFromHeader(authorizationHeader);
+        Board board = permissionCheck(authorizationHeader, id);
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.createNewTask(taskDTO);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
@@ -133,8 +136,9 @@ public class BoardControllerV3 {
 
     //check task id in board is exist? do it later
     @GetMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
-        String oid = getOidFromHeader(authorizationHeader);
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId, @RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        Board board = permissionCheck(authorizationHeader, id);
+
         TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
@@ -143,7 +147,7 @@ public class BoardControllerV3 {
 
     @PutMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId, @Valid @RequestBody TaskInputDTO taskDTO) {
-        String oid = getOidFromHeader(authorizationHeader);
+        Board board = permissionCheck(authorizationHeader, id);
         taskDTO.setBoardId(id);
         TaskV2 task = taskService.updateTask(taskId, taskDTO);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
@@ -153,6 +157,7 @@ public class BoardControllerV3 {
 
     @DeleteMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> deleteTask(@PathVariable String id, @RequestHeader("Authorization") String authorizationHeader, @PathVariable Integer taskId) {
+        Board board = permissionCheck(authorizationHeader, id);
         TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId, id);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(taskWithIdDTO);
@@ -160,7 +165,9 @@ public class BoardControllerV3 {
 
     //all statuses (public)
     @GetMapping("/{id}/statuses")
-    public ResponseEntity<Object> getAllStatus(@PathVariable String id) {
+    public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        Board board = permissionCheck(authorizationHeader, id);
+
         List<Status> statusList = statusService.getAllStatusByBoardId(id);
         List<StatusOutputDTO> outputDTOList = listMapper.mapList(statusList, StatusOutputDTO.class, modelMapper);
         boardService.updateฺInBoard(id);
@@ -168,7 +175,9 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/statuses")
-    public ResponseEntity<Object> addNewStatus(@PathVariable String id, @Valid @RequestBody StatusInputDTO statusInputDTO) {
+    public ResponseEntity<Object> addNewStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody StatusInputDTO statusInputDTO) {
+        Board board = permissionCheck(authorizationHeader, id);
+
         Status status = statusService.createNewStatus(statusInputDTO, boardService.getBoard(id));
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
@@ -176,14 +185,17 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> getStatusById(@PathVariable String id, @PathVariable Integer statusId) {
+    public ResponseEntity<Object> getStatusById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
+        Board board = permissionCheck(authorizationHeader, id);
+
         Status status = statusService.findByID(statusId);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 
     @PutMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> updateStatus(@PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
+        Board board = permissionCheck(authorizationHeader, id);
         Status status = statusService.updateStatus(statusId, statusDTO);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
@@ -191,14 +203,16 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId) {
+    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
+        Board board = permissionCheck(authorizationHeader, id);
         Status status = statusService.removeStatus(statusId);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
     @DeleteMapping("/{id}/statuses/{statusId}/{newStatusId}")
-    public ResponseEntity<Object> deleteStatus(@PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
+    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
+        Board board = permissionCheck(authorizationHeader, id);
         List<TaskV2> taskV2List = taskService.updateStatusOfTask(statusId, newStatusId);
         Status status = statusService.removeStatus(statusId);
         boardService.updateฺInBoard(id);
@@ -206,7 +220,8 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
-    public ResponseEntity<Object> updateMaximumTask(@PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody StatusInputDTO statusDTO) {
+        Board board = permissionCheck(authorizationHeader, id);
         Status status = statusService.findByID(statusId);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));

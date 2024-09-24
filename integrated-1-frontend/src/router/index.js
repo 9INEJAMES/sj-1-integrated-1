@@ -8,6 +8,9 @@ import SignIn from '@/components/SignIn.vue'
 import BoardView from '@/views/BoardView.vue'
 import HomePage from '@/components/HomePage.vue'
 import VueJwtDecode from 'vue-jwt-decode'
+import { useBoardApi } from '@/composables/board-api'
+import { useAuthStore } from '@/stores/auth'
+import { useBoardStore } from '@/stores/board'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -96,29 +99,47 @@ const router = createRouter({
     ],
 })
 
-router.beforeEach((to, from, next) => {
-    const authData = JSON.parse(localStorage.getItem('authData'))
-    const token = authData ? authData.access_token : null
-    let isTokenExpired = true
+router.beforeEach(async (to, from, next) => {
+    const boardApi = useBoardApi()
+    const boardStore = useBoardStore()
+    const authStore = useAuthStore()
+    const isTokenExpired = !authStore.checkToken()
 
-    if (token) {
+    // if (to.name === 'login' && !isTokenExpired) {
+    //         next({ name: 'boardView' })
+    //     } else if (isTokenExpired) {
+    //         if (to.name !== 'login') {
+    //             next({ name: 'login' })
+    //         } else {
+    //             next()
+    //         }
+    //     } else {
+    //         next()
+    //     }
+
+    // if (isTokenExpired) {
+    //     next({ name: 'login' })
+    // } else {
+    //     next()
+    // }
+    if (to.name === 'taskView' || to.name === 'statusView') {
         try {
-            const decodedToken = VueJwtDecode.decode(token)
-            isTokenExpired = decodedToken.exp < Date.now() / 1000
-        } catch (error) {
-            console.error('Failed to decode token:', error)
-            isTokenExpired = true
-        }
-    }
+            const board = await boardApi.getBoardById(to.params.bid)
+            console.log('board:', board)
 
-    if (to.name === 'login' && !isTokenExpired) {
-        next({ name: 'boardView' })
-    } else if (isTokenExpired) {
-        if (to.name !== 'login') {
-            next({ name: 'login' })
-        } else {
-            next()
+            // Check if board exists and is accessible
+            if (!board || board.visibility === 'PRIVATE') {
+                next({ name: 'login' })
+            } else {
+                boardStore.addBoard(board)
+                next()
+            }
+        } catch (error) {
+            console.error('Error fetching board:', error)
+            next({ name: 'login' }) // Redirect to login on error
         }
+    } else if (isTokenExpired) {
+        next({ name: 'login' })
     } else {
         next()
     }

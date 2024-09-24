@@ -12,6 +12,7 @@ export const useTaskApi = () => {
     const router = useRouter()
 
     async function fetchWithToken(endpoint, options = {}) {
+        await authStore.checkToken()
         const token = authStore.getToken()
 
         const headers = {
@@ -28,7 +29,6 @@ export const useTaskApi = () => {
             headers,
         })
 
-        authStore.checkToken()
         return response
     }
 

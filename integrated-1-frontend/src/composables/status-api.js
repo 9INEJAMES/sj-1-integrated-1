@@ -10,6 +10,7 @@ export const useStatusApi = () => {
     const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
+        await authStore.checkToken()
         const token = authStore.getToken()
 
         const headers = {
@@ -26,14 +27,12 @@ export const useStatusApi = () => {
             headers,
         })
 
-        authStore.checkToken()
         return response
     }
 
     async function getAllStatuses() {
         try {
             return (await fetchWithToken(`/statuses`)).json()
-            
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }

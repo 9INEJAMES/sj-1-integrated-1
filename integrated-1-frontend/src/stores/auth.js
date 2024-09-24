@@ -17,11 +17,10 @@ export const useAuthStore = defineStore('auth', () => {
     const refreshToken = ref('')
 
     const getToken = () => {
-        if (!accessToken.value || !refreshToken.value) {
-            const auth = JSON.parse(localStorage.getItem('authData'))
-            accessToken.value = auth ? auth.access_token : null
-            refreshToken.value = auth ? auth.refresh_token : null
-        }
+        const auth = JSON.parse(localStorage.getItem('authData'))
+        accessToken.value = auth ? auth.access_token : null
+        refreshToken.value = auth ? auth.refresh_token : null
+
         return accessToken.value
     }
 
@@ -30,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
             getToken()
             if (!accessToken.value) {
                 logout()
-                return
+                return false
             }
         }
         if (isTokenExpired()) {
@@ -38,8 +37,13 @@ export const useAuthStore = defineStore('auth', () => {
             if (!success) {
                 toastStore.changeToast(false, 'Your token is expired. Please log in again')
                 logout()
+                return false
+            } else {
+                getToken()
+                return true
             }
         }
+        return true
     }
 
     const isTokenExpired = () => {
@@ -50,7 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const refreshAccessToken = async () => {
         try {
-            const response = await fetch('/token', {
+            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${refreshToken.value}` },
             })
@@ -94,7 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('authData')
         accessToken.value = ''
         refreshToken.value = ''
-        router.push('/login')
+        // router.push('/login')
         boardStore.resetBoards()
         statusStore.resetStatuses()
         taskStore.resetTasks()
