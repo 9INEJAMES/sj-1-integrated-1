@@ -58,7 +58,13 @@ export const useBoardStore = defineStore('board', () => {
     const resetBoards = () => {
         boards.value = []
     }
-    return { boards, filterBoardList, fetchBoard, addBoard, updateBoard, removeBoard, findBoard, findBoardIndex, resetBoards, getBoard, filterBoards }
+    const getCurrentBoard = async () => {
+        resetBoard()
+        const board = await boardApi.getCurrentBoard()
+        if (board) await addBoard(board)
+        return boards.value[0]
+    }
+    return { boards, filterBoardList, fetchBoard, addBoard, updateBoard, removeBoard, findBoard, findBoardIndex, resetBoards, getBoard, filterBoards, getCurrentBoard }
 })
 
 if (import.meta.hot) {

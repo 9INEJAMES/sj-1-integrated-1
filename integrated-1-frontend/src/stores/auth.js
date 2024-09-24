@@ -29,7 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
             getToken()
             if (!accessToken.value) {
                 logout()
-                return false
+                return true
             }
         }
         if (isTokenExpired()) {
@@ -37,13 +37,13 @@ export const useAuthStore = defineStore('auth', () => {
             if (!success) {
                 toastStore.changeToast(false, 'Your token is expired. Please log in again')
                 logout()
-                return false
+                return true
             } else {
                 getToken()
-                return true
+                return false
             }
         }
-        return true
+        return false
     }
 
     const isTokenExpired = () => {
@@ -105,7 +105,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const isOwner = async (bid) => {
-        if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+        // if (checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
         const board = await boardStore.findBoard(bid)
         const authData = await getAuthData()
         if (!authData || !board) return false

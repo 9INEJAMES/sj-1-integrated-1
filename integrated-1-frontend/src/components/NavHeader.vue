@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth.js'
 import { useTasksStore } from '@/stores/task'
@@ -19,23 +19,37 @@ const router = useRouter()
 const route = useRoute()
 const boardStore = useBoardStore()
 const boardApi = useBoardApi()
+const bName = ref('default')
 
 const goBackHome = () => {
-    router.push({ name: 'boardView' })
-    taskStore.resetTasks()
-    status.resetStatuses()
+    if (authStore.checkToken()) {
+        router.push({ name: 'boardView' })
+        taskStore.resetTasks()
+        status.resetStatuses()
+    } else {
+        logout()
+    }
 }
 const checkPage = () => {
     const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete']
     return !excludedRoutes.includes(route.name)
 }
-const getBName = () => {
-    if (route.params.bid && boardStore.boards.length != 0) {
-        return boardApi.getCurrentBoard().name
+const updateBoardName = async () => {
+    const bid = route.params.bid
+    if (bid) {
+        const board = await boardStore.getCurrentBoard()
+        bName.value = board ? board.name : null
+    } else {
+        bName.value = null
     }
 }
+
+watch(() => route.params.bid, updateBoardName)
+
+updateBoardName()
 const logout = () => {
     authStore.logout()
+    router.push({ name: 'login' })
 }
 const deleteModal = ref(false)
 const deleteBoard = () => {
@@ -68,12 +82,12 @@ const handleDeleteModal = (confirmed) => {
                 class="w-[50px] h-[50px] hover:animate-bounce transition-transform duration-300 transform hover:scale-105"
             />
             <div class="flex flex-col">
-                <p class="font-bold text-[4vh] leading-none itbkk-boardname" :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', getBName()?.length > 50 ? 'text-xs' : 'text-xl']">
-                    {{ checkPage() ? getBName() : 'SJ-1' }}
+                <p class="font-bold text-[4vh] leading-none itbkk-boardname" :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', bName?.length > 50 ? 'text-xs' : 'text-xl']">
+                    {{ checkPage() ? bName : 'SJ-1' }}
                 </p>
                 <div class="flex flex-row" v-if="route.name != 'login'">
                     <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.name !== 'login'">
-                        {{ authStore.getAuthData() ? authStore.getAuthData().name : '' }}
+                        {{ authStore.getAuthData() ? authStore.getAuthData().name : 'Guest' }}
                     </p>
                     <img
                         :src="`${base ? base : ''}/logout.png`"

@@ -66,7 +66,7 @@ onMounted(async () => {
     // authStore.checkToken()
 
     if (route.name !== 'boardAdd') {
-        if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+        // if (boardStore.boards.length === 0) await boardStore.fetchBoard()
         oldBoard.value = { ...boardStore.findBoard(route.params.bid) }
         newBoard.value = { ...boardStore.findBoard(route.params.bid) }
         isCanEdit.value = await authStore.isOwner(route.params.bid)

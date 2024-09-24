@@ -18,7 +18,7 @@ const props = defineProps({
 })
 
 onMounted(async () => {
-    await boardStore.fetchBoard()
+    // if (authStore.checkToken()) await boardStore.fetchBoard()
 })
 
 const toEditPage = (bid) => {

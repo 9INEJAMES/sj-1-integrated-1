@@ -127,6 +127,7 @@ router.beforeEach(async (to, from, next) => {
     // } else {
     //     next()
     // }
+    console.log(isTokenExpired)
     if (to.name === 'taskView' || to.name === 'statusView') {
         try {
             const board = await boardApi.getBoardById(to.params.bid)
@@ -145,7 +146,7 @@ router.beforeEach(async (to, from, next) => {
             console.error('Error fetching board:', error)
             next({ name: 'login' }) // Redirect to login on error
         }
-    } else if (isTokenExpired) {
+    } else if (isTokenExpired && to.name !== 'login') {
         next({ name: 'login' })
     } else {
         next()

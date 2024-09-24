@@ -85,7 +85,7 @@ onMounted(async () => {
             isInUsed.value = true
         }
     }
-    if (boardStore.boards.length === 0) await boardStore.fetchBoard()
+    // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
     if (props.mode == 'task') isCanEdit.value = await authStore.isOwner(props.object.bid)
 })
