@@ -5,7 +5,6 @@ import router from '../router/index.js'
 import { useBoardStore } from '../stores/board'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth'
-import { useTasksStore } from '@/stores/task'
 
 const themeStore = useTheme()
 const deleteModal = ref(false)

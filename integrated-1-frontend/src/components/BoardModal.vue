@@ -64,6 +64,7 @@ const changeBoardVisibility = () => {
 
 onMounted(async () => {
     // authStore.checkToken()
+    await boardStore.fetchBoard(route.params.bid)
 
     if (route.name !== 'boardAdd') {
         // if (boardStore.boards.length === 0) await boardStore.fetchBoard()
@@ -71,6 +72,7 @@ onMounted(async () => {
         newBoard.value = { ...boardStore.findBoard(route.params.bid) }
         isCanEdit.value = await authStore.isOwner(route.params.bid)
     }
+
 })
 
 watch(
@@ -133,7 +135,7 @@ watch(
                 <button
                     class="itbkk-button-ok px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500 disabled:bg-slate-300"
                     :class="
-                        newBoard.name.trim().length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') || !isCanEdit
+                        newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') || !isCanEdit
                             ? 'disabled'
                             : ''
                     "

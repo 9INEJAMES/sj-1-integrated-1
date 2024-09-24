@@ -50,7 +50,7 @@ export const useBoardStore = defineStore('board', () => {
     }
 
     const findBoard = (bid) => {
-        return boards.value.find((board) => board.id == bid)
+        return boards.value.find((board) => board.id === bid)
     }
     const findBoardIndex = (bid) => {
         return boards.value.findIndex((board) => board.id == bid)

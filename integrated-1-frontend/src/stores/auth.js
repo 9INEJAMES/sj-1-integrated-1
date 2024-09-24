@@ -105,11 +105,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const isOwner = async (bid) => {
-        // if (checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
+        await boardStore.fetchBoard(bid)
         const board = await boardStore.findBoard(bid)
         const authData = await getAuthData()
-        if (!authData || !board) return false
-        return (await board?.owner.oid) === authData.oid
+        if (board.owner.oid === authData.oid) return true
+        else return false
     }
 
     return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner, refreshAccessToken }

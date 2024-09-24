@@ -127,11 +127,11 @@ router.beforeEach(async (to, from, next) => {
     // } else {
     //     next()
     // }
-    console.log(isTokenExpired)
+    // console.log(isTokenExpired)
     if (to.name === 'taskView' || to.name === 'statusView') {
         try {
             const board = await boardApi.getBoardById(to.params.bid)
-
+            const authData = authStore.getAuthData()
             // Check if board exists and is accessible
             if (!board || board.visibility === 'PRIVATE') {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
