@@ -15,9 +15,11 @@ export const useAuthStore = defineStore('auth', () => {
     const isCanEdit = ref(false)
     const accessToken = ref('')
     const refreshToken = ref('')
+    const isLogin = ref(false)
 
     const getToken = () => {
         const auth = JSON.parse(localStorage.getItem('authData'))
+        isLogin.value = auth ? true : false
         accessToken.value = auth ? auth.access_token : null
         refreshToken.value = auth ? auth.refresh_token : null
 
@@ -25,11 +27,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const checkToken = async () => {
+        getToken()
         if (!accessToken.value) {
-            getToken()
+            // getToken()
             if (!accessToken.value) {
                 logout()
-                return true
             }
         }
         if (isTokenExpired()) {
@@ -37,13 +39,10 @@ export const useAuthStore = defineStore('auth', () => {
             if (!success) {
                 toastStore.changeToast(false, 'Your token is expired. Please log in again')
                 logout()
-                return true
             } else {
-                getToken()
-                return false
             }
         }
-        return false
+        return isTokenExpired()
     }
 
     const isTokenExpired = () => {
@@ -79,6 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
             refresh_token: refreshToken.value,
         }
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
+        isLogin.value = true
         return userTokenObject
     }
 
@@ -98,6 +98,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('authData')
         accessToken.value = ''
         refreshToken.value = ''
+        isLogin.value = false
         // router.push('/login')
         boardStore.resetBoards()
         statusStore.resetStatuses()
@@ -112,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
         else return false
     }
 
-    return { getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner, refreshAccessToken }
+    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner, refreshAccessToken }
 })
 
 if (import.meta.hot) {

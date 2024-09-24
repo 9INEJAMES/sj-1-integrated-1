@@ -22,13 +22,13 @@ onMounted(async () => {
 
 const toEditPage = (bid) => {
     // authStore.checkToken()
-    boardStore.findBoard(bid)
-    router.push({
-        name: 'boardEdit',
-        params: {
-            bid: bid,
-        },
-    })
+    console.log('toEditPage', bid)
+    // router.push({
+    //     name: 'boardEdit',
+    //     params: {
+    //         bid: bid,
+    //     },
+    // })
 }
 
 const deleteBoard = (board, index) => {

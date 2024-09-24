@@ -6,6 +6,7 @@ import router from '@/router'
 import { useBoardStore } from '@/stores/board'
 import { useStatusesStore } from '@/stores/status'
 import { useTasksStore } from '@/stores/task'
+import { useAuthStore } from '@/stores/auth'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
@@ -13,6 +14,7 @@ const authApi = useAuthApi()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
 const boardStore = useBoardStore()
+const authStore = useAuthStore()
 
 const isPasswordVisible = ref(false)
 const base = import.meta.env.VITE_BASE
@@ -28,7 +30,8 @@ function togglePasswordVisibility() {
 const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
-        if (token) {
+        if (!!authStore.checkToken()) {
+            
             router.push('/board')
         }
     } catch (error) {

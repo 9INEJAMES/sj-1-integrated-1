@@ -111,51 +111,69 @@ router.beforeEach(async (to, from, next) => {
     const boardApi = useBoardApi()
     const boardStore = useBoardStore()
     const authStore = useAuthStore()
-    const isTokenExpired = !authStore.checkToken()
     const toastStore = useTasksStore()
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
 
-    // if (to.name === 'login' && !isTokenExpired) {
-    //         next({ name: 'boardView' })
-    //     } else if (isTokenExpired) {
-    //         if (to.name !== 'login') {
+
+    // if (to.name === 'taskView' || to.name === 'statusView') {
+    //     try {
+    //         const board = await boardApi.getBoardById(to.params.bid)
+    //         const authData = authStore.getAuthData()
+    //         // Check if board exists and is accessible
+    //         if (board.visibility === 'PRIVATE') {
+    //             toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
     //             next({ name: 'login' })
     //         } else {
+    //             await boardStore.addBoard(board)
+    //             await taskStore.fetchTasks()
+    //             await statusStore.fetchStatuses()
     //             next()
     //         }
-    //     } else {
-    //         next()
+    //     } catch (error) {
+    //         console.error('Error fetching board:', error)
+    //         next({ name: 'login' }) // Redirect to login on error
     //     }
-
-    // if (isTokenExpired) {
+    // } else if ((await authStore.checkToken()) && to.name !== 'login') {
     //     next({ name: 'login' })
     // } else {
     //     next()
     // }
-    // console.log(isTokenExpired)
-    if (to.name === 'taskView' || to.name === 'statusView') {
-        try {
-            const board = await boardApi.getBoardById(to.params.bid)
-            const authData = authStore.getAuthData()
-            // Check if board exists and is accessible
-            if (!board || board.visibility === 'PRIVATE') {
-                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+
+    if (!authStore.isLogin) {
+        if (to.name === 'taskView' || to.name === 'statusView') {
+            try {
+                const board = await boardApi.getBoardById(to.params.bid)
+                const authData = authStore.getAuthData()
+                // Check if board exists and is accessible
+                if (board.visibility === 'PRIVATE') {
+                    toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                    next({ name: 'login' })
+                } else {
+                    await boardStore.addBoard(board)
+                    await taskStore.fetchTasks()
+                    await statusStore.fetchStatuses()
+                    next()
+                }
+            } catch (error) {
+                console.error('Error fetching board:', error)
+                next({ name: 'login' }) // Redirect to login on error
+            }
+        } else {
+            next()
+        }
+    } else {
+        if (to.name === 'login' && !(await authStore.checkToken())) {
+            next({ name: 'boardView' })
+        } else if (await authStore.checkToken()) {
+            if (to.name !== 'login') {
                 next({ name: 'login' })
             } else {
-                await boardStore.addBoard(board)
-                await taskStore.fetchTasks()
-                await statusStore.fetchStatuses()
                 next()
             }
-        } catch (error) {
-            console.error('Error fetching board:', error)
-            next({ name: 'login' }) // Redirect to login on error
+        } else {
+            next()
         }
-    } else if (isTokenExpired && to.name !== 'login') {
-        next({ name: 'login' })
-    } else {
-        next()
     }
 })
 export default router

@@ -22,7 +22,7 @@ const boardApi = useBoardApi()
 const bName = ref('default')
 
 const goBackHome = () => {
-    if (authStore.checkToken()) {
+    if (!!authStore.checkToken()) {
         router.push({ name: 'boardView' })
         taskStore.resetTasks()
         status.resetStatuses()
