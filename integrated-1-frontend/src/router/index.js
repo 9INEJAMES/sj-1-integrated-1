@@ -11,6 +11,8 @@ import VueJwtDecode from 'vue-jwt-decode'
 import { useBoardApi } from '@/composables/board-api'
 import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
+import { useTasksStore } from '@/stores/task'
+import { useStatusesStore } from '@/stores/status'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -104,6 +106,9 @@ router.beforeEach(async (to, from, next) => {
     const boardStore = useBoardStore()
     const authStore = useAuthStore()
     const isTokenExpired = !authStore.checkToken()
+    const toastStore = useTasksStore()
+    const taskStore = useTasksStore()
+    const statusStore = useStatusesStore()
 
     // if (to.name === 'login' && !isTokenExpired) {
     //         next({ name: 'boardView' })
@@ -125,13 +130,15 @@ router.beforeEach(async (to, from, next) => {
     if (to.name === 'taskView' || to.name === 'statusView') {
         try {
             const board = await boardApi.getBoardById(to.params.bid)
-            console.log('board:', board)
 
             // Check if board exists and is accessible
             if (!board || board.visibility === 'PRIVATE') {
+                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 next({ name: 'login' })
             } else {
-                boardStore.addBoard(board)
+                await boardStore.addBoard(board)
+                await taskStore.fetchTasks()
+                await statusStore.fetchStatuses()
                 next()
             }
         } catch (error) {
