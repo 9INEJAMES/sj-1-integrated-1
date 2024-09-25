@@ -44,13 +44,13 @@ const submitStatus = async (isSave) => {
     if (isSave) {
         newStatus.value.description = isNullStr(newStatus.value.description)
         if (route.params.id) {
-            const updated = await statusApi.updateStatus(route.params.bid,newStatus.value)
+            const updated = await statusApi.updateStatus(route.params.bid, newStatus.value)
             if (updated)
                 statusesStore.updateStatus({
                     ...updated,
                 })
         } else {
-            const status = await statusApi.addStatus(route.params.bid,newStatus.value)
+            const status = await statusApi.addStatus(route.params.bid, newStatus.value)
 
             if (status) statusesStore.addStatus(status)
         }
@@ -69,7 +69,7 @@ onMounted(async () => {
 
     if (route.name !== 'statusAdd') {
         const id = route.params.id
-        status = await statusApi.getStatusById(route.params.bid,id)
+        status = await statusApi.getStatusById(route.params.bid, id)
         if (!status) {
             router.push({ name: 'statusView' })
             // router.back()
@@ -160,14 +160,16 @@ onMounted(async () => {
                         </div>
                         <div class="pt-[4vh]">
                             <div class="flex justify-evenly">
-                                <button
-                                    class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                                    @click="submitStatus(true)"
-                                    :class="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit ? 'disabled' : ''"
-                                    :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit"
-                                >
-                                    save
-                                </button>
+                                <div :class="!isCanEdit ? 'tooltip tooltip-bottom' : ''" data-tip="You need to be board owner to perform this action">
+                                    <button
+                                        class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                                        @click="submitStatus(true)"
+                                        :class="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit ? 'disabled' : ''"
+                                        :disabled="newStatus.name.trim().length <= 0 || !isChanged || route.params.id == 1 || !isCanEdit"
+                                    >
+                                        save
+                                    </button>
+                                </div>
 
                                 <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitStatus(false)">cancel</button>
                             </div>

@@ -265,20 +265,29 @@ const checkLimitStatus = (id) => {
                         </div>
                         <div class="pt-[4vh]">
                             <div v-if="$route.name != 'taskDetails'" class="flex justify-evenly">
-                                <button
-                                    class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
-                                    @click="submitTask(true)"
-                                    :class="
-                                        newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') || !isCanEdit
-                                            ? 'disabled'
-                                            : ''
-                                    "
-                                    :disabled="
-                                        newTask.title.trim().length <= 0 || ($route.name == 'taskEdit' && !isChanged) || (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') || !isCanEdit
-                                    "
-                                >
-                                    save
-                                </button>
+                                <div :class="!isCanEdit ? 'tooltip tooltip-bottom' : ''" data-tip="You need to be board owner to perform this action">
+                                    <button
+                                        class="itbkk-button-confirm btn btn-success btn-xs sm:btn-sm md:btn-md lg:btn-lg"
+                                        @click="submitTask(true)"
+                                        :class="
+                                            newTask.title.trim().length <= 0 ||
+                                            ($route.name == 'taskEdit' && !isChanged) ||
+                                            (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') ||
+                                            !isCanEdit
+                                                ? 'disabled'
+                                                : ''
+                                        "
+                                        :disabled="
+                                            newTask.title.trim().length <= 0 ||
+                                            ($route.name == 'taskEdit' && !isChanged) ||
+                                            (newTask.title.trim().length <= 0 && $route.name == 'taskAdd') ||
+                                            !isCanEdit
+                                        "
+                                    >
+                                        save
+                                    </button>
+                                </div>
+
                                 <button class="itbkk-button-cancel btn btn-error btn-xs sm:btn-sm md:btn-md lg:btn-lg" @click="submitTask(false)">cancel</button>
                             </div>
                             <div v-else class="flex justify-end items-end">

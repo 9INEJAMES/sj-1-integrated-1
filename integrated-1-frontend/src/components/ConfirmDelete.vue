@@ -8,6 +8,7 @@ import { useStatusApi } from '@/composables/status-api'
 import { useBoardApi } from '@/composables/board-api'
 import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
 
 const taskApi = useTaskApi()
 const statusApi = useStatusApi()
@@ -20,6 +21,7 @@ const isSelectNewStatus = ref(false)
 const boardStore = useBoardStore()
 const authStore = useAuthStore()
 const isCanEdit = ref(false)
+const route = useRoute()
 
 const props = defineProps({
     mode: {
@@ -45,7 +47,7 @@ const submitDelete = async () => {
     try {
         // authStore.checkToken()
         if (props.mode == 'task') {
-            const result = await taskApi.deleteTask(props.object.id)
+            const result = await taskApi.deleteTask(route.params.bid,props.object.id)
             if (result) {
                 taskStore.removeTask(result.id)
                 emit('closeModal', true)
@@ -53,18 +55,18 @@ const submitDelete = async () => {
         } else if (props.mode == 'status') {
             if (isInUsed.value) {
                 const newStatus = statusStore.findStatusById(newStatusId.value)
-                const result = await statusApi.deleteStatusAndTransfer(props.object.id, newStatus, props.object.noOfTasks)
+                const result = await statusApi.deleteStatusAndTransfer(route.params.bid,props.object.id, newStatus, props.object.noOfTasks)
                 if (result) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 }
             } else {
-                await statusApi.deleteStatus(props.object.id)
+                await statusApi.deleteStatus(route.params.bid,props.object.id)
                 statusStore.removeStatus(props.object.id)
                 emit('closeModal', true)
             }
         } else if (props.mode == 'board') {
-            await boardApi.deleteBoard(props.object.id)
+            await boardApi.deleteBoard(route.params.bid,props.object.id)
             boardStore.removeBoard(props.object.id)
             statusStore.resetStatuses()
             taskStore.resetTasks()
@@ -114,14 +116,16 @@ watch(newStatusId, (newVal) => {
             </div>
             <div class="flex gap-[2vh] justify-end py-[2vh]">
                 <button @click="cancelDelete" class="itbkk-button-cancel btn btn-error text-white rounded-md p-2">Cancel</button>
-                <button
-                    @click="submitDelete"
-                    class="itbkk-button-confirm btn btn-success text-white rounded-md p-2"
-                    :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit ? 'disabled' : ''"
-                    :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit"
-                >
-                    {{ mode == 'status' && isInUsed && (object.name == 'No Status' || object.name == 'Done') ? 'Transfer' : 'Confirm' }}
-                </button>
+                <div :class="!isCanEdit ? 'tooltip tooltip-bottom' : ''" data-tip="You need to be board owner to perform this action">
+                    <button
+                        @click="submitDelete"
+                        class="itbkk-button-confirm btn btn-success text-white rounded-md p-2"
+                        :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit ? 'disabled' : ''"
+                        :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit"
+                    >
+                        {{ mode == 'status' && isInUsed && (object.name == 'No Status' || object.name == 'Done') ? 'Transfer' : 'Confirm' }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
