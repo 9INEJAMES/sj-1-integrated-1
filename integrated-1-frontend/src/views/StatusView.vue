@@ -34,7 +34,6 @@ const chosenStatus = async (id) => {
 }
 onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
-    console.log('currentBoard', currentBoard.value)
     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses(route.params.bid)

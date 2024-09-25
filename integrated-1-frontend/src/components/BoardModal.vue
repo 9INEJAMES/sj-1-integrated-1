@@ -59,7 +59,6 @@ const submitBoard = async (isSave) => {
 }
 const changeBoardVisibility = () => {
     newBoard.value.isPublic = !newBoard.value.isPublic
-    console.log(newBoard.value.isPublic)
 }
 
 onMounted(async () => {

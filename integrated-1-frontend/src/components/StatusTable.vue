@@ -23,7 +23,6 @@ const emit = defineEmits(['getStatus'])
 onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
-    console.log('statusesStore.statuses', statusesStore.statuses)
 })
 const toEditPage = (id) => {
     router.push({

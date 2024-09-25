@@ -58,13 +58,13 @@ const submitTask = async (isSave) => {
         newTask.value.assignees = isNullStr(newTask.value.assignees)
         // newTask.value.status = statusStore.findStatusById(newTask.value.status)
         if (route.params.taskId) {
-            const updated = await taskApi.updateTask(newTask.value)
+            const updated = await taskApi.updateTask(route.params.bid, newTask.value)
             if (updated)
                 taskStore.updateTask({
                     ...updated,
                 })
         } else {
-            const task = await taskApi.addTask(newTask.value)
+            const task = await taskApi.addTask(route.params.bid, newTask.value)
             if (task) taskStore.addTask(task)
         }
     }
@@ -88,7 +88,7 @@ const switchTimeZone = (task) => {
 }
 onMounted(async () => {
     // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
-    await statusStore.fetchStatuses()
+    await statusStore.fetchStatuses(route.params.bid)
     limitTask.value = boardStore.findBoard(route.params.bid)
     statusList.value = statusStore.statuses
     if (route.name === 'taskDetails') {
@@ -96,7 +96,7 @@ onMounted(async () => {
     }
     if (route.name != 'taskAdd') {
         const id = route.params.taskId
-        task = await taskApi.getTaskById(id)
+        task = await taskApi.getTaskById(route.params.bid, id)
         if (!task) {
             router.push({ name: 'taskView' })
             // router.back()

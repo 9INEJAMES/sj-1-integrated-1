@@ -4,6 +4,7 @@ import { useBoardStore } from '@/stores/board'
 import { onMounted, ref, watch } from 'vue'
 import { useStatusesStore } from '@/stores/status'
 import { useBoardApi } from '@/composables/board-api'
+import { useRoute } from 'vue-router'
 
 const themeStore = useTheme()
 const boardStore = useBoardStore()
@@ -14,9 +15,10 @@ const status = useStatusesStore()
 const emit = defineEmits(['close'])
 const statusReachedLimit = ref([])
 const boardApi = useBoardApi()
+const route = useRoute()
 
 onMounted(async () => {
-    await status.fetchStatuses()
+    await status.fetchStatuses(route.params.bid)
     oldLimit.value = { ...boardStore.getBoard() }
     newLimit.value = { ...boardStore.getBoard() }
     checkStatusLimit() // Ensure the check is run on mount
