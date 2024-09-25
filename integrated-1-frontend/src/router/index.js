@@ -114,31 +114,21 @@ router.beforeEach(async (to, from, next) => {
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
 
+    console.log(!authStore.isLogin)
     if (!authStore.isLogin) {
         if (to.name === 'taskView' || to.name === 'statusView') {
-            try {
-                const board = await boardApi.getBoardById(to.params.bid)
-
-                const authData = authStore.getAuthData()
-                // Check if board exists and is accessible
-                if (board.visibility === 'PRIVATE') {
-
-                    boardStore.resetBoards()
-                    statusStore.resetStatuses()
-                    taskStore.resetTasks()
-                    next({ name: 'login' })
-                } else {
-                    next()
-                }
-            } catch (error) {
-                console.error('Error fetching board:', error)
-
+            const board = await boardApi.getBoardById(to.params.bid)
+            const authData = authStore.getAuthData()
+            if (board === 400) {
                 boardStore.resetBoards()
                 statusStore.resetStatuses()
                 taskStore.resetTasks()
-                next({ name: 'login' }) // Redirect to login on error
+                next({ name: 'accessDenied' })
+            } else {
+                next()
             }
-        } else if (to.name != 'login') {
+        } else if (to.name != 'login' && to.name != 'accessDenied') {
+            console.log("test")
             boardStore.resetBoards()
             statusStore.resetStatuses()
             taskStore.resetTasks()

@@ -41,7 +41,7 @@ public class BoardControllerV3 {
     }
 
     private void oidCheck(String oid1, String oid2) {
-        if (!Objects.equals(oid1, oid2)) {//check user oid by token and compare with oid in board
+        if (oid2 == null||!Objects.equals(oid1, oid2)) {//check user oid by token and compare with oid in board
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't have permission on this board");
         }
     }

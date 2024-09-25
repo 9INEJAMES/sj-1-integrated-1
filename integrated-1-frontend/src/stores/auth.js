@@ -99,7 +99,6 @@ export const useAuthStore = defineStore("auth", () => {
         accessToken.value = ""
         refreshToken.value = ""
         isLogin.value = false
-        // router.push('/login')
     }
 
     const isOwner = async (bid) => {
