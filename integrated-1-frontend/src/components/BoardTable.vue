@@ -6,6 +6,8 @@ import { useBoardStore } from '../stores/board'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth'
 
+
+
 const themeStore = useTheme()
 const deleteModal = ref(false)
 const boardStore = useBoardStore()
@@ -22,7 +24,7 @@ onMounted(async () => {
 
 const toEditPage = (bid) => {
     // authStore.checkToken()
-    boardStore.findBoard(bid)
+    console.log('toEditPage', bid)
     router.push({
         name: 'boardEdit',
         params: {

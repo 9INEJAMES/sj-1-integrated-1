@@ -23,4 +23,8 @@ public class BoardOutputDTOwithLimit {
         owner.setName(this.oName);
         return owner;
     }
+    public String getVisibility() {
+        return isPublic ? "PUBLIC" : "PRIVATE";
+    }
+
 }

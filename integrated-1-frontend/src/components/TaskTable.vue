@@ -4,6 +4,7 @@ import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
+import { useStatusesStore } from '@/stores/status.js'
 
 const base = import.meta.env.VITE_BASE
 const themeStore = useTheme()
@@ -11,6 +12,7 @@ const deleteModal = ref(false)
 const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
+const statusesStore = useStatusesStore()
 
 const getTask = (id) => {
     router.push({
@@ -41,15 +43,16 @@ const handleDeleteModal = () => {
     selectedTask.value = null
     selectedIndex.value = null
 }
-// onMounted(async () => {
-//     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
-//      await taskStore.fetchTasks()
-// })
+onMounted(async () => {
+    await taskStore.fetchTasks()
+    await statusesStore.fetchStatuses()
+})
 </script>
 
 <template>
     <div>
-        <ConfirmDelete v-if="deleteModal" mode="task" :object="selectedTask" :number="selectedIndex" @closeModal="handleDeleteModal" />
+        <ConfirmDelete v-if="deleteModal" mode="task" :object="selectedTask" :number="selectedIndex"
+            @closeModal="handleDeleteModal" />
         <table class="myTable table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
@@ -58,11 +61,10 @@ const handleDeleteModal = () => {
                     <th style="width: 25%">Assignees</th>
                     <th style="width: 10%" class="text-center">
                         Status
-                        <div
-                            class="itbkk-status-sort rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
-                            @click="taskStore.switchSortOrder()"
-                        >
-                            <img :src="`${base ? base : ''}/sort-${taskStore.sortDirection}.png`" class="w-[15px] h-[15px]" />
+                        <div class="itbkk-status-sort rounded-md w-[25px] border border-white h-[25px] relative float-right cursor-pointer shadow-md flex justify-center items-center"
+                            @click="taskStore.switchSortOrder()">
+                            <img :src="`${base ? base : ''}/sort-${taskStore.sortDirection}.png`"
+                                class="w-[15px] h-[15px]" />
                         </div>
                     </th>
                     <th style="width: 9%" class="text-center">Action</th>
@@ -75,18 +77,17 @@ const handleDeleteModal = () => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td
-                        :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
+                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
                         class="itbkk-title font-bold h-[30px] text-[2vh] break-all hover:cursor-pointer"
-                        @click="getTask(task.id)"
-                    >
+                        @click="getTask(task.id)">
                         {{ task.title }}
                     </td>
                     <td class="break-all itbkk-assignees" :class="[task.assignees ? '' : 'italic text-gray-500']">
                         {{ task.assignees ? task.assignees : 'Unassigned' }}
                     </td>
                     <td class="itbkk-status">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black" :style="{ backgroundColor: task.status.color }">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default text-black"
+                            :style="{ backgroundColor: task.status.color }">
                             {{ task.status.name }}
                         </button>
                     </td>
@@ -96,7 +97,9 @@ const handleDeleteModal = () => {
                                 <div tabindex="0" role="button" class="">
                                     <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
                                 </div>
-                                <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="themeStore.getAlterTheme()">
+                                <ul tabindex="0"
+                                    class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box"
+                                    :class="themeStore.getAlterTheme()">
                                     <li>
                                         <p class="itbkk-button-edit" @click="toEditPage(task.id)">Edit</p>
                                     </li>
