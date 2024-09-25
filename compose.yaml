@@ -34,20 +34,22 @@ services:
       - integrated_net
     depends_on:
       - backend
-  
+
   proxy:
     build: ./integrated-1-proxy
     container_name: proxy
     restart: unless-stopped
     ports:
       - 80:80
+      - 443:443
     networks:
       - integrated_net
     depends_on:
       - frontend
       - backend
       - database
-
+    volumes:
+      - /home/sysadmin/deploy/integrated-1-proxy/ssl:/ssl
+      
 networks:
   integrated_net:
-
