@@ -23,7 +23,7 @@ export const useStatusApi = () => {
             headers['Authorization'] = `Bearer ${token}`
         }
 
-        const response = await fetch(`${url}/v3/boards/${route.params.bid}${endpoint}`, {
+        const response = await fetch(`${url}/v3/boards/${endpoint}`, {
             ...options,
             headers,
         })
@@ -31,26 +31,26 @@ export const useStatusApi = () => {
         return response
     }
 
-    async function getAllStatuses() {
+    async function getAllStatuses(bid) {
         try {
-            return (await fetchWithToken(`/statuses`)).json()
+            return (await fetchWithToken(`${bid}/statuses`)).json()
         } catch (error) {
             console.error(`Error fetching statuses: ${error}`)
         }
     }
 
-    async function getStatusById(id) {
+    async function getStatusById(bid, id) {
         try {
-            return (await fetchWithToken(`/statuses/${id}`)).json()
+            return (await fetchWithToken(`${bid}/statuses/${id}`)).json()
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
             console.error(`Error fetching status by ID: ${error}`)
         }
     }
 
-    async function addStatus(status) {
+    async function addStatus(bid, status) {
         try {
-            const response = await fetchWithToken(`/statuses`, {
+            const response = await fetchWithToken(`${bid}/statuses`, {
                 method: 'POST',
                 body: JSON.stringify({ ...status }),
             })
@@ -68,9 +68,9 @@ export const useStatusApi = () => {
         }
     }
 
-    async function updateStatus(status) {
+    async function updateStatus(bid, status) {
         try {
-            const response = await fetchWithToken(`/statuses/${status.id}`, {
+            const response = await fetchWithToken(`${bid}/statuses/${status.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...status }),
             })
@@ -84,9 +84,9 @@ export const useStatusApi = () => {
         }
     }
 
-    async function deleteStatus(id) {
+    async function deleteStatus(bid, id) {
         try {
-            const response = await fetchWithToken(`/statuses/${id}`, {
+            const response = await fetchWithToken(`${bid}/statuses/${id}`, {
                 method: 'DELETE',
             })
             if (response.ok) {
@@ -99,9 +99,9 @@ export const useStatusApi = () => {
         }
     }
 
-    async function deleteStatusAndTransfer(id, newStatus, tasks) {
+    async function deleteStatusAndTransfer(bid, id, newStatus, tasks) {
         try {
-            const response = await fetchWithToken(`/statuses/${id}/${newStatus.id}`, {
+            const response = await fetchWithToken(`${bid}/statuses/${id}/${newStatus.id}`, {
                 method: 'DELETE',
             })
             if (response.ok) {

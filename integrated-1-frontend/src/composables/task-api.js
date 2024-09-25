@@ -25,7 +25,7 @@ export const useTaskApi = () => {
             headers['Authorization'] = `Bearer ${token}`
         }
 
-        const response = await fetch(`${url}/v3/boards/${route.params.bid}${endpoint}`, {
+        const response = await fetch(`${url}/v3/boards/${endpoint}`, {
             ...options,
             headers,
         })
@@ -33,7 +33,7 @@ export const useTaskApi = () => {
         return response
     }
 
-    async function getAllTasks(filterStatuses) {
+    async function getAllTasks(bid, filterStatuses) {
         try {
             let filter = ''
             if (filterStatuses && filterStatuses.length > 0) {
@@ -42,16 +42,16 @@ export const useTaskApi = () => {
                     return acc + prefix + status
                 }, '')
             }
-            const response = await fetchWithToken(`/tasks${filter}`)
+            const response = await fetchWithToken(`${bid}/tasks${filter}`)
             return response.json()
         } catch (error) {
             console.error(`Error fetching tasks: ${error}`)
         }
     }
 
-    async function getTaskById(id) {
+    async function getTaskById(bid, id) {
         try {
-            const response = await fetchWithToken(`/tasks/${id}`)
+            const response = await fetchWithToken(`${bid}/tasks/${id}`)
             return response.json()
         } catch (error) {
             toastStore.changeToast(false, 'The requested task does not exist')
@@ -59,9 +59,9 @@ export const useTaskApi = () => {
         }
     }
 
-    async function addTask(task) {
+    async function addTask(bid, task) {
         try {
-            const response = await fetchWithToken(`/tasks`, {
+            const response = await fetchWithToken(`${bid}/tasks`, {
                 method: 'POST',
                 body: JSON.stringify({ ...task }),
             })
@@ -86,9 +86,9 @@ export const useTaskApi = () => {
         }
     }
 
-    async function updateTask(task) {
+    async function updateTask(bid, task) {
         try {
-            const response = await fetchWithToken(`/tasks/${task.id}`, {
+            const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
                 method: 'PUT',
                 body: JSON.stringify({ ...task }),
             })
@@ -113,9 +113,9 @@ export const useTaskApi = () => {
         }
     }
 
-    async function deleteTask(id) {
+    async function deleteTask(bid, id) {
         try {
-            const response = await fetchWithToken(`/tasks/${id}`, {
+            const response = await fetchWithToken(`${bid}/tasks/${id}`, {
                 method: 'DELETE',
             })
 

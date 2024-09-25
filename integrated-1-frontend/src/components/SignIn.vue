@@ -30,7 +30,7 @@ function togglePasswordVisibility() {
 const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
-        if (!!authStore.checkToken()) {
+        if (await authStore.checkToken()) {
             
             router.push('/board')
         }
