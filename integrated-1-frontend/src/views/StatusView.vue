@@ -36,9 +36,14 @@ onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
     console.log('currentBoard', currentBoard.value)
     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
-    // if (!currentBoard.value) {
-    //     router.push({ name: 'boardView' })
-    // }
+    if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
+    if (statusStore.statuses.length === 0) await statusStore.fetchStatuses(route.params.bid)
+
+    if (!currentBoard.value) {
+        router.push({ name: 'boardView' })
+    }
+
+    // currentBoard.value = await boardStore.findBoard(route.params.bid)
     isCanEdit.value = authStore.checkToken() ? await authStore.isOwner(route.params.bid) : false
 })
 const changeBoardVisibility = async () => {

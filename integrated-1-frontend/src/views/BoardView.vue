@@ -19,6 +19,7 @@ const authStore = useAuthStore()
 
 onMounted(async () => {
     if (authStore.checkToken) await boardStore.fetchBoard()
+    console.log('boardStore', boardStore.boards)
     // onlyone board
     // if (boardStore.filterBoards(authStore.getAuthData().oid).length >= 1) {
     //     router.push({ name: 'taskView', params: { bid: boardStore.filterBoards(authStore.getAuthData().oid)[0] } })

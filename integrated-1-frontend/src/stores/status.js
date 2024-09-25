@@ -5,8 +5,8 @@ import { ref } from 'vue'
 export const useStatusesStore = defineStore('statuses', () => {
     const statuses = ref([])
     const statusApi = useStatusApi()
-    const fetchStatuses = async () => {
-        const statusesData = await statusApi.getAllStatuses()
+    const fetchStatuses = async (bid) => {
+        const statusesData = await statusApi.getAllStatuses(bid)
         resetStatuses()
         addStatuses(statusesData)
     }

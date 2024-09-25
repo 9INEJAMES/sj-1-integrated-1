@@ -5,6 +5,7 @@ import router from '../router/index.js'
 import { useTasksStore } from '../stores/task.js'
 import { useTheme } from '@/stores/theme.js'
 import { useStatusesStore } from '@/stores/status.js'
+import { useRoute } from 'vue-router'
 
 const base = import.meta.env.VITE_BASE
 const themeStore = useTheme()
@@ -13,6 +14,7 @@ const taskStore = useTasksStore()
 const selectedTask = ref(null)
 const selectedIndex = ref(null)
 const statusesStore = useStatusesStore()
+const route = useRoute()
 
 const getTask = (id) => {
     router.push({
@@ -44,8 +46,8 @@ const handleDeleteModal = () => {
     selectedIndex.value = null
 }
 onMounted(async () => {
-    await taskStore.fetchTasks()
-    await statusesStore.fetchStatuses()
+    await taskStore.fetchTasks(route.params.bid)
+    await statusesStore.fetchStatuses(route.params.bid)
 })
 </script>
 

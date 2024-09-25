@@ -6,8 +6,8 @@ export const useTasksStore = defineStore('tasks', () => {
     const tasks = ref([])
     const sortDirection = ref('default')
     const taskApi = useTaskApi()
-    const fetchTasks = async (filterStatuses) => {
-        const tasksData = await taskApi.getAllTasks(filterStatuses)
+    const fetchTasks = async (bid,filterStatuses) => {
+        const tasksData = await taskApi.getAllTasks(bid,filterStatuses)
         resetTasks()
         addTasks(tasksData)
         sortedTasks()

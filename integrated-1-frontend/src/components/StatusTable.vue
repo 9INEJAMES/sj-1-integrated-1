@@ -5,6 +5,8 @@ import { useTheme } from '@/stores/theme'
 import ConfirmDelete from './ConfirmDelete.vue'
 import router from '../router/index.js'
 import { useStatusApi } from '@/composables/status-api'
+import { useRoute } from 'vue-router'
+import { useTasksStore } from '../stores/task.js'
 
 const statusesStore = useStatusesStore()
 const themeStore = useTheme()
@@ -13,12 +15,15 @@ const selectedIndex = ref(null)
 const selectStatus = ref(null)
 const statusApi = useStatusApi()
 const base = import.meta.env.VITE_BASE
+const route = useRoute()
+const taskStore = useTasksStore()
 
 const emit = defineEmits(['getStatus'])
 
 onMounted(async () => {
-    // if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
-    if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses()
+    if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
+    if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
+    console.log('statusesStore.statuses', statusesStore.statuses)
 })
 const toEditPage = (id) => {
     router.push({
@@ -43,6 +48,7 @@ const handleDeleteModal = () => {
     selectStatus.value = null
     selectedIndex.value = null
 }
+
 </script>
 
 <template>

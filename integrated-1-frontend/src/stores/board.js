@@ -13,6 +13,7 @@ export const useBoardStore = defineStore('board', () => {
         const data = await boardApi.getAllBoard()
         resetBoard()
         addBoards(data)
+        console.log(boards.value)
         findBoard(bid)
     }
 

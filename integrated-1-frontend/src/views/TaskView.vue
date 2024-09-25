@@ -39,8 +39,8 @@ onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
     console.log('currentBoard', currentBoard.value)
     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
-    if (taskStore.tasks.length === 0) await taskStore.fetchTasks()
-    if (statusStore.statuses.length === 0) await statusStore.fetchStatuses()
+    if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
+    if (statusStore.statuses.length === 0) await statusStore.fetchStatuses(route.params.bid)
 
     if (!currentBoard.value) {
         router.push({ name: 'boardView' })
@@ -61,6 +61,9 @@ const changeBoardVisibility = async () => {
                 ...updated,
             })
     }
+}
+const fetchFilter = async (filter) => {
+    await taskStore.fetchTasks(route.params.bid, filter)
 }
 </script>
 
@@ -96,7 +99,7 @@ const changeBoardVisibility = async () => {
         </div>
     </div>
     <StatusSetting v-if="isSettingOpen" @close="isSettingOpen = false" class="z-[45]"></StatusSetting>
-    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="taskStore.fetchTasks"></FilterModal>
+    <FilterModal v-if="isFilterOpen" @close="isFilterOpen = false" class="z-40" @applyFilter="fetchFilter"></FilterModal>
 </template>
 
 <style scoped></style>

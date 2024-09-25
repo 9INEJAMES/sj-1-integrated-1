@@ -100,9 +100,6 @@ export const useAuthStore = defineStore("auth", () => {
         refreshToken.value = ""
         isLogin.value = false
         // router.push('/login')
-        boardStore.resetBoards()
-        statusStore.resetStatuses()
-        taskStore.resetTasks()
     }
 
     const isOwner = async (bid) => {

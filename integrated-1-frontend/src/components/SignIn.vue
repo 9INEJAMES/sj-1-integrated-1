@@ -30,9 +30,8 @@ function togglePasswordVisibility() {
 const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
-        if (await authStore.checkToken()) {
-            
-            router.push('/board')
+        if (token) {
+            router.push({ name: 'boardView' })
         }
     } catch (error) {
         console.error('Sign in error:', error)
@@ -41,11 +40,13 @@ const submitSignIn = async () => {
 </script>
 
 <template>
-    <div class="min-h-screen  max-h-full flex items-center justify-center" :class="themeStore.getBackgroundTheme()">
+    <div class="min-h-screen max-h-full flex items-center justify-center" :class="themeStore.getBackgroundTheme()">
         <div class="flex w-[80vw] h-[80vh] bg-white rounded-3xl shadow-lg overflow-hidden">
             <div class="w-1/2 bg-pink-300 p-10 flex flex-col justify-center text-white" :class="themeStore.getModalTheme()">
                 <h1 class="text-4xl font-bold mb-6">Welcome To ITB-KK</h1>
-                <p class="text-lg leading-relaxed">This website is a Kanban board platform designed to empower you to easily visualize your tasks, manage work-in-progress, and enhance workflow efficiency.</p>
+                <p class="text-lg leading-relaxed">
+                    This website is a Kanban board platform designed to empower you to easily visualize your tasks, manage work-in-progress, and enhance workflow efficiency.
+                </p>
             </div>
 
             <div class="w-1/2 p-10 flex flex-col justify-center">
@@ -106,7 +107,7 @@ const submitSignIn = async () => {
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
                     :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'opacity-50 cursor-not-allowed' : themeStore.getButtonTheme()"
-                    class="itbkk-button-signin w-full  font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300 text-black hover:text-white"
+                    class="itbkk-button-signin w-full font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300 text-black hover:text-white"
                     @click="submitSignIn"
                 >
                     LOGIN
