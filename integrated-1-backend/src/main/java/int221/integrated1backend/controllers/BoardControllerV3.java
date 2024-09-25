@@ -50,6 +50,7 @@ public class BoardControllerV3 {
         String oid = null;
         if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
+        System.out.println(board.toString());
         if (!board.getIsPublic()) oidCheck(board.getOid(), oid);
         return board;
     }
@@ -124,6 +125,16 @@ public class BoardControllerV3 {
         }
     }
 
+    //check task id in board is exist? do it later
+    @GetMapping("/{id}/tasks/{taskId}")
+    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId, @RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        Board board = permissionCheck(authorizationHeader, id);
+        TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
+        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+        boardService.updateฺInBoard(id);
+        return ResponseEntity.ok(outputDTO);
+    }
+
     @PostMapping("/{id}/tasks")
     public ResponseEntity<Object> addNewTask(@Valid @RequestBody TaskInputDTO taskDTO, @RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id);
@@ -132,17 +143,6 @@ public class BoardControllerV3 {
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(outputDTO);
-    }
-
-    //check task id in board is exist? do it later
-    @GetMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@PathVariable Integer taskId, @RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
-        Board board = permissionCheck(authorizationHeader, id);
-
-        TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
-        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
-        boardService.updateฺInBoard(id);
-        return ResponseEntity.ok(outputDTO);
     }
 
     @PutMapping("/{id}/tasks/{taskId}")

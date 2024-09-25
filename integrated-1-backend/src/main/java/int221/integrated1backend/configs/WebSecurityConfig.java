@@ -34,6 +34,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/token").permitAll()
                                 .requestMatchers("/v3/boards/*").permitAll()
                                 .requestMatchers("/v3/boards/*/*").permitAll()
+                                .requestMatchers("/v3/boards/*/*/*").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());

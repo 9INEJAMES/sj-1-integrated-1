@@ -41,6 +41,13 @@ const router = createRouter({
             component: BoardView,
             children: [
                 {
+                    path: '/board/:bid',
+                    name: 'boardCache',
+                    redirect: (to) => {
+                        return { name: 'taskView', params: { bid: to.params.bid } }
+                    },
+                },
+                {
                     path: 'add',
                     name: 'boardAdd',
                     component: BoardModal,
@@ -114,9 +121,8 @@ router.beforeEach(async (to, from, next) => {
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
 
-    console.log(!authStore.isLogin)
     if (!authStore.isLogin) {
-        if (to.name === 'taskView' || to.name === 'statusView') {
+        if (to.params.bid) {
             const board = await boardApi.getBoardById(to.params.bid)
             const authData = authStore.getAuthData()
             if (board === 400) {
@@ -128,7 +134,6 @@ router.beforeEach(async (to, from, next) => {
                 next()
             }
         } else if (to.name != 'login' && to.name != 'accessDenied') {
-            console.log("test")
             boardStore.resetBoards()
             statusStore.resetStatuses()
             taskStore.resetTasks()
