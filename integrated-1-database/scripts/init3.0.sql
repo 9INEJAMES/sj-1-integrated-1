@@ -12,7 +12,7 @@ CREATE TABLE boards (
     ownerId VARCHAR(36),
     isLimit BOOLEAN DEFAULT FALSE,
     limitMaximumTask INT NOT NULL DEFAULT 10,
-    isPublic BOOLEAN DEFAULT FALSE,
+	visibility ENUM('PUBLIC', 'PRIVATE') DEFAULT 'PRIVATE',
     createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT CHK_boardName_not_empty CHECK (boardName <> '')
@@ -30,8 +30,8 @@ BEGIN
     IF NEW.limitMaximumTask IS NULL THEN
         SET NEW.limitMaximumTask = 10;
     END IF;
-    IF NEW.isPublic IS NULL THEN
-        SET NEW.isPublic = false;
+    IF NEW.visibility IS NULL THEN
+        SET NEW.visibility = 'PRIVATE';
     END IF;
     IF NEW.createdOn IS NULL THEN
         SET NEW.createdOn = CURRENT_TIMESTAMP;
@@ -51,8 +51,8 @@ BEGIN
     IF NEW.limitMaximumTask IS NULL THEN
         SET NEW.limitMaximumTask = OLD.limitMaximumTask;
     END IF;
-    IF NEW.isPublic IS NULL THEN
-        SET NEW.isPublic = OLD.isPublic;
+    IF NEW.visibility IS NULL THEN
+        SET NEW.visibility = OLD.visibility;
     END IF;
 	SET NEW.createdOn = OLD.createdOn;
 	IF NEW.updatedOn IS NULL THEN

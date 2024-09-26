@@ -108,7 +108,7 @@ export const useBoardApi = () => {
     async function getCurrentBoard() {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}`)
-            if (response.status == 400) {
+            if (response.status == 403) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 return
             }
@@ -120,7 +120,7 @@ export const useBoardApi = () => {
     async function getBoardById(bid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}`)
-            if (response.status == 400) {
+            if (response.status == 403) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 return response.status
             }

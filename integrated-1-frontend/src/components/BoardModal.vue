@@ -31,7 +31,6 @@ const oldBoard = ref({
 const submitBoard = async (isSave) => {
     if (isSave) {
         newBoard.value.visibility = newBoard.value.isPublic ? 'PUBLIC' : 'PRIVATE'
-        console.log(newBoard.value)
         if (route.params.bid) {
             const updated = await boardApi.updateBoard(newBoard.value)
             boardStore.updateBoard({

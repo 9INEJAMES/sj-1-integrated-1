@@ -47,7 +47,7 @@ const submitDelete = async () => {
     try {
         // authStore.checkToken()
         if (props.mode == 'task') {
-            const result = await taskApi.deleteTask(route.params.bid,props.object.id)
+            const result = await taskApi.deleteTask(route.params.bid, props.object.id)
             if (result) {
                 taskStore.removeTask(result.id)
                 emit('closeModal', true)
@@ -55,18 +55,18 @@ const submitDelete = async () => {
         } else if (props.mode == 'status') {
             if (isInUsed.value) {
                 const newStatus = statusStore.findStatusById(newStatusId.value)
-                const result = await statusApi.deleteStatusAndTransfer(route.params.bid,props.object.id, newStatus, props.object.noOfTasks)
+                const result = await statusApi.deleteStatusAndTransfer(route.params.bid, props.object.id, newStatus, props.object.noOfTasks)
                 if (result) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 }
             } else {
-                await statusApi.deleteStatus(route.params.bid,props.object.id)
+                await statusApi.deleteStatus(route.params.bid, props.object.id)
                 statusStore.removeStatus(props.object.id)
                 emit('closeModal', true)
             }
         } else if (props.mode == 'board') {
-            await boardApi.deleteBoard(route.params.bid,props.object.id)
+            await boardApi.deleteBoard(route.params.bid, props.object.id)
             boardStore.removeBoard(props.object.id)
             statusStore.resetStatuses()
             taskStore.resetTasks()
@@ -89,7 +89,7 @@ onMounted(async () => {
     }
     // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
-    if (props.mode == 'task') isCanEdit.value = await authStore.isOwner(props.object.bid)
+    else isCanEdit.value = await authStore.isOwner(props.object.bid)
 })
 
 watch(newStatusId, (newVal) => {
@@ -104,9 +104,12 @@ watch(newStatusId, (newVal) => {
             <hr />
             <p v-if="mode == 'task' && !isInUsed" class="itbkk-message py-[3vh]">Do you want to delete the Task number {{ number }} "{{ object.title }}"</p>
             <p v-else-if="mode == 'status' && (object.name == 'No Status' || object.name == 'Done')" class="itbkk-message py-[3vh]">You can't delete default status</p>
+            <p v-else-if="mode == 'status' && !isInUsed" class="itbkk-message py-[3vh]">Do you want to delete the {{ object.name }} status?</p>
             <p v-else-if="mode == 'board'" class="itbkk-message py-[3vh]">Do you want to delete the Board name "{{ object.name }}"?</p>
             <div v-else-if="mode == 'status'" class="pt-[3vh]">
-                <p class="itbkk-message">There {{ object.tasks == 1 ? 'is' : 'are' }} {{ object.tasks }} {{ object.tasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status</p>
+                <p class="itbkk-message">
+                    There {{ object.noOfTasks == 1 ? 'is' : 'are' }} {{ object.noOfTasks }} {{ object.noOfTasks == 1 ? 'task' : 'tasks' }} associated with the {{ object.name }} status
+                </p>
                 <div class="flex">
                     <p class="w-1/3 flex items-center">Transfer to</p>
                     <select v-model="newStatusId" id="status" class="itbkk-status select select-bordered disabled:text-black w-2/3" :class="themeStore.getTheme()">
@@ -123,7 +126,7 @@ watch(newStatusId, (newVal) => {
                         :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit ? 'disabled' : ''"
                         :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit"
                     >
-                        {{ mode == 'status' && isInUsed && (object.name == 'No Status' || object.name == 'Done') ? 'Transfer' : 'Confirm' }}
+                        {{ mode == 'status' && isInUsed && (object.name !== 'No Status' || object.name !== 'Done') ? 'Transfer' : 'Confirm' }}
                     </button>
                 </div>
             </div>

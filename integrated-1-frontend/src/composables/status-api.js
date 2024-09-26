@@ -107,6 +107,8 @@ export const useStatusApi = () => {
             if (response.ok) {
                 toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
                 return response.json()
+            } else {
+                toastStore.changeToast(false, 'can not move all taks to new status because its over limit.')
             }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the status does not exist.')

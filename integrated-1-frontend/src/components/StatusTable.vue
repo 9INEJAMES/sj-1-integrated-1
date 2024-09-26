@@ -34,7 +34,7 @@ const toEditPage = (id) => {
 }
 
 const deleteStatus = async (status, index) => {
-    const status_1 = await statusApi.getStatusById(route.params.bid,status.id)
+    const status_1 = await statusApi.getStatusById(route.params.bid, status.id)
     if (status_1) {
         selectStatus.value = status_1
         selectedIndex.value = index
@@ -47,13 +47,11 @@ const handleDeleteModal = () => {
     selectStatus.value = null
     selectedIndex.value = null
 }
-
 </script>
 
 <template>
     <div class="">
-        <ConfirmDelete v-if="deleteModal" mode="status" :object="selectStatus" :number="selectedIndex"
-            @closeModal="handleDeleteModal" />
+        <ConfirmDelete v-if="deleteModal" mode="status" :object="selectStatus" :number="selectedIndex" @closeModal="handleDeleteModal" />
         <table class="myTable table-pin-rows shadow-lg">
             <thead>
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
@@ -71,33 +69,27 @@ const handleDeleteModal = () => {
                         </div>
                     </td>
                     <td class="itbkk-status-name font-bold h-[30px] text-[2vh] break-all text-black">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default"
-                            :style="{ backgroundColor: status.color }">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :style="{ backgroundColor: status.color }">
                             {{ status.name }}
                         </button>
                     </td>
-                    <td :class="status.description ? '' : 'italic text-gray-500'"
-                        class="itbkk-status-description break-all">
+                    <td :class="status.description ? '' : 'italic text-gray-500'" class="itbkk-status-description break-all">
                         {{ status.description ? status.description : 'No description is provided' }}
                     </td>
                     <td>
                         <div class="flex justify-center gap-1">
-                            <div class="itbkk-button-edit btn btn-sm" :class="themeStore.getButtonTheme()"
-                                @click="toEditPage(status.id)">
-                                Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`"
-                                    alt="edit picture" class="w-4 h-4" />
+                            <div class="itbkk-button-edit btn btn-sm" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
+                                Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
                             </div>
-                            <div class="itbkk-button-delete btn btn-sm" :class="themeStore.getButtonTheme()"
-                                @click="deleteStatus(status, index + 1)">
-                                Delete <img :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`"
-                                    alt="delete picture" class="w-4 h-4" />
+                            <div class="itbkk-button-delete btn btn-sm" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
+                                Delete <img :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
                             </div>
                         </div>
                     </td>
                 </tr>
-
             </tbody>
-    </table>
-</div></template>
+        </table>
+    </div>
+</template>
 
 <style lang="scss" scoped></style>

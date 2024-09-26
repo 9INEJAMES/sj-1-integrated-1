@@ -8,7 +8,6 @@ import { onMounted } from 'vue'
 import { useBoardStore } from '@/stores/board'
 import { useRouter, useRoute } from 'vue-router'
 
-
 const boardStore = useBoardStore()
 const base = import.meta.env.VITE_BASE
 const isSelectTask = ref(false)

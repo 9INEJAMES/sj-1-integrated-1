@@ -104,7 +104,7 @@ export const useAuthStore = defineStore('auth', () => {
             await boardStore.fetchBoard()
             const board = await boardStore.findBoard(bid)
             const authData = await getAuthData()
-            if (board.owner.oid === authData.oid) {
+            if (board?.owner.oid === authData.oid) {
                 currBid = bid
                 return true
             }

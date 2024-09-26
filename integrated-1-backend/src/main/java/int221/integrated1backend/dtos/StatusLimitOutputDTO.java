@@ -10,6 +10,7 @@ public class StatusLimitOutputDTO {
     private String name;
     private String description;
     private String color;
+    @JsonIgnore
     private Board board;
     private Integer noOfTasks;
 
