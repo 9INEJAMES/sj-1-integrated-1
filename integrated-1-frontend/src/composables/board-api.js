@@ -112,6 +112,10 @@ export const useBoardApi = () => {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 return
             }
+            if (response.status == 404) {
+                toastStore.changeToast(false, 'An error has occurred, page not found')
+                return response.status
+            }
             if (response.ok) return response.json()
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
@@ -120,11 +124,14 @@ export const useBoardApi = () => {
     async function getBoardById(bid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}`)
+            if (response.ok) return response.json()
             if (response.status == 403) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
-                return response.status
             }
-            if (response.ok) return response.json()
+            if (response.status == 404) {
+                toastStore.changeToast(false, 'An error has occurred, page not found')
+            }
+            return response.status
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }

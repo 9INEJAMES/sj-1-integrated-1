@@ -99,7 +99,7 @@ public class BoardControllerV3 {
     }
     /////////
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updatedBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
+    public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
         Board existingBoard = permissionCheck(authorizationHeader, id);
 
         Board board = boardService.updateฺBoard(id, boardInput);

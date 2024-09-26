@@ -13,7 +13,6 @@ public class BoardOutputDTO {
     private String oid;
     @JsonIgnore
     private String oName;
-    @JsonIgnore
     private Visibility visibility;
 
     public Owner getOwner() {

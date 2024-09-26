@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useBoardStore } from '@/stores/board'
 import { useTasksStore } from '@/stores/task'
 import { useStatusesStore } from '@/stores/status'
+import PageNotFound from '@/components/PageNotFound.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -110,6 +111,11 @@ const router = createRouter({
             name: 'accessDenied',
             component: AccessDenied,
         },
+        {
+            path: '/not-found',
+            name: 'notFound',
+            component: PageNotFound,
+        },
     ],
 })
 
@@ -120,22 +126,27 @@ router.beforeEach(async (to, from, next) => {
     const toastStore = useTasksStore()
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
+    let board
+
+    if (to.params.bid) {
+        board = await boardApi.getBoardById(to.params.bid)
+        console.log(board)
+    }
 
     if (!authStore.isLogin) {
         if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             next({ name: 'accessDenied' })
-        } else if (to.params.bid) {
-            const board = await boardApi.getBoardById(to.params.bid)
-            const authData = authStore.getAuthData()
-            if (board === 403) {
-                boardStore.resetBoards()
-                statusStore.resetStatuses()
-                taskStore.resetTasks()
-                next({ name: 'accessDenied' })
-            } else {
-                next()
-            }
-        } else if (to.name != 'login' && to.name != 'accessDenied') {
+        } else if (board === 403) {
+            boardStore.resetBoards()
+            statusStore.resetStatuses()
+            taskStore.resetTasks()
+            next({ name: 'accessDenied' })
+        } else if (board === 404) {
+            boardStore.resetBoards()
+            statusStore.resetStatuses()
+            taskStore.resetTasks()
+            next({ name: 'notFound' })
+        } else if (to.name != 'login' && to.name != 'accessDenied' && to.name != 'notFound') {
             boardStore.resetBoards()
             statusStore.resetStatuses()
             taskStore.resetTasks()
@@ -146,6 +157,16 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (to.name === 'login' && !(await authStore.checkToken())) {
             next({ name: 'boardView' })
+        } else if (board === 403) {
+            boardStore.resetBoards()
+            statusStore.resetStatuses()
+            taskStore.resetTasks()
+            next({ name: 'accessDenied' })
+        } else if (board === 404) {
+            boardStore.resetBoards()
+            statusStore.resetStatuses()
+            taskStore.resetTasks()
+            next({ name: 'notFound' })
         } else if (await authStore.checkToken()) {
             if (to.name !== 'login') {
                 boardStore.resetBoards()

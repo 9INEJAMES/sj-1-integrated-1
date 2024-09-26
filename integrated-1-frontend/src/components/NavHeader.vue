@@ -30,8 +30,8 @@ const goBackHome = () => {
         logout()
     }
 }
-const checkPage = (page) => {
-    const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete', page]
+const checkPage = (pages = []) => {
+    const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete', ...pages]
     return !excludedRoutes.includes(route.name)
 }
 const updateBoardName = async () => {
@@ -82,8 +82,11 @@ const handleDeleteModal = (confirmed) => {
                 class="w-[50px] h-[50px] hover:animate-bounce transition-transform duration-300 transform hover:scale-105"
             />
             <div class="flex flex-col">
-                <p class="itbkk-board-name font-bold text-[4vh] leading-none itbkk-boardname" :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', bName?.length > 50 ? 'text-xs' : 'text-xl']">
-                    {{ checkPage() ? bName : 'SJ-1' }}
+                <p
+                    class="itbkk-board-name font-bold text-[4vh] leading-none itbkk-boardname"
+                    :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', bName?.length > 50 ? 'text-xs' : 'text-xl']"
+                >
+                    {{ checkPage(['accessDenied', 'notFound']) ? bName : 'SJ-1' }}
                 </p>
                 <div class="flex flex-row" v-if="route.name != 'login'">
                     <p class="text-[3vh] itbkk-fullname" :class="themeStore.isLight ? 'text-pink-300' : 'text-cyan-300'" v-if="$route.name !== 'login'">
@@ -93,7 +96,7 @@ const handleDeleteModal = (confirmed) => {
                         v-show="authStore.isLogin"
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
-                        class="w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"
+                        class="itbkk-sign-out w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"
                         @click="logout()"
                     />
                 </div>
@@ -102,7 +105,7 @@ const handleDeleteModal = (confirmed) => {
         <div class="flex flex-row items-center align-middle gap-8">
             <div class="flex justify-center items-center h-full">
                 <img
-                    v-if="checkPage('accessDenied')"
+                    v-if="checkPage(['accessDenied', 'notFound'])"
                     @click="deleteBoard()"
                     :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`"
                     class="w-[20px] h-[20px] hover:cursor-pointer"
