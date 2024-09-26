@@ -34,12 +34,12 @@ const isViModal = ref(false)
 
 const authStore = useAuthStore()
 const chosenTask = async (id) => {
-    selectedTask.value = await taskApi.getTaskById(route.params.bid,id)
+    selectedTask.value = await taskApi.getTaskById(route.params.bid, id)
     isSelectTask.value = true
 }
 onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
-
+    currentBoard.value.isPublic = currentBoard.value.visibility === 'PRIVATE' ? false : true
     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses(route.params.bid)
@@ -53,8 +53,9 @@ onMounted(async () => {
 })
 const changeBoardVisibility = async (isConfirm) => {
     if (isConfirm) {
+        currentBoard.value.visibility = currentBoard.value.isPublic ? 'PUBLIC' : 'PRIVATE'
         if (route.params.bid) {
-            const updated = await boardApi.updateBoard(currentBoard.value)
+            const updated = await boardApi.updateBoardVisibility(currentBoard.value)
             boardStore.updateBoard({
                 ...updated,
             })
@@ -86,12 +87,19 @@ const fetchFilter = async (filter) => {
             <VButton msg="Manage Status" class="itbkk-manage-status" @click="$router.push({ name: 'statusView' })" />
         </div>
         <div class="flex gap-2">
-            <VisibleModal v-if="isViModal" class="z-[45]" @closeModal="changeBoardVisibility"></VisibleModal>
+            <VisibleModal v-if="isViModal" :msg="currentBoard.value.isPublic" class="z-[45]" @closeModal="changeBoardVisibility"></VisibleModal>
 
             <div class="flex items-center" v-if="isCanEdit">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
-                    <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="openVisibilityModal()" v-model="currentBoard.value.isPublic" />
+                    <input
+                        id="theme"
+                        type="checkbox"
+                        value="synthwave"
+                        class="itbkk-board-visibility toggle theme-controller hidden"
+                        @click="openVisibilityModal()"
+                        v-model="currentBoard.value.isPublic"
+                    />
                     <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
                         <span
                             class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform"

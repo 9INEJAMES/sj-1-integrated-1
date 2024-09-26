@@ -10,12 +10,10 @@ import { useStatusesStore } from '@/stores/status.js'
 export const useAuthStore = defineStore('auth', () => {
     const toastStore = useToast()
     const boardStore = useBoardStore()
-    const statusStore = useStatusesStore()
-    const taskStore = useTasksStore()
-    const isCanEdit = ref(false)
     const accessToken = ref('')
     const refreshToken = ref('')
     const isLogin = ref(false)
+    let currBid = ''
 
     const getToken = () => {
         const auth = JSON.parse(localStorage.getItem('authData'))
@@ -102,10 +100,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     const isOwner = async (bid) => {
         if (isLogin.value) {
-            await boardStore.fetchBoard(bid)
+            if (currBid === bid) return true
+            await boardStore.fetchBoard()
             const board = await boardStore.findBoard(bid)
             const authData = await getAuthData()
-            if (board.owner.oid === authData.oid) return true
+            if (board.owner.oid === authData.oid) {
+                currBid = bid
+                return true
+            }
         } else return false
     }
 

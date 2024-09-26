@@ -30,8 +30,8 @@ const goBackHome = () => {
         logout()
     }
 }
-const checkPage = () => {
-    const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete']
+const checkPage = (page) => {
+    const excludedRoutes = ['login', 'homepage', 'boardView', 'boardAdd', 'boardEdit', 'boardDelete', page]
     return !excludedRoutes.includes(route.name)
 }
 const updateBoardName = async () => {
@@ -64,7 +64,7 @@ const handleDeleteModal = (confirmed) => {
 }
 </script>
 <template>
-    <ConfirmDelete v-if="deleteModal" mode="board" :object="boardStore.boards[0]" :number="1" @closeModal="handleDeleteModal" />
+    <ConfirmDelete v-if="deleteModal" mode="board" :object="boardStore.findBoard(route.params.bid)" :number="1" @closeModal="handleDeleteModal" />
     <div class="poetsen-one-regular justify-between pt-[3vh] flex px-[5vh] items-center">
         <div class="flex gap-5 items-center">
             <img
@@ -72,7 +72,7 @@ const handleDeleteModal = (confirmed) => {
                 @click="goBackHome"
                 :src="`${base ? base : ''}/pHome${themeStore.isLight ? '1' : '2'}.png`"
                 alt="pig"
-                class="w-[50px] h-[50px] hover:cursor-pointer transition-transform duration-300 transform hover:scale-105"
+                class="itbkk-home w-[50px] h-[50px] hover:cursor-pointer transition-transform duration-300 transform hover:scale-105"
             />
 
             <img
@@ -82,7 +82,7 @@ const handleDeleteModal = (confirmed) => {
                 class="w-[50px] h-[50px] hover:animate-bounce transition-transform duration-300 transform hover:scale-105"
             />
             <div class="flex flex-col">
-                <p class="font-bold text-[4vh] leading-none itbkk-boardname" :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', bName?.length > 50 ? 'text-xs' : 'text-xl']">
+                <p class="itbkk-board-name font-bold text-[4vh] leading-none itbkk-boardname" :class="[themeStore.isLight ? 'text-pink-400' : 'text-cyan-500', bName?.length > 50 ? 'text-xs' : 'text-xl']">
                     {{ checkPage() ? bName : 'SJ-1' }}
                 </p>
                 <div class="flex flex-row" v-if="route.name != 'login'">
@@ -101,7 +101,13 @@ const handleDeleteModal = (confirmed) => {
         </div>
         <div class="flex flex-row items-center align-middle gap-8">
             <div class="flex justify-center items-center h-full">
-                <img v-if="checkPage()" @click="deleteBoard()" :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" class="w-[20px] h-[20px] hover:cursor-pointer" alt="list img" />
+                <img
+                    v-if="checkPage('accessDenied')"
+                    @click="deleteBoard()"
+                    :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`"
+                    class="w-[20px] h-[20px] hover:cursor-pointer"
+                    alt="list img"
+                />
             </div>
 
             <!-- <div class="flex items-center">

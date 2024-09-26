@@ -122,10 +122,12 @@ router.beforeEach(async (to, from, next) => {
     const statusStore = useStatusesStore()
 
     if (!authStore.isLogin) {
-        if (to.params.bid) {
+        if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
+            next({ name: 'accessDenied' })
+        } else if (to.params.bid) {
             const board = await boardApi.getBoardById(to.params.bid)
             const authData = authStore.getAuthData()
-            if (board === 400) {
+            if (board === 403) {
                 boardStore.resetBoards()
                 statusStore.resetStatuses()
                 taskStore.resetTasks()

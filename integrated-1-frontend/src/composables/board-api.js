@@ -69,6 +69,26 @@ export const useBoardApi = () => {
             console.error(`Error updating board: ${error}`)
         }
     }
+    async function updateBoardVisibility(board) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${board.id}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ ...board }),
+            })
+
+            if (response.ok) {
+                toastStore.changeToast(true, 'The board visibility has been change to ' + board.visibility.toLowerCase() + '.')
+                return response.json()
+            } else if (response.status == 403) {
+                toastStore.changeToast(false, 'You do not have permission to change board visibility mode')
+            } else {
+                toastStore.changeToast(false, 'There is a problem, Please try again later.')
+            }
+        } catch (error) {
+            toastStore.changeToast(false, 'There is a problem, Please try again later.')
+            console.error(`Error updating board: ${error}`)
+        }
+    }
 
     async function deleteBoard(id) {
         try {
@@ -135,5 +155,5 @@ export const useBoardApi = () => {
         }
     }
 
-    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit, getBoardById }
+    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit, getBoardById, updateBoardVisibility }
 }

@@ -6,8 +6,6 @@ import { useBoardStore } from '../stores/board'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthStore } from '@/stores/auth'
 
-
-
 const themeStore = useTheme()
 const deleteModal = ref(false)
 const boardStore = useBoardStore()
@@ -89,8 +87,8 @@ const handleDeleteModal = (confirmed) => {
                         {{ board.name }}
                     </td>
                     <td class="flex justify-center items-center h-full font-bold text-[2vh] break-all text-black">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :class="board.isPublic ? 'bg-green-400' : 'bg-red-400'">
-                            {{ board.isPublic ? 'Public' : 'Private' }}
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-bold cursor-default" :class="board.visibility == 'PUBLIC' ? 'bg-green-400' : 'bg-red-400'">
+                            {{ board.visibility }}
                         </button>
                     </td>
                     <td>

@@ -25,9 +25,9 @@ public class Board {
     private String name;
     @Column(name = "ownerId")
     private String oid;
-    @Setter
-    @Column(name = "isPublic")
-    private Boolean isPublic;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility")
+    private Visibility visibility = Visibility.PRIVATE;
     @Setter
     @Column(name = "isLimit")
     private Boolean limit;

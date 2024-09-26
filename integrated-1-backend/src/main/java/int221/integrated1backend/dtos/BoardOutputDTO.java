@@ -1,6 +1,7 @@
 package int221.integrated1backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import int221.integrated1backend.entities.in.Visibility;
 import lombok.Data;
 
 @Data
@@ -13,7 +14,7 @@ public class BoardOutputDTO {
     @JsonIgnore
     private String oName;
     @JsonIgnore
-    private boolean isPublic;
+    private Visibility visibility;
 
     public Owner getOwner() {
         Owner owner = new Owner();
@@ -22,7 +23,4 @@ public class BoardOutputDTO {
         return owner;
     }
 
-    public String getVisibility() {
-        return isPublic ? "PUBLIC" : "PRIVATE";
-    }
 }

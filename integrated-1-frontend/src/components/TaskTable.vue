@@ -48,8 +48,8 @@ const handleDeleteModal = () => {
     selectedIndex.value = null
 }
 onMounted(async () => {
-    await taskStore.fetchTasks(route.params.bid)
-    await statusesStore.fetchStatuses(route.params.bid)
+    if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
+    if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
 })
 </script>
 

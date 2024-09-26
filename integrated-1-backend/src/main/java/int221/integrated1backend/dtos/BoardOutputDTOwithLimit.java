@@ -1,6 +1,7 @@
 package int221.integrated1backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import int221.integrated1backend.entities.in.Visibility;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import lombok.Data;
 public class BoardOutputDTOwithLimit {
     private String id;
     private String name;
-    private Boolean isPublic;
+    private Visibility visibility;
     private Boolean limit;
     @Positive
     private Integer limitMaximumTask;
@@ -22,9 +23,6 @@ public class BoardOutputDTOwithLimit {
         owner.setOid(this.oid);
         owner.setName(this.oName);
         return owner;
-    }
-    public String getVisibility() {
-        return isPublic ? "PUBLIC" : "PRIVATE";
     }
 
 }

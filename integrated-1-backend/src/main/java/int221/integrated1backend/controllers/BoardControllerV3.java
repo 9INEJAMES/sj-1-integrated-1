@@ -4,6 +4,7 @@ import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
 import int221.integrated1backend.entities.in.TaskV2;
+import int221.integrated1backend.entities.in.Visibility;
 import int221.integrated1backend.services.*;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -42,7 +43,7 @@ public class BoardControllerV3 {
 
     private void oidCheck(String oid1, String oid2) {
         if (oid2 == null||!Objects.equals(oid1, oid2)) {//check user oid by token and compare with oid in board
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You don't have permission on this board");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
     }
 
@@ -51,7 +52,7 @@ public class BoardControllerV3 {
         if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
         System.out.println(board.toString());
-        if (!board.getIsPublic()) oidCheck(board.getOid(), oid);
+        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board.getOid(), oid);
         return board;
     }
 
@@ -90,6 +91,15 @@ public class BoardControllerV3 {
     /////////
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
+        Board existingBoard = permissionCheck(authorizationHeader, id);
+
+        Board board = boardService.updateฺBoard(id, boardInput);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        return ResponseEntity.ok(boardOutputDTO);
+    }
+    /////////
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updatedBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody BoardInputDTO boardInput) {
         Board existingBoard = permissionCheck(authorizationHeader, id);
 
         Board board = boardService.updateฺBoard(id, boardInput);

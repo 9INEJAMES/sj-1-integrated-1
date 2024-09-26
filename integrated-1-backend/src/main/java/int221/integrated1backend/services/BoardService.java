@@ -5,6 +5,7 @@ import int221.integrated1backend.dtos.BoardOutputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTOwithLimit;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.entities.in.Visibility;
 import int221.integrated1backend.repositories.in.BoardRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class BoardService {
     public Board updateฺBoard(String id, BoardInputDTO boardInput) {
         Board board = getBoard(id);
         board.setName(boardInput.getName() == null ? board.getName() : boardInput.getName());
-        board.setIsPublic(boardInput.getIsPublic() == null ? board.getIsPublic() : boardInput.getIsPublic());
+        board.setVisibility(boardInput.getVisibility() == null ? board.getVisibility() : boardInput.getVisibility());
         board.setLimit(boardInput.getLimit() == null ? board.getLimit() : boardInput.getLimit());
         board.setLimitMaximumTask(boardInput.getLimitMaximumTask() == null ? board.getLimitMaximumTask() : boardInput.getLimitMaximumTask());
         board.setUpdatedOn(null);
@@ -79,7 +80,7 @@ public class BoardService {
 //    }
     @Transactional("firstTransactionManager")
     public List<Board> getBoardByOId(String oid) {
-        return repository.findAllByOidOrIsPublic(oid,true);
+        return repository.findAllByOidOrVisibility(oid, Visibility.PUBLIC);
     }
     @Transactional("firstTransactionManager")
     public Board deleteBoard(String id) {

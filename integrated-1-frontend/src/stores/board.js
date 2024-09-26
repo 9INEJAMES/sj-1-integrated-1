@@ -9,11 +9,10 @@ export const useBoardStore = defineStore('board', () => {
     const boardApi = useBoardApi()
     const filterBoardList = ref([])
 
-    const fetchBoard = async (bid) => {
+    const fetchBoard = async () => {
         const data = await boardApi.getAllBoard()
         resetBoard()
         addBoards(data)
-        findBoard(bid)
     }
 
     function updateBoard(updatedBoard) {

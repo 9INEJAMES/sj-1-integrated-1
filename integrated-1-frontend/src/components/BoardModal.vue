@@ -30,6 +30,8 @@ const oldBoard = ref({
 
 const submitBoard = async (isSave) => {
     if (isSave) {
+        newBoard.value.visibility = newBoard.value.isPublic ? 'PUBLIC' : 'PRIVATE'
+        console.log(newBoard.value)
         if (route.params.bid) {
             const updated = await boardApi.updateBoard(newBoard.value)
             boardStore.updateBoard({
@@ -63,15 +65,16 @@ const changeBoardVisibility = () => {
 
 onMounted(async () => {
     // authStore.checkToken()
-    await boardStore.fetchBoard(route.params.bid)
+    await boardStore.fetchBoard()
 
     if (route.name !== 'boardAdd') {
         // if (boardStore.boards.length === 0) await boardStore.fetchBoard()
-        oldBoard.value = { ...boardStore.findBoard(route.params.bid) }
-        newBoard.value = { ...boardStore.findBoard(route.params.bid) }
+        const board = await boardStore.findBoard(route.params.bid)
+        oldBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
+        newBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
         isCanEdit.value = await authStore.isOwner(route.params.bid)
+        console.log(oldBoard.value)
     }
-
 })
 
 watch(
@@ -113,10 +116,10 @@ watch(
                 />
             </div>
 
-            <div class="flex items-center" v-if="isCanEdit">
+            <div class="flex items-center" v-if="isCanEdit && route.params.bid">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
-                    <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="changeBoardVisibility()" v-model="newBoard.isPublic" />
+                    <input id="theme" type="checkbox" value="synthwave" class="itbkk-board-visibility toggle theme-controller hidden" @click="changeBoardVisibility()" v-model="newBoard.isPublic" />
                     <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
                         <span class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform" :class="{ 'translate-x-full': newBoard.isPublic }"></span>
                     </div>
@@ -133,11 +136,7 @@ watch(
                 </button>
                 <button
                     class="itbkk-button-ok px-4 py-2 text-white bg-green-500 hover:bg-green-600 rounded-md transition duration-200 ease-in-out focus:outline-none focus:ring focus:ring-green-300 dark:focus:ring-green-500 disabled:bg-slate-300"
-                    :class="
-                        newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') || !isCanEdit
-                            ? 'disabled'
-                            : ''
-                    "
+                    :class="newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged) || (newBoard.name.trim().length <= 0 && $route.name == 'boardAdd') || !isCanEdit ? 'disabled' : ''"
                     :disabled="newBoard.name.length <= 0 || ($route.name == 'boardEdit' && !isChanged) || !isCanEdit"
                     @click="submitBoard(true)"
                 >

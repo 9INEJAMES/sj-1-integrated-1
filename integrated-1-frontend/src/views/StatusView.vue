@@ -15,7 +15,6 @@ import BoardModal from '@/components/BoardModal.vue'
 import { useBoardApi } from '@/composables/board-api'
 import VisibleModal from '@/components/VisibleModal.vue'
 
-
 const route = useRoute()
 const router = useRouter()
 const base = import.meta.env.VITE_BASE
@@ -32,11 +31,12 @@ const boardApi = useBoardApi()
 const isViModal = ref(false)
 
 const chosenStatus = async (id) => {
-    selectedStatus.value = await statusApi.getStatusById(route.params.bid,id)
+    selectedStatus.value = await statusApi.getStatusById(route.params.bid, id)
     isSelectStatus.value = true
 }
 onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
+    currentBoard.value.isPublic = currentBoard.value.visibility === 'PRIVATE' ? false : true
     // if (!authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusStore.statuses.length === 0) await statusStore.fetchStatuses(route.params.bid)
@@ -50,8 +50,9 @@ onMounted(async () => {
 })
 const changeBoardVisibility = async (isConfirm) => {
     if (isConfirm) {
+        currentBoard.value.visibility = currentBoard.value.isPublic ? 'PUBLIC' : 'PRIVATE'
         if (route.params.bid) {
-            const updated = await boardApi.updateBoard(currentBoard.value)
+            const updated = await boardApi.updateBoardVisibility(currentBoard.value)
             boardStore.updateBoard({
                 ...updated,
             })
@@ -86,7 +87,14 @@ const openVisibilityModal = () => {
             <div class="flex items-center" v-if="isCanEdit">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
-                    <input id="theme" type="checkbox" value="synthwave" class="toggle theme-controller hidden" @click="openVisibilityModal()" v-model="currentBoard.value.isPublic" />
+                    <input
+                        id="theme"
+                        type="checkbox"
+                        value="synthwave"
+                        class="itbkk-board-visibility toggle theme-controller hidden"
+                        @click="openVisibilityModal()"
+                        v-model="currentBoard.value.isPublic"
+                    />
                     <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
                         <span
                             class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform"
@@ -96,7 +104,9 @@ const openVisibilityModal = () => {
                     public
                 </label>
             </div>
-            <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action"><VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status" @click="router.push({ name: 'statusAdd' })" /></div>
+            <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action">
+                <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status" @click="router.push({ name: 'statusAdd' })" />
+            </div>
         </div>
     </div>
 
