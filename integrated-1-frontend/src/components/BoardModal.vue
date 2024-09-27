@@ -72,7 +72,6 @@ onMounted(async () => {
         oldBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
         newBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
         isCanEdit.value = await authStore.isOwner(route.params.bid)
-        console.log(oldBoard.value)
     }
 })
 

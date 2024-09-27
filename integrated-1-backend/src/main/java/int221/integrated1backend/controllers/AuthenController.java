@@ -1,5 +1,6 @@
 package int221.integrated1backend.controllers;
 
+import int221.integrated1backend.dtos.AccessToken;
 import int221.integrated1backend.dtos.JwtRequestUser;
 import int221.integrated1backend.dtos.Token;
 import int221.integrated1backend.entities.ex.User;
@@ -68,9 +69,8 @@ public class AuthenController {
         }
         User user = userService.findByOid(jwtTokenUtil.getClaimValueFromRefreshToken(refresh_token,"oid"));
         String access_token = jwtTokenUtil.generateToken(user.getUsername());
-        Token tokenObj = new Token();
+        AccessToken tokenObj = new AccessToken();
         tokenObj.setAccess_token(access_token);
-        tokenObj.setRefresh_token(refresh_token);
 
         return ResponseEntity.ok(tokenObj);
     }

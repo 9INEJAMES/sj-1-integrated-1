@@ -130,7 +130,6 @@ router.beforeEach(async (to, from, next) => {
 
     if (to.params.bid) {
         board = await boardApi.getBoardById(to.params.bid)
-        console.log(board)
     }
 
     if (!authStore.isLogin) {

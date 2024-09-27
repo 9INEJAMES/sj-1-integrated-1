@@ -56,7 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
             })
             const data = await response.json()
             if (response.ok && data.access_token) {
-                addToken(data.access_token, refreshToken.value) // Keep the same refresh token
+                addToken(data.access_token) // Keep the same refresh token
                 return true
             }
             return false
