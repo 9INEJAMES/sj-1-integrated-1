@@ -10,7 +10,7 @@ export const useStatusApi = () => {
     const route = useRoute()
 
     async function fetchWithToken(endpoint, options = {}) {
-        authStore.checkToken()
+        await authStore.checkToken()
 
         const token = authStore.getToken()
 

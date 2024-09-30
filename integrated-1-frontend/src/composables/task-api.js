@@ -12,7 +12,7 @@ export const useTaskApi = () => {
     const router = useRouter()
 
     async function fetchWithToken(endpoint, options = {}) {
-        authStore.checkToken()
+        await authStore.checkToken()
 
         const token = authStore.getToken()
 
