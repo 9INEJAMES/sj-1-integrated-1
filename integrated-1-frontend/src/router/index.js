@@ -128,6 +128,11 @@ router.beforeEach(async (to, from, next) => {
     const statusStore = useStatusesStore()
     let board
 
+    const reset = () => {
+        boardStore.resetBoards()
+        statusStore.resetStatuses()
+        taskStore.resetTasks()
+    }
     if (to.params.bid) {
         board = await boardApi.getBoardById(to.params.bid)
     }
@@ -136,19 +141,13 @@ router.beforeEach(async (to, from, next) => {
         if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             next({ name: 'accessDenied' })
         } else if (board === 403) {
-            boardStore.resetBoards()
-            statusStore.resetStatuses()
-            taskStore.resetTasks()
+            reset()
             next({ name: 'accessDenied' })
         } else if (board === 404) {
-            boardStore.resetBoards()
-            statusStore.resetStatuses()
-            taskStore.resetTasks()
+            reset()
             next({ name: 'notFound' })
         } else if (to.name != 'login' && to.name != 'accessDenied' && to.name != 'notFound') {
-            boardStore.resetBoards()
-            statusStore.resetStatuses()
-            taskStore.resetTasks()
+            reset()
             next({ name: 'login' })
         } else {
             next()
@@ -156,24 +155,18 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (to.name === 'login' && !(await authStore.checkToken())) {
             next({ name: 'boardView' })
-        } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
-            if (!authStore.isOwner(to.params.bid)) next({ name: 'accessDenied' })
-            else next()
+            } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
+                if (await authStore.isOwner(to.params.bid)) next()
+                else next({ name: 'accessDenied' })
         } else if (board === 403) {
-            boardStore.resetBoards()
-            statusStore.resetStatuses()
-            taskStore.resetTasks()
+            reset()
             next({ name: 'accessDenied' })
         } else if (board === 404) {
-            boardStore.resetBoards()
-            statusStore.resetStatuses()
-            taskStore.resetTasks()
+            reset()
             next({ name: 'notFound' })
         } else if (await authStore.checkToken()) {
             if (to.name !== 'login') {
-                boardStore.resetBoards()
-                statusStore.resetStatuses()
-                taskStore.resetTasks()
+                reset()
                 next({ name: 'login' })
             } else {
                 next()
