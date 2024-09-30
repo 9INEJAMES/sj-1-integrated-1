@@ -140,9 +140,9 @@ router.beforeEach(async (to, from, next) => {
     if (!authStore.isLogin) {
         if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             next({ name: 'accessDenied' })
-        } else if (board === 403) {
-            reset()
-            next({ name: 'accessDenied' })
+        // } else if (board === 403) {
+        //     reset()
+        //     next({ name: 'accessDenied' })
         } else if (board === 404) {
             reset()
             next({ name: 'notFound' })

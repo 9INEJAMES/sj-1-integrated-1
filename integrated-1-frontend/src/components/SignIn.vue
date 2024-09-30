@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthApi } from '@/composables/auth-api.js'
 import router from '@/router'
@@ -37,6 +37,9 @@ const submitSignIn = async () => {
         console.error('Sign in error:', error)
     }
 }
+onMounted(async () => {
+    authStore.isLogin = false
+})
 </script>
 
 <template>

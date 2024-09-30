@@ -28,10 +28,9 @@ export const useAuthStore = defineStore('auth', () => {
     const checkToken = async () => {
         getToken()
         if (!accessToken.value) {
+            if (refreshToken.value) await refreshAccessToken()
             // getToken()
-            if (!accessToken.value) {
-                logout()
-            }
+            if (!accessToken.value) logout()
         }
         if (isTokenExpired()) {
             const success = await refreshAccessToken()
@@ -97,7 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('authData')
         accessToken.value = ''
         refreshToken.value = ''
-        isLogin.value = false
+        // isLogin.value = false
     }
 
     const isOwner = async (bid) => {
@@ -107,7 +106,6 @@ export const useAuthStore = defineStore('auth', () => {
             const authData = await getAuthData()
             if (board?.owner?.oid === authData.oid) isO = true
         }
-        console.log('is owner: ', isO)
         return isO
     }
 

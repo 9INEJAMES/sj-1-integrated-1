@@ -78,6 +78,7 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
         claims.put("oid", user.getOid());
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole());
+        claims.put("type", "access");
 //        claims.put("sub", user.getUsername());
         return doGenerateToken(claims, SECRET_KEY, JWT_TOKEN_VALIDITY);
     }
@@ -86,6 +87,7 @@ public class JwtTokenUtil implements Serializable { //เอาไว้ encypt 
         User user = userService.findByUserName(userName);
         Map<String, Object> claims = new HashMap<>();
         claims.put("oid", user.getOid());
+        claims.put("type", "refresh");
 //        claims.put("sub", user.getUsername());
         return doGenerateToken(claims, SECRET_REFRESH_KEY, JWT_TOKEN_VALIDITY * 48);
     }
