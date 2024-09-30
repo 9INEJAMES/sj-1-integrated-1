@@ -37,7 +37,7 @@ const deleteBoard = (board, index) => {
 }
 
 const boardSelector = async (bid) => {
-    boardStore.findBoard(bid)
+    // boardStore.findBoard(bid)
     router.push({
         name: 'taskView',
         params: {

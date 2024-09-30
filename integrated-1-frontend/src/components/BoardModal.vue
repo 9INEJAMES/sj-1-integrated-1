@@ -68,7 +68,8 @@ onMounted(async () => {
 
     if (route.name !== 'boardAdd') {
         // if (boardStore.boards.length === 0) await boardStore.fetchBoard()
-        const board = await boardStore.findBoard(route.params.bid)
+        // const board = await boardStore.findBoard(route.params.bid)
+        const board = await boardApi.getBoardById(route.params.bid)
         oldBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
         newBoard.value = { ...board, isPublic: board.visibility == 'PRIVATE' ? false : true }
         isCanEdit.value = await authStore.isOwner(route.params.bid)
