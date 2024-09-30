@@ -6,10 +6,12 @@ import { useToast } from '@/stores/toast.js'
 import { useBoardStore } from '@/stores/board.js'
 import { useTasksStore } from '@/stores/task.js'
 import { useStatusesStore } from '@/stores/status.js'
+import { useBoardApi } from '@/composables/board-api'
 
 export const useAuthStore = defineStore('auth', () => {
     const toastStore = useToast()
     const boardStore = useBoardStore()
+    const boardApi = useBoardApi()
     const accessToken = ref('')
     const refreshToken = ref('')
     const isLogin = ref(false)
@@ -100,14 +102,9 @@ export const useAuthStore = defineStore('auth', () => {
 
     const isOwner = async (bid) => {
         if (isLogin.value) {
-            if (currBid === bid) return true
-            await boardStore.fetchBoard()
-            const board = await boardStore.findBoard(bid)
+            const board = await boardApi.getBoardById(bid)
             const authData = await getAuthData()
-            if (board?.owner.oid === authData.oid) {
-                currBid = bid
-                return true
-            }
+            if (board?.owner.oid === authData.oid) return true
         } else return false
     }
 

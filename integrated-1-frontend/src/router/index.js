@@ -156,6 +156,9 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (to.name === 'login' && !(await authStore.checkToken())) {
             next({ name: 'boardView' })
+        } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
+            if (!authStore.isOwner(to.params.bid)) next({ name: 'accessDenied' })
+            else next()
         } else if (board === 403) {
             boardStore.resetBoards()
             statusStore.resetStatuses()
