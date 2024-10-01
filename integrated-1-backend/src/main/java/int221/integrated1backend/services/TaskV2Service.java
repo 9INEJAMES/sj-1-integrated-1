@@ -80,8 +80,7 @@ public class TaskV2Service {
     }
 
     @Transactional("firstTransactionManager")
-    public TaskV2 createNewTask(TaskInputDTO taskDTO) {
-        Board board = boardService.getBoard(taskDTO.getBoardId());
+    public TaskV2 createNewTask(TaskInputDTO taskDTO,Board board) {
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
         if (board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT ADD TASK MORE THAN STATUS LIMIT");

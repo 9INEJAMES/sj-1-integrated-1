@@ -68,4 +68,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<myErrorResponse> handleHttpMessageNotReadable(HttpMessageNotReadableException exception, WebRequest request) {
         return buildErrorResponse(exception, "Request body is missing or unreadable", HttpStatus.BAD_REQUEST, request);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<myErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception, WebRequest request) {
+        return buildErrorResponse(exception, "Request body is missing or unreadable", HttpStatus.BAD_REQUEST, request);
+    }
 }
