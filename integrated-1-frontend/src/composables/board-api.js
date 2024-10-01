@@ -131,7 +131,8 @@ export const useBoardApi = () => {
             if (response.status == 404) {
                 toastStore.changeToast(false, 'An error has occurred, page not found')
             }
-            return response.status
+            const status = response.status
+            return { response: response, status: status }
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
