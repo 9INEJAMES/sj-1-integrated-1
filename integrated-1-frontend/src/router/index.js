@@ -135,23 +135,24 @@ router.beforeEach(async (to, from, next) => {
         taskStore.resetTasks()
     }
     if (to.params.bid) {
-        let { response, status } = await boardApi.getBoardById(to.params.bid)
+        const { response, status } = await boardApi.getBoardById(to.params.bid)
         board = response
         bStatus = status
+        console.log(status)
     }
 
     if (!authStore.isLogin) {
         if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             next({ name: 'accessDenied' })
-        } else if (bStatus === 403) {
-            reset()
-            next({ name: 'accessDenied' })
         } else if (bStatus == 404) {
             reset()
             next({ name: 'notFound' })
-        } else if (to.name != 'login' && to.name != 'accessDenied' && to.name != 'notFound' && board?.visibility === 'PRIVATE') {
+        } else if ((to.name != 'login' && to.name != 'accessDenied' && to.name != 'notFound' && board?.visibility === 'PRIVATE') || to.name === 'boardView') {
             reset()
             next({ name: 'login' })
+        } else if (bStatus === 403) {
+            reset()
+            next({ name: 'accessDenied' })
         } else {
             next()
         }
@@ -161,10 +162,7 @@ router.beforeEach(async (to, from, next) => {
         } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             if (await authStore.isOwner(to.params.bid)) next()
             else next({ name: 'accessDenied' })
-        } else if (board === 403) {
-            reset()
-            next({ name: 'accessDenied' })
-        } else if (board === 404) {
+        } else if (bStatus === 404) {
             reset()
             next({ name: 'notFound' })
         } else if (await authStore.checkToken()) {
@@ -174,6 +172,9 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next()
             }
+        } else if (bStatus === 403) {
+            reset()
+            next({ name: 'accessDenied' })
         } else {
             next()
         }

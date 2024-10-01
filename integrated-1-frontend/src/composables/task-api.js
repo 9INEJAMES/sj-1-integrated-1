@@ -52,6 +52,11 @@ export const useTaskApi = () => {
     async function getTaskById(bid, id) {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${id}`)
+            if (response.status >= 400) {
+                toastStore.changeToast(false, 'The requested task does not exist')
+                router.push({ name: 'notFound' })
+                return
+            }
             return response.json()
         } catch (error) {
             toastStore.changeToast(false, 'The requested task does not exist')

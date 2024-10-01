@@ -51,7 +51,6 @@ public class BoardControllerV3 {
         String oid = null;
         if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
-        System.out.println(board.toString());
         if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board.getOid(), oid);
         return board;
     }

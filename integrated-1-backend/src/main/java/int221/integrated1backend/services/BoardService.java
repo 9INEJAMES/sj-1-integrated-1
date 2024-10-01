@@ -80,7 +80,8 @@ public class BoardService {
 //    }
     @Transactional("firstTransactionManager")
     public List<Board> getBoardByOId(String oid) {
-        return repository.findAllByOidOrVisibility(oid, Visibility.PUBLIC);
+//        return repository.findAllByOidOrVisibility(oid, Visibility.PUBLIC);
+        return repository.findAllByOid(oid);
     }
     @Transactional("firstTransactionManager")
     public Board deleteBoard(String id) {

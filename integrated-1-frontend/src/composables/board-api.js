@@ -124,7 +124,7 @@ export const useBoardApi = () => {
     async function getBoardById(bid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}`)
-            if (response.ok) return response.json()
+            // if (response.ok) return response.json()
             if (response.status == 403) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
             }
@@ -132,7 +132,7 @@ export const useBoardApi = () => {
                 toastStore.changeToast(false, 'An error has occurred, page not found')
             }
             const status = response.status
-            return { response: response, status: status }
+            return { response: await response?.json(), status: status }
         } catch (error) {
             console.error(`Error fetching limit: ${error}`)
         }
