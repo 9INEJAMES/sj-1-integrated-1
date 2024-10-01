@@ -102,9 +102,9 @@ export const useAuthStore = defineStore('auth', () => {
     const isOwner = async (bid) => {
         let isO = false
         if (isLogin.value) {
-            const board = await boardApi.getBoardById(bid)
+            const { response, status } = await boardApi.getBoardById(bid)
             const authData = await getAuthData()
-            if (board?.owner?.oid === authData.oid) isO = true
+            if (response?.owner?.oid === authData.oid) isO = true
         }
         return isO
     }
