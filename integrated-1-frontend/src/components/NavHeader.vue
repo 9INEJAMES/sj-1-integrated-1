@@ -47,8 +47,10 @@ const updateBoardName = async () => {
 watch(() => route.params.bid, updateBoardName)
 
 updateBoardName()
+
 const logout = () => {
     authStore.logout()
+    !authStore.checkToken()
     router.push({ name: 'login' })
 }
 const deleteModal = ref(false)
@@ -97,7 +99,7 @@ const handleDeleteModal = (confirmed) => {
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
                         class="itbkk-sign-out w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"
-                        @click="logout()"
+                        @click="logout"
                     />
                 </div>
             </div>
