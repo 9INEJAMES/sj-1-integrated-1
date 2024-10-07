@@ -28,7 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.equals("/token") || path.equals("/board") || path.equals("/login");
+        return path.equals("/token")||path.equals("/board") ;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (requestTokenHeader.startsWith("Bearer ")) {
                 jwtToken = requestTokenHeader.substring(7);
                 try {
-                    oid = jwtTokenUtil.getClaimValueFromToken(jwtToken, "oid");
+                    oid = jwtTokenUtil.getClaimValueFromToken(jwtToken,"oid");
                 } catch (IllegalArgumentException e) {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
                 } catch (ExpiredJwtException e) {

@@ -1,10 +1,8 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.*;
-import int221.integrated1backend.entities.in.Board;
-import int221.integrated1backend.entities.in.Status;
-import int221.integrated1backend.entities.in.TaskV2;
-import int221.integrated1backend.entities.in.Visibility;
+import int221.integrated1backend.entities.ex.User;
+import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.services.*;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -34,6 +32,10 @@ public class BoardControllerV3 {
     private ModelMapper modelMapper;
     @Autowired
     private ListMapper listMapper;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private CollabService collabService;
 
 
     private String getOidFromHeader(String header) {
@@ -91,6 +93,8 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(boardOutputDTO);
     }
 
+
+    /////////
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO boardInput) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "put");
@@ -102,6 +106,7 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(boardOutputDTO);
     }
 
+    /////////
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO boardInput) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "patch");
@@ -127,6 +132,7 @@ public class BoardControllerV3 {
     }
 
     //Task operation
+
     @GetMapping("/{id}/tasks")
     public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses, @RequestParam(defaultValue = "") String[] sortBy, @RequestParam(defaultValue = "ASC") String[] sortDirection) {
         Board board = permissionCheck(authorizationHeader, id, "get");
@@ -152,6 +158,7 @@ public class BoardControllerV3 {
         return ResponseEntity.status(HttpStatus.CREATED).body(outputDTO);
     }
 
+    //check task id in board is exist? do it later
     @GetMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> getTaskById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable Integer taskId, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get");
@@ -160,6 +167,7 @@ public class BoardControllerV3 {
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
     }
+
 
     @PutMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestBody(required = false) TaskInputDTO taskDTO) {
@@ -182,6 +190,7 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(taskWithIdDTO);
     }
 
+    //all statuses (public)
     @GetMapping("/{id}/statuses")
     public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get");
@@ -254,7 +263,15 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 
-    //collab operation
-
+    @PostMapping("/{id}/collabs")
+    public  ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authoriztionHeader, @PathVariable String id , @Valid @RequestBody(required = false) CollabInputDTO collabDTO){
+        User user = userService.findByEmail(collabDTO.getEmail());
+        Collab collab = new Collab();
+        collab.setBoardId(id);
+        collab.setOwnerId(user.getOid());
+        collab.setAccessRight(collabDTO.getAccessRight());
+        Collab newCollab =  collabService.createNewCollab(collab);
+        return ResponseEntity.ok(newCollab);
+    }
 }
 

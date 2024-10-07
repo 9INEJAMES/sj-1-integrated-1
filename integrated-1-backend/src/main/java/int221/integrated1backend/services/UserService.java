@@ -27,4 +27,6 @@ public class UserService {
 
     public User findByOid(String oid) { return userRepository.findByOid(oid);}
 
+    public User findByEmail(String email) { return userRepository.findByEmail(email);}
+
 }
