@@ -227,6 +227,16 @@ END$$
 
 DELIMITER ;
 
+CREATE TABLE collabs (
+    boardId VARCHAR(10),
+    ownerId VARCHAR(36),
+    access_right ENUM('READ', 'WRITE') DEFAULT 'READ',
+    createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (boardId, ownerId)
+) ENGINE=InnoDB;
+
+
 
 USE integrated;
 
@@ -242,3 +252,4 @@ INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 SELECT * FROM boards;
 SELECT * FROM tasksV2;
 SELECT * FROM statuses;
+SELECT * FROM collabs;
