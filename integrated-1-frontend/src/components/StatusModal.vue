@@ -65,7 +65,7 @@ const checkLength = (name, value, length) => {
     }
 }
 onMounted(async () => {
-    isCanEdit.value = await authStore.isOwner(route.params.bid)
+    isCanEdit.value = await authStore.isOwnerOrCollab(route.params.bid)
 
     if (route.name !== 'statusAdd') {
         const id = route.params.id

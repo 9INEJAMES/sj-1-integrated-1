@@ -46,7 +46,7 @@ onMounted(async () => {
     }
 
     // currentBoard.value = await boardStore.findBoard(route.params.bid)
-    isCanEdit.value = authStore.checkToken() ? await authStore.isOwner(route.params.bid) : false
+    isCanEdit.value = authStore.checkToken() ? await authStore.isOwnerOrCollab(route.params.bid) : false
 })
 const changeBoardVisibility = async (isConfirm) => {
     if (isConfirm) {

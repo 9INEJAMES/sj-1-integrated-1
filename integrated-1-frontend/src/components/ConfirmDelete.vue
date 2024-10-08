@@ -66,7 +66,7 @@ const submitDelete = async () => {
                 emit('closeModal', true)
             }
         } else if (props.mode == 'board') {
-            await boardApi.deleteBoard( props.object.id)
+            await boardApi.deleteBoard(props.object.id)
             boardStore.removeBoard(props.object.id)
             statusStore.resetStatuses()
             taskStore.resetTasks()
@@ -88,8 +88,8 @@ onMounted(async () => {
         }
     }
     // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
-    if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
-    else isCanEdit.value = await authStore.isOwner(props.object.bid)
+    if (props.mode == 'board') isCanEdit.value = await authStore.isOwnerOrCollab(props.object.id)
+    else isCanEdit.value = await authStore.isOwnerOrCollab(props.object.bid)
 })
 
 watch(newStatusId, (newVal) => {

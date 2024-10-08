@@ -99,17 +99,18 @@ export const useAuthStore = defineStore('auth', () => {
         // isLogin.value = false
     }
 
-    const isOwner = async (bid) => {
+    const isOwnerOrCollab = async (bid) => {
         let isO = false
         if (isLogin.value) {
-            const { response, status } = await boardApi.getBoardById(bid)
-            const authData = await getAuthData()
-            if (response?.owner?.oid === authData.oid) isO = true
+            // const { response, status } = await boardApi.getBoardById(bid)
+            const access = await boardApi.getAccess(bid)
+            // const authData = await getAuthData()
+            if (access == 'WRITE') isO = true
         }
         return isO
     }
 
-    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwner, refreshAccessToken }
+    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwnerOrCollab, refreshAccessToken }
 })
 
 if (import.meta.hot) {

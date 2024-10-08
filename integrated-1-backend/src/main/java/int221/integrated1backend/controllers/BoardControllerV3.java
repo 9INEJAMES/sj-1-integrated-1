@@ -43,7 +43,7 @@ public class BoardControllerV3 {
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
     }
 
-    private void oidCheck(Board board, String userOid, String method) {
+    private AccessRight oidCheck(Board board, String userOid, String method) {
         boolean isOwner = Objects.equals(board.getOid(), userOid);
         Collab collab = isOwner ? null : collabService.getCollabOfBoard(board.getId(), userOid, false);
 
@@ -53,28 +53,35 @@ public class BoardControllerV3 {
         if (userOid == null || !isCollab || !isHasAccess) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
+        return isOwner || collab.getAccessRight() == AccessRight.WRITE ? AccessRight.WRITE : AccessRight.READ;
     }
 
-    private Board permissionCheck(String authorizationHeader, String id, String method) {
-        String oid = null;
-        if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
-        Board board = boardService.getBoard(id);
-        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board, oid, method);
-        if (!Objects.equals(method, "get") && board.getVisibility().equals(Visibility.PUBLIC) && oid != null)
-            oidCheck(board, oid, method);
+    private Board permissionCheck(String authorizationHeader, String bid, String method) {
+        String userId = null;
+        if (authorizationHeader != null) userId = getOidFromHeader(authorizationHeader);
+        Board board = boardService.getBoard(bid);
+        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board, userId, method);
+        if (!Objects.equals(method, "get") && board.getVisibility().equals(Visibility.PUBLIC) && userId != null)
+            oidCheck(board, userId, method);
 
         return board;
     }
 
+    @GetMapping("/{id}/access")
+    public ResponseEntity<Object> getBoardAccess(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        Board board = permissionCheck(authorizationHeader, id, "get");
+        return ResponseEntity.ok(oidCheck(board, getOidFromHeader(authorizationHeader), "get"));
+    }
+
     @GetMapping("")
     public ResponseEntity<Object> getAllBoard(@RequestHeader(value = "Authorization") String authorizationHeader) {
-        String oid = getOidFromHeader(authorizationHeader);
+        String userId = getOidFromHeader(authorizationHeader);
 
-        List<Board> boardList = boardService.getBoardByOId(oid);
+        List<Board> boardList = boardService.getBoardByOId(userId);
         List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTO(boardList);
         List<CollabBoardOutputDTO> collabBoards = new ArrayList<>();
 
-        List<Collab> collabs = collabService.getAllCollabBoardByOid(oid);
+        List<Collab> collabs = collabService.getAllCollabBoardByOid(userId);
         for (Collab collab : collabs) {
             CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId())), CollabBoardOutputDTO.class);
             collabOutputDTO.setAccessRight(collab.getAccessRight());
@@ -112,8 +119,6 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(boardOutputDTO);
     }
 
-
-    /////////
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "put");
@@ -125,7 +130,6 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(boardOutputDTO);
     }
 
-    /////////
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "patch");
@@ -323,7 +327,6 @@ public class BoardControllerV3 {
         if (Objects.equals(oid, collab_oid)) method = "get";
 
         Board board = permissionCheck(authorizationHeader, id, method);
-
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.deleteCollab(id, collab_oid));
         return ResponseEntity.ok().body(new HashMap<>());

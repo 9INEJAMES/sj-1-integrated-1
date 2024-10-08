@@ -93,14 +93,14 @@ export const useBoardApi = () => {
     async function deleteBoard(bid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The board has been deleted.")
+                toastStore.changeToast(true, 'The board has been deleted.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the board could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
         }
     }
@@ -162,6 +162,21 @@ export const useBoardApi = () => {
             console.error(`Error updating limit: ${error}`)
         }
     }
+    async function getAccess(bid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/acess`)
+            // if (response.ok) return response.json()
+            if (response.status == 403) {
+                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+            }
+            if (response.status == 404) {
+                toastStore.changeToast(false, 'An error has occurred, page not found')
+            }
+            return response.json()
+        } catch (error) {
+            console.error(`Error fetching limit: ${error}`)
+        }
+    }
 
-    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit, getBoardById, updateBoardVisibility }
+    return { getAllBoard, createBoard, deleteBoard, updateBoard, getCurrentBoard, updateBoardLimit, getBoardById, updateBoardVisibility, getAccess }
 }
