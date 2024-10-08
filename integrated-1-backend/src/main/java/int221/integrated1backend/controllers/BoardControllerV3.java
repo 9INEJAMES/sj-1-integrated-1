@@ -45,7 +45,7 @@ public class BoardControllerV3 {
 
     private void oidCheck(Board board, String userOid, String method) {
         boolean isOwner = Objects.equals(board.getOid(), userOid);
-        Collab collab = isOwner ? null : collabService.getCollabOfBoard(board.getId(), userOid);
+        Collab collab = isOwner ? null : collabService.getCollabOfBoard(board.getId(), userOid, false);
 
         boolean isCollab = isOwner || collab != null;
         boolean isHasAccess = Objects.equals(method, "get") || isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE);
@@ -293,7 +293,7 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
         Board board = permissionCheck(authorizationHeader, id, "get");
 
-        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid));
+        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
         return ResponseEntity.ok(collab);
     }
 
@@ -309,7 +309,7 @@ public class BoardControllerV3 {
 
     @PatchMapping("/{id}/collabs/{collab_oid}")
     public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) {
-        Board board = permissionCheck(authorizationHeader, id, "get");
+        Board board = permissionCheck(authorizationHeader, id, "patch");
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollab(id, collab_oid, input));
         return ResponseEntity.ok(collab);
@@ -318,7 +318,12 @@ public class BoardControllerV3 {
 
     @DeleteMapping("/{id}/collabs/{collab_oid}")
     public ResponseEntity<Object> deleteCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
-        Board board = permissionCheck(authorizationHeader, id, "get");
+        String method = "delete";
+        String oid = getOidFromHeader(authorizationHeader);
+        if (Objects.equals(oid, collab_oid)) method = "get";
+
+        Board board = permissionCheck(authorizationHeader, id, method);
+
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.deleteCollab(id, collab_oid));
         return ResponseEntity.ok().body(new HashMap<>());
