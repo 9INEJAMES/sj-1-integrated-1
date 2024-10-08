@@ -310,7 +310,7 @@ INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','Doing','The task is being worked on','#fabc3f'),
 ('kanbanbase','Done','Finished','#10b981');
 
-SELECT * FROM boards;
-SELECT * FROM tasks;
-SELECT * FROM statuses;
-SELECT * FROM collabs;
+SELECT * FROM integrated.boards;
+SELECT * FROM integrated.tasks;
+SELECT * FROM integrated.statuses;
+SELECT * FROM integrated.collabs;

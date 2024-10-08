@@ -45,7 +45,7 @@ public class BoardControllerV3 {
 
     private void oidCheck(Board board, String userOid, String method) {
         boolean isOwner = Objects.equals(board.getOid(), userOid);
-        Collab collab = collabService.getCollabOfBoard(board.getId(), userOid);
+        Collab collab = isOwner ? null : collabService.getCollabOfBoard(board.getId(), userOid);
 
         boolean isCollab = isOwner || collab != null;
         boolean isHasAccess = Objects.equals(method, "get") || isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE);
@@ -312,7 +312,7 @@ public class BoardControllerV3 {
         Board board = permissionCheck(authorizationHeader, id, "get");
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollab(id, collab_oid, input));
-        return ResponseEntity.ok(collab.getAccessRight());
+        return ResponseEntity.ok(collab);
     }
 
 
