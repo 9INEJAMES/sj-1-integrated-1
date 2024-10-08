@@ -42,12 +42,14 @@ public class BoardControllerV3 {
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
     }
 
-    private void oidCheck(Board board, String userOid) {
-        boolean isCollab = false;
-        if (Objects.equals(board.getOid(), userOid) || collabService.isCollabExist(board.getId(), userOid)) {
-            isCollab = true;
-        }
-        if (userOid == null || !isCollab) {//check user oid by token and compare with oid in board
+    private void oidCheck(Board board, String userOid, String method) {
+        boolean isOwner = Objects.equals(board.getOid(), userOid);
+        CollabOutputDTO collab = collabService.getCollabOfBoard(board.getId(), userOid);
+
+        boolean isCollab = isOwner || collab != null;
+        boolean isHasAccess = Objects.equals(method, "get") || isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE);
+
+        if (userOid == null || !isCollab || !isHasAccess) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
     }
@@ -56,8 +58,9 @@ public class BoardControllerV3 {
         String oid = null;
         if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
-        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board, oid);
-        if (method != "get" && board.getVisibility().equals(Visibility.PUBLIC) && oid != null) oidCheck(board, oid);
+        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board, oid, method);
+        if (!Objects.equals(method, "get") && board.getVisibility().equals(Visibility.PUBLIC) && oid != null)
+            oidCheck(board, oid, method);
 
         return board;
     }
