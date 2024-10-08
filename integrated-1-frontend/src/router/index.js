@@ -63,6 +63,11 @@ const router = createRouter({
                     name: 'boardEdit',
                     component: BoardModal,
                 },
+                { 
+                    path: ':bid/collab',
+                    name: 'boardCollab',
+                    component: BoardModal,
+                }
             ],
         },
         // Nested Status Routes

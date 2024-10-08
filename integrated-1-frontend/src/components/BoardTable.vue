@@ -30,6 +30,15 @@ const toEditPage = (bid) => {
     })
 }
 
+const toCollabPage = (bid) => {
+    router.push({
+        name: 'collab',
+        params: {
+            bid: bid,
+        },
+    })
+}
+
 const deleteBoard = (board, index) => {
     selectedBoard.value = board
     selectedIndex.value = index
@@ -59,7 +68,6 @@ const handleDeleteModal = (confirmed) => {
 <template>
     <div>
         <ConfirmDelete v-if="deleteModal" mode="board" :object="selectedBoard" :number="selectedIndex" @closeModal="handleDeleteModal" />
-
         <table class="myTable table-lg table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
@@ -103,6 +111,9 @@ const handleDeleteModal = (confirmed) => {
                                     </li>
                                     <li>
                                         <p :disabled="!isCanEdit" class="itbkk-button-delete" @click="deleteBoard(board, index + 1)">Delete</p>
+                                    </li>
+                                    <li>
+                                        <p :disabled="!isCanEdit" @click="toCollabPage(board.id)">Collab</p>
                                     </li>
                                 </ul>
                             </div>
