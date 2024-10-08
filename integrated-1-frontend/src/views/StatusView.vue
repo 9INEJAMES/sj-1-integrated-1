@@ -78,7 +78,6 @@ const openVisibilityModal = () => {
             <div :class="!isCanEdit ? 'tooltip tooltip-right' : ''" data-tip="You need to be board owner to perform this action">
                 <VButton :disabled="!isCanEdit" @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
             </div>
-
             <VButton msg="Manage Task" class="itbkk-button-home" @click="$router.push({ name: 'taskView' })" />
         </div>
         <div class="flex gap-2">
@@ -105,6 +104,7 @@ const openVisibilityModal = () => {
                 </label>
             </div>
             <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action">
+                <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh]" @click="$router.push({ name: 'collab' })" />
                 <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status" @click="router.push({ name: 'statusAdd' })" />
             </div>
         </div>
