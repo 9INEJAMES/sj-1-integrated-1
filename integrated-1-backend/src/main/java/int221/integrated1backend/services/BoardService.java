@@ -37,7 +37,7 @@ public class BoardService {
         return boardOutputDTO;
     }
 
-    public List<BoardOutputDTOwithLimit> mapOutputDTOList(List<Board> source) {
+    public List<BoardOutputDTOwithLimit> mapOutputDTO(List<Board> source) {
         return source.stream().map(entity -> mapOutputDTO(entity)).collect(Collectors.toList());
     }
 

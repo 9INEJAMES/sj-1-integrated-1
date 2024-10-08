@@ -13,4 +13,6 @@ public interface CollabRepository extends JpaRepository<Collab, CollabId> {
     public Collab findByBoardIdAndOwnerId(String bid,String oid);
     public boolean existsByBoardIdAndOwnerId(String bid, String oid);
 
+    public List<Collab> findAllByOwnerId(String oid);
+
 }

@@ -37,7 +37,7 @@ public class TaskService {
         return repository.findAll();
     }
 
-    public List<Task> getAllTask(String[] statuses, String[] sortBy, String[] direction) {
+    public List<Task> getAllTask(String[] statuses) {
         List<Task> TaskList = new ArrayList<>();
         if (statuses != null && statuses.length > 0) {
             for (int i = 0; i < statuses.length; i++) {
@@ -53,7 +53,7 @@ public class TaskService {
         return repository.findAllByBoardId(bId);
     }
 
-    public List<Task> getAllTaskOfBoard(String bId, String[] statuses, String[] sortBy, String[] direction) {
+    public List<Task> getAllTaskOfBoard(String bId, String[] statuses) {
         List<Task> TaskList = new ArrayList<>();
         if (statuses != null && statuses.length > 0) {
             for (int i = 0; i < statuses.length; i++) {
@@ -78,7 +78,7 @@ public class TaskService {
     }
 
     @Transactional("firstTransactionManager")
-    public Task createNewTask(TaskInputDTO taskDTO,Board board) {
+    public Task createNewTask(TaskInputDTO taskDTO, Board board) {
         Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
         if (board.getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT ADD TASK MORE THAN STATUS LIMIT");
@@ -98,15 +98,15 @@ public class TaskService {
     }
 
     @Transactional("firstTransactionManager")
-    public TaskOutputDTO removeTask(Integer taskId,String bid) {
-        Task task = findByIdAndAndBoardId(taskId,bid);
+    public TaskOutputDTO removeTask(Integer taskId, String bid) {
+        Task task = findByIdAndAndBoardId(taskId, bid);
         repository.delete(task);
         return modelMapper.map(task, TaskOutputDTO.class);
     }
 
     @Transactional("firstTransactionManager")
     public void removeAllTaskOfBoard(String bid) {
-        List<Task> tasks= getAllTaskOfBoard(bid);
+        List<Task> tasks = getAllTaskOfBoard(bid);
         repository.deleteAllByBoardId(bid);
     }
 

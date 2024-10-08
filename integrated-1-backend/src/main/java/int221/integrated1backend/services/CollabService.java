@@ -1,5 +1,6 @@
 package int221.integrated1backend.services;
 
+import int221.integrated1backend.dtos.AccessRightDTO;
 import int221.integrated1backend.dtos.CollabCreateInputDTO;
 import int221.integrated1backend.dtos.CollabOutputDTO;
 import int221.integrated1backend.entities.ex.User;
@@ -35,17 +36,20 @@ public class CollabService {
         return collabOutputDTO;
     }
 
-    public List<CollabOutputDTO> mapOutputDTOList(List<Collab> source) {
+    public List<CollabOutputDTO> mapOutputDTO(List<Collab> source) {
         return source.stream().map(entity -> mapOutputDTO(entity)).collect(Collectors.toList());
     }
 
-    public List<CollabOutputDTO> getAllCollabOfBoard(String bId) {
-        ;
-        return mapOutputDTOList(repository.findAllByBoardId(bId));
+    public List<Collab> getAllCollabOfBoard(String bId) {
+        return repository.findAllByBoardId(bId);
     }
 
-    public CollabOutputDTO getCollabOfBoard(String bId, String oId) {
-        CollabOutputDTO collab = mapOutputDTO(repository.findByBoardIdAndOwnerId(bId, oId));
+    public List<Collab> getAllCollabBoardByOid(String oid) {
+        return repository.findAllByOwnerId(oid);
+    }
+
+    public Collab getCollabOfBoard(String bId, String oId) {
+        Collab collab = repository.findByBoardIdAndOwnerId(bId, oId);
         if (collab == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Collaborator id does not exists in this board !!!");
         }
@@ -77,5 +81,23 @@ public class CollabService {
         return repository.save(newCollab);
     }
 
+    @Transactional("firstTransactionManager")
+    public Collab updateCollab(String boardId, String userId, AccessRightDTO input) {
+        Collab collab = repository.findByBoardIdAndOwnerId(boardId, userId);
+        if (collab == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Collaborator id does not exists in this board !!!");
+        }
+        collab.setAccessRight(input.getAccess_right());
+        return repository.save(collab);
+    }
 
+    @Transactional("firstTransactionManager")
+    public Collab deleteCollab(String boardId, String userId){
+        Collab collab = repository.findByBoardIdAndOwnerId(boardId, userId);
+        if (collab == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Collaborator id does not exists in this board !!!");
+        }
+        repository.delete(collab);
+        return collab;
+    }
 }

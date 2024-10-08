@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +45,7 @@ public class BoardControllerV3 {
 
     private void oidCheck(Board board, String userOid, String method) {
         boolean isOwner = Objects.equals(board.getOid(), userOid);
-        CollabOutputDTO collab = collabService.getCollabOfBoard(board.getId(), userOid);
+        Collab collab = collabService.getCollabOfBoard(board.getId(), userOid);
 
         boolean isCollab = isOwner || collab != null;
         boolean isHasAccess = Objects.equals(method, "get") || isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE);
@@ -66,17 +67,29 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("")
-    public ResponseEntity<Object> getAllBoard(@RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<Object> getAllBoard(@RequestHeader(value = "Authorization") String authorizationHeader) {
         String oid = getOidFromHeader(authorizationHeader);
 
-        //make its return collab board!!!!!!!
         List<Board> boardList = boardService.getBoardByOId(oid);
-        List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTOList(boardList);
-        return ResponseEntity.ok(boardOutputDTOList);
+        List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTO(boardList);
+        List<CollabBoardOutputDTO> collabBoards = new ArrayList<>();
+
+        List<Collab> collabs = collabService.getAllCollabBoardByOid(oid);
+        for (Collab collab : collabs) {
+            CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId())), CollabBoardOutputDTO.class);
+            collabOutputDTO.setAccessRight(collab.getAccessRight());
+            collabBoards.add(collabOutputDTO);
+        }
+
+        TwoBoardListDTO output = new TwoBoardListDTO();
+        output.setPerson_boards(boardOutputDTOList);
+        output.setCollab_boards(collabBoards);
+
+        return ResponseEntity.ok(output);
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody(required = false) BoardCreateInputDTO input) {
+    public ResponseEntity<Object> createBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @Valid @RequestBody(required = false) BoardCreateInputDTO input) {
         String oid = getOidFromHeader(authorizationHeader);
         if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
@@ -102,7 +115,7 @@ public class BoardControllerV3 {
 
     /////////
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
+    public ResponseEntity<Object> updateBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "put");
         if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
@@ -114,7 +127,7 @@ public class BoardControllerV3 {
 
     /////////
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
+    public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "patch");
         if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
@@ -125,7 +138,7 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id) {
+    public ResponseEntity<Object> deleteBoard(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "delete");
 
         //delete all task and status in board!!
@@ -140,11 +153,10 @@ public class BoardControllerV3 {
     //Task operation
 
     @GetMapping("/{id}/tasks")
-    public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses, @RequestParam(defaultValue = "") String[] sortBy, @RequestParam(defaultValue = "ASC") String[] sortDirection) {
+    public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses) {
         Board board = permissionCheck(authorizationHeader, id, "get");
 
-        if (filterStatuses.length > 0)
-            return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses, sortBy, sortDirection));
+        if (filterStatuses.length > 0) return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses));
         else {
             List<Task> taskList = taskService.getAllTaskOfBoard(id);
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
@@ -273,7 +285,7 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get");
 
-        List<CollabOutputDTO> collabs = collabService.getAllCollabOfBoard(id);
+        List<CollabOutputDTO> collabs = collabService.mapOutputDTO(collabService.getAllCollabOfBoard(id));
         return ResponseEntity.ok(collabs);
     }
 
@@ -281,7 +293,7 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
         Board board = permissionCheck(authorizationHeader, id, "get");
 
-        CollabOutputDTO collab = collabService.getCollabOfBoard(id, collab_oid);
+        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid));
         return ResponseEntity.ok(collab);
     }
 
@@ -293,6 +305,23 @@ public class BoardControllerV3 {
         }
         Collab newCollab = collabService.createNewCollab(board, input);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
+    }
+
+    @PatchMapping("/{id}/collabs/{collab_oid}")
+    public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) {
+        Board board = permissionCheck(authorizationHeader, id, "get");
+
+        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollab(id, collab_oid, input));
+        return ResponseEntity.ok(collab.getAccessRight());
+    }
+
+
+    @DeleteMapping("/{id}/collabs/{collab_oid}")
+    public ResponseEntity<Object> deleteCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
+        Board board = permissionCheck(authorizationHeader, id, "get");
+
+        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.deleteCollab(id, collab_oid));
+        return ResponseEntity.ok().body(new HashMap<>());
     }
 }
 
