@@ -12,7 +12,7 @@ export const useBoardStore = defineStore('board', () => {
     const fetchBoard = async () => {
         const data = await boardApi.getAllBoard()
         resetBoard()
-        addBoards(data)
+        addBoards(data.person_boards)
     }
 
     function updateBoard(updatedBoard) {

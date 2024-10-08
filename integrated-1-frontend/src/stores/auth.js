@@ -104,6 +104,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (isLogin.value) {
             // const { response, status } = await boardApi.getBoardById(bid)
             const access = await boardApi.getAccess(bid)
+            console.log('access:', access)
             // const authData = await getAuthData()
             if (access == 'WRITE') isO = true
         }

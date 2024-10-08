@@ -164,8 +164,7 @@ export const useBoardApi = () => {
     }
     async function getAccess(bid) {
         try {
-            const response = await fetchWithToken(`/v3/boards/${bid}/acess`)
-            // if (response.ok) return response.json()
+            const response = await fetchWithToken(`/v3/boards/${bid}/access`)
             if (response.status == 403) {
                 toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
             }
