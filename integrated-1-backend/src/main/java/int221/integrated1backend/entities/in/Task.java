@@ -1,8 +1,11 @@
 package int221.integrated1backend.entities.in;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,8 +16,8 @@ import java.util.TimeZone;
 @Getter
 @Setter
 @Entity
-@Table(name = "tasksV2")
-public class TaskV2 {
+@Table(name = "tasks")
+public class Task {
     @Positive
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +33,13 @@ public class TaskV2 {
     @Size(min = 0, max = 30)
     @Column(name = "taskAssignees")
     private String assignees;
-    //    @Column(name = "taskStatus")
-    //    private String status;
+
+    //    @Column(name = "createdOn", nullable = false, updatable = false)
+    //    @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
+
+    //    @Column(name = "updatedOn", nullable = false)
+    //    @Temporal(TemporalType.TIMESTAMP)
     private Date updatedOn;
     //    @JsonIgnore
     @ManyToOne
@@ -68,10 +75,12 @@ public class TaskV2 {
         this.status = status;
         return this.status;
     }
+
     public Board setBoard(Board board) {
         this.board = board;
         return this.board;
     }
+
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();
         SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");

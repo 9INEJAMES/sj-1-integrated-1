@@ -1,7 +1,6 @@
 package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.*;
-import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.services.*;
 import jakarta.validation.Valid;
@@ -23,7 +22,7 @@ public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
     @Autowired
-    private TaskV2Service taskService;
+    private TaskService taskService;
     @Autowired
     private StatusService statusService;
     @Autowired
@@ -43,8 +42,12 @@ public class BoardControllerV3 {
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
     }
 
-    private void oidCheck(String oid1, String oid2) {
-        if (oid2 == null || !Objects.equals(oid1, oid2)) {//check user oid by token and compare with oid in board
+    private void oidCheck(Board board, String userOid) {
+        boolean isCollab = false;
+        if (Objects.equals(board.getOid(), userOid) || collabService.isCollabExist(board.getId(), userOid)) {
+            isCollab = true;
+        }
+        if (userOid == null || !isCollab) {//check user oid by token and compare with oid in board
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
     }
@@ -53,9 +56,8 @@ public class BoardControllerV3 {
         String oid = null;
         if (authorizationHeader != null) oid = getOidFromHeader(authorizationHeader);
         Board board = boardService.getBoard(id);
-        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board.getOid(), oid);
-        if (method != "get" && board.getVisibility().equals(Visibility.PUBLIC) && oid != null)
-            oidCheck(board.getOid(), oid);
+        if (board.getVisibility().equals(Visibility.PRIVATE)) oidCheck(board, oid);
+        if (method != "get" && board.getVisibility().equals(Visibility.PUBLIC) && oid != null) oidCheck(board, oid);
 
         return board;
     }
@@ -64,18 +66,19 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> getAllBoard(@RequestHeader("Authorization") String authorizationHeader) {
         String oid = getOidFromHeader(authorizationHeader);
 
+        //make its return collab board!!!!!!!
         List<Board> boardList = boardService.getBoardByOId(oid);
         List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTOList(boardList);
         return ResponseEntity.ok(boardOutputDTOList);
     }
 
     @PostMapping("")
-    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody(required = false) BoardCreateInputDTO boardInput) {
+    public ResponseEntity<Object> createBoard(@RequestHeader("Authorization") String authorizationHeader, @Valid @RequestBody(required = false) BoardCreateInputDTO input) {
         String oid = getOidFromHeader(authorizationHeader);
-        if (boardInput == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Board board = modelMapper.map(boardInput, Board.class);
+        Board board = modelMapper.map(input, Board.class);
         board.setOid(oid);
 
         Board newBoard = boardService.createNewBoard(board);
@@ -96,24 +99,24 @@ public class BoardControllerV3 {
 
     /////////
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO boardInput) {
+    public ResponseEntity<Object> updateBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "put");
-        if (boardInput == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Board board = boardService.updateฺBoard(id, boardInput);
+        Board board = boardService.updateฺBoard(id, input);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
     /////////
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO boardInput) {
+    public ResponseEntity<Object> updateVisibilityOfBoard(@RequestHeader("Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) BoardInputDTO input) {
         Board existingBoard = permissionCheck(authorizationHeader, id, "patch");
-        if (boardInput == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Board board = boardService.updateฺBoard(id, boardInput);
+        Board board = boardService.updateฺBoard(id, input);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
         return ResponseEntity.ok(boardOutputDTO);
     }
@@ -140,19 +143,19 @@ public class BoardControllerV3 {
         if (filterStatuses.length > 0)
             return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses, sortBy, sortDirection));
         else {
-            List<TaskV2> taskList = taskService.getAllTaskOfBoard(id);
+            List<Task> taskList = taskService.getAllTaskOfBoard(id);
             List<TaskOutputDTO> taskDTO = listMapper.mapList(taskList, TaskOutputDTO.class, modelMapper);
             return ResponseEntity.ok(taskDTO);
         }
     }
 
     @PostMapping("/{id}/tasks")
-    public ResponseEntity<Object> addNewTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> addNewTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) TaskInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "post");
-        if (taskDTO == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        TaskV2 task = taskService.createNewTask(taskDTO, boardService.getBoard(id));
+        Task task = taskService.createNewTask(input, boardService.getBoard(id));
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(outputDTO);
@@ -162,7 +165,7 @@ public class BoardControllerV3 {
     @GetMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> getTaskById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable Integer taskId, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get");
-        TaskV2 task = taskService.findByIdAndAndBoardId(taskId, id);
+        Task task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
@@ -170,13 +173,13 @@ public class BoardControllerV3 {
 
 
     @PutMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestBody(required = false) TaskInputDTO taskDTO) {
+    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestBody(required = false) TaskInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "put");
-        if (taskDTO == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        taskDTO.setBoardId(id);
-        TaskV2 task = taskService.updateTask(taskId, taskDTO);
+        input.setBoardId(id);
+        Task task = taskService.updateTask(taskId, input);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
@@ -202,12 +205,12 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/statuses")
-    public ResponseEntity<Object> addNewStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) StatusInputDTO statusInputDTO) {
+    public ResponseEntity<Object> addNewStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "post");
-        if (statusInputDTO == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Status status = statusService.createNewStatus(statusInputDTO, boardService.getBoard(id));
+        Status status = statusService.createNewStatus(input, boardService.getBoard(id));
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.status(HttpStatus.CREATED).body(statusOutputDTO);
@@ -223,12 +226,12 @@ public class BoardControllerV3 {
     }
 
     @PutMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> updateStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "put");
-        if (statusDTO == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Status status = statusService.updateStatus(statusId, statusDTO);
+        Status status = statusService.updateStatus(statusId, input);
         StatusOutputDTO statusOutputDTO = modelMapper.map(status, StatusOutputDTO.class);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(statusOutputDTO);
@@ -246,16 +249,16 @@ public class BoardControllerV3 {
     @DeleteMapping("/{id}/statuses/{statusId}/{newStatusId}")
     public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
         Board board = permissionCheck(authorizationHeader, id, "delete");
-        List<TaskV2> taskV2List = taskService.updateStatusOfTask(statusId, newStatusId);
+        List<Task> TaskList = taskService.updateStatusOfTask(statusId, newStatusId);
         Status status = statusService.removeStatus(statusId);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
 
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
-    public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO statusDTO) {
+    public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "patch");
-        if (statusDTO == null) {
+        if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
         Status status = statusService.findByID(statusId);
@@ -263,15 +266,30 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(modelMapper.map(status, StatusLimitOutputDTO.class));
     }
 
+    @GetMapping("/{id}/collabs")
+    public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        Board board = permissionCheck(authorizationHeader, id, "get");
+
+        List<CollabOutputDTO> collabs = collabService.getAllCollabOfBoard(id);
+        return ResponseEntity.ok(collabs);
+    }
+
+    @GetMapping("/{id}/collabs/{collab_oid}")
+    public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
+        Board board = permissionCheck(authorizationHeader, id, "get");
+
+        CollabOutputDTO collab = collabService.getCollabOfBoard(id, collab_oid);
+        return ResponseEntity.ok(collab);
+    }
+
     @PostMapping("/{id}/collabs")
-    public  ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authoriztionHeader, @PathVariable String id , @Valid @RequestBody(required = false) CollabInputDTO collabDTO){
-        User user = userService.findByEmail(collabDTO.getEmail());
-        Collab collab = new Collab();
-        collab.setBoardId(id);
-        collab.setOwnerId(user.getOid());
-        collab.setAccessRight(collabDTO.getAccessRight());
-        Collab newCollab =  collabService.createNewCollab(collab);
-        return ResponseEntity.ok(newCollab);
+    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) {
+        Board board = permissionCheck(authorizationHeader, id, "post");
+        if (input == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+        Collab newCollab = collabService.createNewCollab(board, input);
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }
 }
 

@@ -42,7 +42,7 @@ public class Board {
     private List<Status> statuses;
 
     @OneToMany(mappedBy = "board",fetch = FetchType.EAGER)
-    private List<TaskV2> tasks;
+    private List<Task> tasks;
 
     private String getDateString(Date d) throws ParseException {
         if (d == null) d = new Date();

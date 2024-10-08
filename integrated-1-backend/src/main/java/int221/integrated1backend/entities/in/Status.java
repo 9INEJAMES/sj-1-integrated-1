@@ -2,11 +2,17 @@ package int221.integrated1backend.entities.in;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Getter
 @Setter
@@ -29,12 +35,38 @@ public class Status {
     private String color;
     //    @JsonIgnore
     @OneToMany(mappedBy = "status", fetch = FetchType.EAGER)
-    private List<TaskV2> noOfTasks;
+    private List<Task> noOfTasks;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "boardId")
     private Board board;
+
+    //    @Column(name = "createdOn", nullable = false, updatable = false)
+    //    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdOn;
+
+    //    @Column(name = "updatedOn", nullable = false)
+    //    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedOn;
+
+
+    private String getDateString(Date d) throws ParseException {
+        if (d == null) d = new Date();
+        SimpleDateFormat in = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSXXX");
+        SimpleDateFormat out = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+        in.setTimeZone(TimeZone.getTimeZone("UTC"));
+        out.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return out.format(in.parse(in.format(d)));
+    }
+
+    public String getCreatedOn() throws ParseException {
+        return getDateString(createdOn);
+    }
+
+    public String getUpdatedOn() throws ParseException {
+        return getDateString(updatedOn);
+    }
 
     public Integer getNoOfTasks() {
         return this.noOfTasks == null ? 0 : (this.noOfTasks.size());

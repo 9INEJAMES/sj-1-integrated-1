@@ -4,8 +4,6 @@ import int221.integrated1backend.dtos.BoardInputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTO;
 import int221.integrated1backend.dtos.BoardOutputDTOwithLimit;
 import int221.integrated1backend.entities.in.Board;
-import int221.integrated1backend.entities.in.Status;
-import int221.integrated1backend.entities.in.Visibility;
 import int221.integrated1backend.repositories.in.BoardRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +43,7 @@ public class BoardService {
 
     @Transactional("firstTransactionManager")
     public Board getBoard(String id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist"));
     }
 
     @Transactional("firstTransactionManager")
@@ -74,7 +71,7 @@ public class BoardService {
         return repository.save(newBoard);
     }
 
-//    @Transactional("firstTransactionManager")
+    //    @Transactional("firstTransactionManager")
 //    public List<Board> getBoardByOId(String oid) {
 //        return repository.findAllByOid(oid);
 //    }
@@ -83,6 +80,7 @@ public class BoardService {
 //        return repository.findAllByOidOrVisibility(oid, Visibility.PUBLIC);
         return repository.findAllByOid(oid);
     }
+
     @Transactional("firstTransactionManager")
     public Board deleteBoard(String id) {
         Board board = getBoard(id);

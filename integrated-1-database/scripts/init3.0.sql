@@ -68,6 +68,8 @@ CREATE TABLE statuses (
     statusName VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
     statusDescription VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     statusColor VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '#cbd5e1',
+    createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (statusId, boardId),
     CONSTRAINT FK_boardId_statuses FOREIGN KEY (boardId) REFERENCES boards(boardId) ON DELETE CASCADE,
     CONSTRAINT CHK_statusDescription_not_empty CHECK (TRIM(statusDescription) <> ''),
@@ -86,6 +88,12 @@ BEGIN
     IF NEW.statusColor IS NULL THEN
         SET NEW.statusColor = '#CBD5E1';
     END IF;
+    IF NEW.createdOn IS NULL THEN
+        SET NEW.createdOn = CURRENT_TIMESTAMP;
+    END IF;
+    IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
 END$$
 
 CREATE TRIGGER before_update_statuses
@@ -97,6 +105,10 @@ BEGIN
 	END IF;
 	SET NEW.statusName = TRIM(NEW.statusName);
 	SET NEW.statusDescription = TRIM(NEW.statusDescription);
+	SET NEW.createdOn = OLD.createdOn;
+	IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
 END$$
 
 CREATE TRIGGER before_delete_statuses
@@ -110,7 +122,7 @@ END$$
 
 DELIMITER ;
 
-CREATE TABLE tasksV2 (
+CREATE TABLE tasks (
     taskId INT AUTO_INCREMENT,
     boardId VARCHAR(10) NOT NULL,
     taskTitle VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -124,13 +136,13 @@ CREATE TABLE tasksV2 (
     CONSTRAINT CHK_taskDescription2_not_empty CHECK (taskDescription <> ''),
     CONSTRAINT CHK_taskAssignees2_not_empty CHECK (taskAssignees <> ''),
     CONSTRAINT FK_status FOREIGN KEY (statusId) REFERENCES statuses(statusId) ON DELETE RESTRICT,
-    CONSTRAINT FK_boardId_tasksV2 FOREIGN KEY (boardId) REFERENCES boards(boardId) ON DELETE CASCADE
+    CONSTRAINT FK_boardId_tasks FOREIGN KEY (boardId) REFERENCES boards(boardId) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 DELIMITER $$
 
-CREATE TRIGGER before_insert_tasksV2
-BEFORE INSERT ON tasksV2
+CREATE TRIGGER before_insert_tasks
+BEFORE INSERT ON tasks
 FOR EACH ROW
 BEGIN
     DECLARE isLimitValue INT;
@@ -139,7 +151,6 @@ BEGIN
     DECLARE current_status VARCHAR(50);
     DECLARE status_exists INT;
 
-    -- Check if statusId exists for the boardId or in the default board 'kanbanbase'
     SELECT COUNT(*) INTO status_exists
     FROM statuses
     WHERE statusId = NEW.statusId AND (boardId = NEW.boardId OR boardId = 'kanbanbase');
@@ -157,7 +168,7 @@ BEGIN
     IF current_status != 'No Status' AND current_status != 'Done' THEN
         SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
         IF isLimitValue = 1 THEN
-            SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
+            SELECT COUNT(*) INTO tasks_count FROM tasks WHERE statusId = NEW.statusId;
             SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
             IF tasks_count >= limit_value THEN
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
@@ -179,8 +190,8 @@ BEGIN
 
 END$$
 
-CREATE TRIGGER before_update_tasksV2
-BEFORE UPDATE ON tasksV2
+CREATE TRIGGER before_update_tasks
+BEFORE UPDATE ON tasks
 FOR EACH ROW
 BEGIN
     DECLARE current_status VARCHAR(50);
@@ -211,7 +222,7 @@ BEGIN
     IF current_status != 'No Status' AND current_status != 'Done' THEN
         SELECT isLimit INTO isLimitValue FROM boards WHERE boardId = NEW.boardId;
         IF isLimitValue = 1 THEN
-            SELECT COUNT(*) INTO tasks_count FROM tasksV2 WHERE statusId = NEW.statusId;
+            SELECT COUNT(*) INTO tasks_count FROM tasks WHERE statusId = NEW.statusId;
             SELECT limitMaximumTask INTO limit_value FROM boards WHERE boardId = NEW.boardId;
             IF tasks_count >= limit_value+1 THEN
                 SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add task more than limit';
@@ -236,7 +247,57 @@ CREATE TABLE collabs (
     PRIMARY KEY (boardId, ownerId)
 ) ENGINE=InnoDB;
 
+DELIMITER $$
 
+CREATE TRIGGER before_insert_collabs
+BEFORE INSERT ON collabs
+FOR EACH ROW
+BEGIN
+    DECLARE board_owner VARCHAR(36);
+
+    SELECT ownerId INTO board_owner
+    FROM boards
+    WHERE boardId = NEW.boardId;
+
+    IF NEW.ownerId = board_owner THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Board owner cannot be added as a collaborator';
+    END IF;
+    IF NEW.access_right IS NULL THEN
+        SET NEW.access_right = 'READ';
+    END IF;
+    IF NEW.createdOn IS NULL THEN
+        SET NEW.createdOn = CURRENT_TIMESTAMP;
+    END IF;
+    IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
+END$$
+
+
+CREATE TRIGGER before_update_collabs
+BEFORE UPDATE ON collabs
+FOR EACH ROW
+BEGIN
+    DECLARE board_owner VARCHAR(36);
+
+    SELECT ownerId INTO board_owner
+    FROM boards
+    WHERE boardId = NEW.boardId;
+
+    IF NEW.ownerId = board_owner THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot update collaborator to the board owner';
+    END IF;
+
+    IF NEW.access_right IS NULL THEN
+        SET NEW.access_right = OLD.access_right;
+    END IF;
+	SET NEW.createdOn = OLD.createdOn;
+    IF NEW.updatedOn IS NULL THEN
+        SET NEW.updatedOn = CURRENT_TIMESTAMP;
+    END IF;
+END$$
+
+DELIMITER ;
 
 USE integrated;
 
@@ -250,6 +311,6 @@ INSERT INTO statuses (boardId, statusName,statusDescription,statusColor) VALUES
 ('kanbanbase','Done','Finished','#10b981');
 
 SELECT * FROM boards;
-SELECT * FROM tasksV2;
+SELECT * FROM tasks;
 SELECT * FROM statuses;
 SELECT * FROM collabs;

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class CollabInputDTO {
+public class CollabCreateInputDTO {
     @NotNull
     @Email
     @Size(min = 0, max = 50)

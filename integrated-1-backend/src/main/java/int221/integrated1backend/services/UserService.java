@@ -12,11 +12,6 @@ import java.util.List;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private StatusService statusService;
-
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
