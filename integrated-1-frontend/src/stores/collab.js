@@ -2,12 +2,12 @@ import { defineStore, acceptHMRUpdate } from "pinia"
 import { ref } from "vue"
 import { useAuthStore } from "@/stores/auth"
 import { useBoardApi } from "@/composables/board-api"
+import { useCollabApi } from "@/composables/collab-api"
 
 export const useCollabStore = defineStore("collab", () => {
     const collabBoards = ref([])
     const authStore = useAuthStore()
     const boardApi = useBoardApi()
-
     const fetchCollabBoards = async () => {
         const response = await boardApi.getAllBoard() // Call the method correctly
 
@@ -31,7 +31,14 @@ export const useCollabStore = defineStore("collab", () => {
         collabBoards.value = [] // Reset the array
     }
 
-    return { collabBoards, fetchCollabBoards, resetCollabBoards }
+    const removeCollabBoard = (boardId) => {
+        const index = collabBoards.value.findIndex((board) => board.id === boardId)
+        collabBoards.value.splice(index, 1)
+    }
+
+    
+
+    return { collabBoards, fetchCollabBoards, resetCollabBoards, removeCollabBoard }
 })
 
 // Hot module replacement support for the store

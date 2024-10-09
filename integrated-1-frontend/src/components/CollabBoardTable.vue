@@ -1,11 +1,21 @@
 <script setup>
 import { useTheme } from '@/stores/theme.js'
 import { useCollabStore } from '@/stores/collab';
+import { useCollabApi } from '@/composables/collab-api';
+import { useAuthStore } from '@/stores/auth';
 
 
 const themeStore = useTheme()
 const collabStore = useCollabStore()
+const collabApi = useCollabApi()
+const authStore = useAuthStore()
 
+const deleteCollabBoard = (collabBoard) => {
+    collabStore.removeCollabBoard(collabBoard.id)
+    console.log(authStore.getAuthData().oid , collabBoard.id)
+    collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
+
+}
 
 </script>
 
@@ -37,7 +47,7 @@ const collabStore = useCollabStore()
                         {{ collabBoard.accessRight }}
                     </td>
                     <td>
-                        <button class="btn">
+                        <button class="btn" @click="deleteCollabBoard(collabBoard)">
                             Leave
                         </button>
                     </td>

@@ -16,7 +16,7 @@ export const useCollabApi = () => {
         const headers = {
             "Content-Type": "application/json",
             ...options.headers,
-        } 
+        }
 
         if (token) {
             headers["Authorization"] = `Bearer ${token}`
@@ -30,13 +30,28 @@ export const useCollabApi = () => {
         return response
     }
 
-        async function getAllCollabBoard() {
-            try {
-                return (await fetchWithToken(`/v3/boards/`)).json()
-            } catch (error) {
-                console.error(`Error fetching boards: ${error}`)
-            }
+    async function getAllCollabBoard() {
+        try {
+            return (await fetchWithToken(`/v3/boards/`)).json()
+        } catch (error) {
+            console.error(`Error fetching boards: ${error}`)
         }
+    }
 
-    return { getAllCollabBoard }
+    async function deleteCollabBoard(bid, oid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
+                method: "DELETE",
+            })
+            if (response.ok) {
+                toastStore.changeToast(true, "The collab board has been deleted.")
+                return response.json()
+            }
+        } catch (error) {
+            toastStore.changeToast(false, "An error has occurred, the collab board could not be deleted.")
+            console.error(`Error deleting board: ${error}`)
+        }
+    }
+    
+    return { getAllCollabBoard, deleteCollabBoard }
 }
