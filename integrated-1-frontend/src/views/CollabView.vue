@@ -32,6 +32,7 @@ onMounted(async () => {
     collabStore.fetchCollaborator(route.params.bid);
     console.log(collabStore.collaborators);
 });
+
 </script>
 
 

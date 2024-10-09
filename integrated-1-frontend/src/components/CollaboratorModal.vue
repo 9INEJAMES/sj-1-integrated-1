@@ -34,24 +34,33 @@ const newCollaborator = {
     accessRight: 'READ'
 };
 
-const deleteCollabBoard = (collaborator) => {
-    collabStore.removeCollaborator(collaborator.oid)
-    console.log(route.params.bid, collaborator.oid)
-    collabApi.deleteCollabBoard(route.params.bid, collaborator.oid)
-    closeModal();
+const deleteCollabBoard = async (collaboratorId) => {
+    try {
+        const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId);
+        if (response.success) {
+            collabStore.removeCollaborator(collaboratorId);
+            closeModal(); // Close the modal only if the deletion is successful
+        } else {
+            console.error("Failed to delete collaborator.");
+        }
+    } catch (error) {
+        console.error("Error occurred while deleting collaborator:", error);
+    }
+};
 
 
-}
 
 const handleSubmit = () => {
     if (props.action === 'add') {
-        collabStore.addCollaborator(newCollaborator);
+        collabStore.addCollaborator(newCollaborator)
+        collabStore.fetchCollaborator(route.params.bid);
     } 
     // else if (props.action === 'delete') {
     //     deleteCollabBoard();
     // }
     closeModal(); // Close modal after handling
 };
+
 
 </script>
 
@@ -96,7 +105,7 @@ const handleSubmit = () => {
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
             <div class="flex justify-end gap-2">
                 <button  v-if="props.action === 'add'" @click="handleSubmit" class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
-                <button   v-if="props.action === 'delete'" @click="deleteCollabBoard(props.collaborator)" class="px-4 py-2 text-black rounded-md bg-pink-500 " >Delete</button>
+                <button  v-if="props.action === 'delete'" @click="deleteCollabBoard(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500 " >Delete</button>
                 <button @click="closeModal" class="px-4 py-2 text-black rounded-md bg-slate-100">Cancel</button>
             </div>
         </div>

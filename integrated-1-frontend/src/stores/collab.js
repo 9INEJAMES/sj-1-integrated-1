@@ -67,20 +67,36 @@ export const useCollabStore = defineStore("collab", () => {
         collabApi.addCollaborator(newCollaborator)
     }
 
-    function findCollaborator(bid) {
-        return collaborators.value.find((collaborator) => collaborator.id === bid)
+    function findCollaborator(oid) {
+        return collaborators.value.find((collaborator) => collaborator.oid === oid)
     }
 
     function removeCollaborator(collaboratorId) {
-        const index = collaborators.value.findIndex((collaborator) => collaborator.oid === collaboratorId)
-        collaborators.value.splice(index, 1)
-        
+        const index = findCollaboratorIndex(collaboratorId)
+        if (index !== -1) {
+            collaborators.value.splice(index, 1)
+        }
+    }
+
+    const findCollaboratorIndex = (oid) => {
+        return collaborators.value.findIndex((collaborator) => collaborator.oid === oid)
     }
 
 
-    return { collabBoards, collaborators , fetchCollabBoards, resetCollabBoards,
-         removeCollabBoard, fetchCollaborator , getCollaborator , resetCollaborator , addCollaborators , addCollaborator 
-        , removeCollaborator}
+    return {
+        collabBoards,
+        collaborators,
+        fetchCollabBoards,
+        resetCollabBoards,
+        removeCollabBoard,
+        fetchCollaborator,
+        getCollaborator,
+        resetCollaborator,
+        addCollaborators,
+        addCollaborator,
+        removeCollaborator,
+        findCollaboratorIndex,
+    }
 })
 
 // Hot module replacement support for the store

@@ -76,7 +76,29 @@ export const useCollabApi = () => {
         }
     }
 
+    async function deleteCollaborator(bid, oid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
+                method: "DELETE",
+            })
+            if (response.ok) {
+                toastStore.changeToast(true, "The collaborator has been deleted.")
+                return { success: true, data: await response.json() } // Return success with data
+            } else {
+                toastStore.changeToast(false, "Failed to delete the collaborator.")
+                return { success: false }
+            }
+        } catch (error) {
+            toastStore.changeToast(false, "An error has occurred, the collaborator could not be deleted.")
+            console.error(`Error deleting collaborator: ${error}`)
+            return { success: false, error } // Return false with error info
+        }
+    }
+
+
+
+
     
 
-    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator , addCollaborator }
+    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator }
 }
