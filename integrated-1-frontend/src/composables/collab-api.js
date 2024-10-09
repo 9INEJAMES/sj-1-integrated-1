@@ -52,6 +52,31 @@ export const useCollabApi = () => {
             console.error(`Error deleting board: ${error}`)
         }
     }
+
+    async function getAllCollaborator(){
+        try {
+            return (await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`)).json()
+        } catch (error) {
+            console.error(`Error fetching collaborators: ${error}`)
+        }
+    }
+    async function addCollaborator(newCollaborator){
+        try {
+            const response = await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`, {
+                method: "POST",
+                body: JSON.stringify({ ...newCollaborator }),
+            })
+            if (response.ok) {
+                toastStore.changeToast(true, "The collaborator has been added.")
+                return response.json()
+            }
+        } catch (error) {
+            toastStore.changeToast(false, "An error has occurred, the collaborator could not be added.")
+            console.error(`Error adding collaborator: ${error}`)
+        }
+    }
+
     
-    return { getAllCollabBoard, deleteCollabBoard }
+
+    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator , addCollaborator }
 }

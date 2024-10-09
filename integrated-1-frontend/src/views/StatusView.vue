@@ -104,7 +104,7 @@ const openVisibilityModal = () => {
                 </label>
             </div>
             <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action">
-                <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh]" @click="$router.push({ name: 'collab' })" />
+                <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh] " @click="router.push({ name: 'CollabView' })" />
                 <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status" @click="router.push({ name: 'statusAdd' })" />
             </div>
         </div>

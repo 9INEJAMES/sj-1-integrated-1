@@ -5,9 +5,12 @@ import { useBoardApi } from "@/composables/board-api"
 import { useCollabApi } from "@/composables/collab-api"
 
 export const useCollabStore = defineStore("collab", () => {
+    // Board is here
     const collabBoards = ref([])
     const authStore = useAuthStore()
     const boardApi = useBoardApi()
+    const collabApi = useCollabApi()
+
     const fetchCollabBoards = async () => {
         const response = await boardApi.getAllBoard() // Call the method correctly
 
@@ -36,9 +39,48 @@ export const useCollabStore = defineStore("collab", () => {
         collabBoards.value.splice(index, 1)
     }
 
-    
+    // This is the collaborator
 
-    return { collabBoards, fetchCollabBoards, resetCollabBoards, removeCollabBoard }
+    const collaborators = ref([])
+
+    const fetchCollaborator = async (bid) => {
+        resetCollaborator()
+        const data = await collabApi.getAllCollaborator(bid)
+        addCollaborators(data)
+        
+    }
+
+    function getCollaborator() {
+        return findCollaborator(route.params.bid)
+    }
+
+    function resetCollaborator() {
+        collaborators.value = []
+    }
+
+    function addCollaborators(newCollaborators) {
+        newCollaborators.forEach((newCollaborator) => addCollaborator(newCollaborator))
+    }
+
+    async function addCollaborator(newCollaborator) {
+        collaborators.value.push(newCollaborator)
+        collabApi.addCollaborator(newCollaborator)
+    }
+
+    function findCollaborator(bid) {
+        return collaborators.value.find((collaborator) => collaborator.id === bid)
+    }
+
+    function removeCollaborator(collaboratorId) {
+        const index = collaborators.value.findIndex((collaborator) => collaborator.oid === collaboratorId)
+        collaborators.value.splice(index, 1)
+        
+    }
+
+
+    return { collabBoards, collaborators , fetchCollabBoards, resetCollabBoards,
+         removeCollabBoard, fetchCollaborator , getCollaborator , resetCollaborator , addCollaborators , addCollaborator 
+        , removeCollaborator}
 })
 
 // Hot module replacement support for the store

@@ -111,6 +111,7 @@ const fetchFilter = async (filter) => {
             </div>
             <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-status-filter" :iconurl="`${base ? base : ''}/filter.png`" />
             <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action">
+                <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh] " @click="router.push({ name: 'CollabView' })" />
                 <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Task" @click="router.push({ name: 'taskAdd' })" />
             </div>
         </div>
