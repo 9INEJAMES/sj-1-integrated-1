@@ -314,7 +314,6 @@ public class BoardControllerV3 {
     @PatchMapping("/{id}/collabs/{collab_oid}")
     public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "patch");
-
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollab(id, collab_oid, input));
         return ResponseEntity.ok(collab);
     }

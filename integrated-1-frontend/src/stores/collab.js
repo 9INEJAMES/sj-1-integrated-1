@@ -75,6 +75,17 @@ export const useCollabStore = defineStore('collab', () => {
         return collaborators.value.findIndex((collaborator) => collaborator.oid === oid)
     }
 
+<<<<<<< Updated upstream
+=======
+    function updateCollaborator(updateCollaboratorId, updateCollaborator) {
+        const index = findCollaboratorIndex(updateCollaboratorId)
+        if (index !== -1) {
+            collaborators.value.splice(index, 1, updateCollaborator)
+        }
+    }
+
+
+>>>>>>> Stashed changes
     return {
         collabBoards,
         collaborators,
@@ -88,6 +99,7 @@ export const useCollabStore = defineStore('collab', () => {
         addCollaborator,
         removeCollaborator,
         findCollaboratorIndex,
+        updateCollaborator
     }
 })
 

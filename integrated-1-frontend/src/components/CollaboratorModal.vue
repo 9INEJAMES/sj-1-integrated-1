@@ -17,20 +17,32 @@ const props = defineProps({
         type: String,
         required: true,
     },
+<<<<<<< Updated upstream
     collaborator: {
         type: Object,
         required: false,
     },
+=======
+    collaborator: { 
+        type: Object,
+        required: false 
+    }
+>>>>>>> Stashed changes
 })
 
 const emit = defineEmits(['close'])
 
 const closeModal = () => {
+<<<<<<< Updated upstream
     emit('close')
+=======
+    emit('close');
+>>>>>>> Stashed changes
 }
 
 const newCollaborator = {
     email: '',
+<<<<<<< Updated upstream
     access_right: 'READ',
 }
 
@@ -55,16 +67,85 @@ const handleSubmit = async () => {
     // }
     closeModal() 
 }
+=======
+    accessRight: 'READ'
+}
+
+
+const deleteCollabBoard = async (collaboratorId) => {
+    try {
+        const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId)
+        if (response.success) {
+            collabStore.removeCollaborator(collaboratorId);
+            closeModal(); // Close the modal only if the deletion is successful
+        } else {
+            console.error("Failed to delete collaborator.");
+        }
+    } catch (error) {
+        console.error("Error occurred while deleting collaborator:", error)
+    }
+}
+
+const updateCollaborator = async (collaboratorId, newCol) => {
+
+    const updatedAccessRight = newCol.accessRight === 'READ' ? 'WRITE' : 'READ'
+    newCol.accessRight = updatedAccessRight
+
+    console.log("Updating collaborator with accessRight:", newCol.accessRight)
+
+    const response = await collabApi.updateCollaborator(route.params.bid, collaboratorId, newCol.accessRight)
+
+    if (response.success) {
+        collabStore.updateCollaborator(collaboratorId, newCol)
+        console.log("Collaborator access right updated successfully.")
+        console.log(response.data);
+    } else {
+        console.error("Failed to update collaborator access right.")
+    }
+    closeModal()
+};
+
+const handleSubmit = () => {
+    if (props.action === 'add') {
+        collabStore.addCollaborator(newCollaborator)
+        collabStore.fetchCollaborator(route.params.bid);
+    }
+    closeModal()
+}
+
+onMounted(() => {
+    if (props.action === 'update') {
+        newCollaborator.email = props.collaborator.email;
+        newCollaborator.accessRight = props.collaborator.accessRight;
+
+    }
+})
+>>>>>>> Stashed changes
 </script>
 
 <template>
     <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-60 w-full">
-        <div class="shadow-lg rounded-lg p-6 w-full max-w-lg mx-6" :class="themeStore.getTheme()">
+        <div class="shadow-lg rounded-lg p-6 w-full max-w-xl mx-6" :class="themeStore.getTheme()">
             <div class="flex justify-between items-center mb-4">
+<<<<<<< Updated upstream
                 <p v-if="props.action === 'add'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Add Collaborator</p>
                 <p v-if="props.action === 'delete'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Remove Collaborator</p>
                 <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" @click="closeModal">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+=======
+                <p v-if="props.action === 'add'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Add
+                    Collaborator</p>
+                <p v-if="props.action === 'delete'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
+                    Remove Collaborator
+                </p>
+                <p v-if="props.action === 'update'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
+                    Change access right
+                </p>
+                <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+                    @click="closeModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6">
+>>>>>>> Stashed changes
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -84,12 +165,32 @@ const handleSubmit = async () => {
                         </select>
                     </div>
                 </div>
+<<<<<<< Updated upstream
                 <div v-if="props.action === 'delete'" class="font-medium">Do you want to remove "{{ props.collaborator.name }}" from the board?</div>
             </div>
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
             <div class="flex justify-end gap-2">
                 <button v-if="props.action === 'add'" @click="handleSubmit" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'delete'" @click="deleteCollabBoard(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Delete</button>
+=======
+                <div v-if="props.action === 'delete'" class="font-medium">
+                    Do you want to remove "{{ props.collaborator.name }}" from the board?
+                </div>
+                <div v-if="props.action === 'update'" class="font-medium">
+                    Do you want to change access right of "{{ props.collaborator.name }}" to "{{
+                        props.collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}" ?
+                </div>
+            </div>
+            <hr class="my-3 border-gray-300 dark:border-gray-600" />
+            <div class="flex justify-end gap-2">
+                <button v-if="props.action === 'add'" @click="handleSubmit"
+                    class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
+                <button v-if="props.action === 'delete'" @click="deleteCollabBoard(props.collaborator.oid)"
+                    class="px-4 py-2 text-black rounded-md bg-pink-500 ">Delete</button>
+                <button v-if="props.action === 'update'"
+                    @click="updateCollaborator(props.collaborator.oid, newCollaborator)"
+                    class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
+>>>>>>> Stashed changes
                 <button @click="closeModal" class="px-4 py-2 text-black rounded-md bg-slate-100">Cancel</button>
             </div>
         </div>

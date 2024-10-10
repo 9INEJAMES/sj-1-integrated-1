@@ -99,5 +99,38 @@ export const useCollabApi = () => {
         }
     }
 
+<<<<<<< Updated upstream
     return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator }
+=======
+    async function updateCollaborator(bid, oid, access_right) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" }, // Ensure JSON content type
+                body: JSON.stringify({ access_right }), // Properly serialize the body
+            })
+
+            if (response.ok) {
+                // Check if the response is successful
+                toastStore.changeToast(true, "Collaborator access right has been updated.")
+                return { success: true, data: await response.json() } // Return success with data
+            } else {
+                toastStore.changeToast(false, "Failed to update collaborator access right.")
+                return { success: false }
+            }
+        } catch (error) {
+            toastStore.changeToast(false, "You do not have permission to change collaborator access right.")
+            console.error(`Error updating collaborator access: ${error}`)
+            return { success: false, error }
+        }
+    }
+
+
+
+
+
+    
+
+    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator , updateCollaborator }
+>>>>>>> Stashed changes
 }
