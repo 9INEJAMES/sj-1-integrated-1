@@ -35,6 +35,8 @@ const newCollaborator = {
 }
 
 
+
+
 const deleteCollabBoard = async (collaboratorId) => {
     try {
         const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId)
@@ -85,10 +87,12 @@ const handleSubmit = async () => {
 
 onMounted(() => {
     if (props.action === 'update') {
-        newCollaborator.name = props.collaborator.name;
-        newCollaborator.email = props.collaborator.email;
-        newCollaborator.accessRight = props.collaborator.accessRight;
-
+        newCollaborator.name = props.collaborator.name
+        newCollaborator.email = props.collaborator.email
+        newCollaborator.accessRight = props.collaborator.accessRight
+        newCollaborator.oid = props.collaborator.oid
+        console.log("Collaborator to update:", newCollaborator);
+        console.log("Collaborator to update:", props.collaborator);
     }
 })
 </script>
