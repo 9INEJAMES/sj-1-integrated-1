@@ -307,7 +307,7 @@ public class BoardControllerV3 {
         if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-        Collab newCollab = collabService.createNewCollab(board, input);
+        CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input));
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }
 

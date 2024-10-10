@@ -102,7 +102,19 @@ watch(
 
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
 
-
+            <div class="mb-5">
+                <label for="title" class="block mb-1 font-medium"> {{ $route.name == 'boardAdd' ? 'Name' : 'Change board name' }}<span class="text-red-600">*</span> </label>
+                <input
+                    v-model="newBoard.name"
+                    type="text"
+                    id="title"
+                    class="itbkk-board-name block w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                    placeholder="Enter your board name"
+                    :class="themeStore.getTheme()"
+                    :disabled="isDisabled"
+                />
+            </div>
+            
             <div class="flex items-center" v-if="isCanEdit && route.params.bid">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private

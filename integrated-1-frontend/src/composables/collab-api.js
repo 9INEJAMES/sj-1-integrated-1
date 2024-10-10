@@ -1,6 +1,6 @@
-import { useRoute, useRouter } from "vue-router"
-import { useToast } from "@/stores/toast.js"
-import { useAuthStore } from "@/stores/auth.js"
+import { useRoute, useRouter } from 'vue-router'
+import { useToast } from '@/stores/toast.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 export const useCollabApi = () => {
     const authStore = useAuthStore()
@@ -14,12 +14,12 @@ export const useCollabApi = () => {
         const token = authStore.getToken()
 
         const headers = {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             ...options.headers,
         }
 
         if (token) {
-            headers["Authorization"] = `Bearer ${token}`
+            headers['Authorization'] = `Bearer ${token}`
         }
 
         const response = await fetch(`${url}${endpoint}`, {
@@ -41,37 +41,41 @@ export const useCollabApi = () => {
     async function deleteCollabBoard(bid, oid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collab board has been deleted.")
+                toastStore.changeToast(true, 'The collab board has been deleted.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the collab board could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the collab board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
         }
     }
 
-    async function getAllCollaborator(){
+    async function getAllCollaborator() {
         try {
             return (await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`)).json()
         } catch (error) {
             console.error(`Error fetching collaborators: ${error}`)
         }
     }
-    async function addCollaborator(newCollaborator){
+    async function addCollaborator(newCollaborator) {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`, {
-                method: "POST",
+                method: 'POST',
                 body: JSON.stringify({ ...newCollaborator }),
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collaborator has been added.")
+                toastStore.changeToast(true, 'The collaborator has been added.')
                 return response.json()
+            } else if (response.status === 409) {
+                toastStore.changeToast(false, 'This user is already a collaborator on this board.')
+            } else if (response.status === 400) {
+                toastStore.changeToast(false, 'An error has occurred, the collaborator could not be added.')
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the collaborator could not be added.")
+            toastStore.changeToast(false, 'An error has occurred, the collaborator could not be added.')
             console.error(`Error adding collaborator: ${error}`)
         }
     }
@@ -79,26 +83,21 @@ export const useCollabApi = () => {
     async function deleteCollaborator(bid, oid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collaborator has been deleted.")
+                toastStore.changeToast(true, 'The collaborator has been deleted.')
                 return { success: true, data: await response.json() } // Return success with data
             } else {
-                toastStore.changeToast(false, "Failed to delete the collaborator.")
+                toastStore.changeToast(false, 'Failed to delete the collaborator.')
                 return { success: false }
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the collaborator could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the collaborator could not be deleted.')
             console.error(`Error deleting collaborator: ${error}`)
             return { success: false, error } // Return false with error info
         }
     }
-
-
-
-
-    
 
     return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator }
 }

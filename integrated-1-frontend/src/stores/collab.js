@@ -1,10 +1,10 @@
-import { defineStore, acceptHMRUpdate } from "pinia"
-import { ref } from "vue"
-import { useAuthStore } from "@/stores/auth"
-import { useBoardApi } from "@/composables/board-api"
-import { useCollabApi } from "@/composables/collab-api"
+import { defineStore, acceptHMRUpdate } from 'pinia'
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useBoardApi } from '@/composables/board-api'
+import { useCollabApi } from '@/composables/collab-api'
 
-export const useCollabStore = defineStore("collab", () => {
+export const useCollabStore = defineStore('collab', () => {
     // Board is here
     const collabBoards = ref([])
     const authStore = useAuthStore()
@@ -13,13 +13,8 @@ export const useCollabStore = defineStore("collab", () => {
 
     const fetchCollabBoards = async () => {
         const response = await boardApi.getAllBoard() // Call the method correctly
-
-        if (response && response.collab_boards) {
-            resetCollabBoards()
-            addCollabBoards(response.collab_boards) // Pass the collab_boards array
-        } else {
-            console.error("Expected response with collab_boards, but got:", response)
-        }
+        resetCollabBoards()
+        addCollabBoards(response.collab_boards)
     }
 
     const addCollabBoards = (newBoard) => {
@@ -47,7 +42,6 @@ export const useCollabStore = defineStore("collab", () => {
         resetCollaborator()
         const data = await collabApi.getAllCollaborator(bid)
         addCollaborators(data)
-        
     }
 
     function getCollaborator() {
@@ -64,7 +58,6 @@ export const useCollabStore = defineStore("collab", () => {
 
     async function addCollaborator(newCollaborator) {
         collaborators.value.push(newCollaborator)
-        collabApi.addCollaborator(newCollaborator)
     }
 
     function findCollaborator(oid) {
@@ -81,7 +74,6 @@ export const useCollabStore = defineStore("collab", () => {
     const findCollaboratorIndex = (oid) => {
         return collaborators.value.findIndex((collaborator) => collaborator.oid === oid)
     }
-
 
     return {
         collabBoards,
