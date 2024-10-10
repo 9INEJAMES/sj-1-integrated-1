@@ -31,8 +31,8 @@ const closeCollabModal = () => {
 
 
 onMounted(async () => {
-    collabStore.fetchCollaborator(route.params.bid);
-    console.log(collabStore.collaborators);
+    collabStore.fetchCollaborator(route.params.bid)
+    console.log(collabStore.collaborators)
 });
 
 
