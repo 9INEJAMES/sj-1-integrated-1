@@ -12,7 +12,6 @@ const authStore = useAuthStore()
 
 const deleteCollabBoard = (collabBoard) => {
     collabStore.removeCollabBoard(collabBoard.id)
-    console.log(authStore.getAuthData().oid , collabBoard.id)
     collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
 
 }
