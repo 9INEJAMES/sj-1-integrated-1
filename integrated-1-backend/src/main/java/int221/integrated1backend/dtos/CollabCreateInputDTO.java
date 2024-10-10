@@ -12,5 +12,5 @@ public class CollabCreateInputDTO {
     @Email
     @Size(min = 0, max = 50)
     private String email;
-    private AccessRight access_right;
+    private AccessRight accessRight;
 }

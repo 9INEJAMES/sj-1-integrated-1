@@ -78,7 +78,7 @@ public class CollabService {
         Collab newCollab = new Collab();
         newCollab.setBoardId(board.getId());
         newCollab.setOwnerId(user.getOid());
-        newCollab.setAccessRight(input.getAccess_right() == null ? AccessRight.READ : input.getAccess_right());
+        newCollab.setAccessRight(input.getAccessRight() == null ? AccessRight.READ : input.getAccessRight());
         return repository.save(newCollab);
     }
 
