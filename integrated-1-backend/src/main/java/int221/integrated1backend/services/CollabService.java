@@ -86,7 +86,7 @@ public class CollabService {
     public Collab updateCollab(String boardId, String userId, AccessRightDTO input) {
         Collab collab = getCollabOfBoard(boardId, userId,true);
 
-        collab.setAccessRight(input.getAccess_right());
+        collab.setAccessRight(input.getAccessRight());
         return repository.save(collab);
     }
 

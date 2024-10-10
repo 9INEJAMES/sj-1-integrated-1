@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class AccessRightDTO {
-    private AccessRight access_right;
+    private AccessRight accessRight;
 }
