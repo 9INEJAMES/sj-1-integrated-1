@@ -1,6 +1,6 @@
-import { useRoute, useRouter } from "vue-router"
-import { useToast } from "@/stores/toast.js"
-import { useAuthStore } from "@/stores/auth.js"
+import { useRoute, useRouter } from 'vue-router'
+import { useToast } from '@/stores/toast.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 export const useCollabApi = () => {
     const authStore = useAuthStore()
@@ -14,12 +14,12 @@ export const useCollabApi = () => {
         const token = authStore.getToken()
 
         const headers = {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             ...options.headers,
         }
 
         if (token) {
-            headers["Authorization"] = `Bearer ${token}`
+            headers['Authorization'] = `Bearer ${token}`
         }
 
         const response = await fetch(`${url}${endpoint}`, {
@@ -41,14 +41,14 @@ export const useCollabApi = () => {
     async function deleteCollabBoard(bid, oid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collab board has been deleted.")
+                toastStore.changeToast(true, 'The collab board has been deleted.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the collab board could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the collab board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
         }
     }
@@ -63,19 +63,19 @@ export const useCollabApi = () => {
     async function addCollaborator(newCollaborator) {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`, {
-                method: "POST",
+                method: 'POST',
                 body: JSON.stringify({ ...newCollaborator }),
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collaborator has been added.")
+                toastStore.changeToast(true, 'The collaborator has been added.')
                 return { success: true, data: await response.json() } // Return success and data
             } else if (response.status === 409) {
-                toastStore.changeToast(false, "This user is already a collaborator on this board.")
+                toastStore.changeToast(false, 'This user is already a collaborator on this board.')
             } else if (response.status === 400) {
-                toastStore.changeToast(false, "Invalid data. Could not add the collaborator.")
+                toastStore.changeToast(false, 'Invalid data. Could not add the collaborator.')
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error occurred, the collaborator could not be added.")
+            toastStore.changeToast(false, 'An error occurred, the collaborator could not be added.')
             console.error(`Error adding collaborator: ${error}`)
         }
         return { success: false }
@@ -84,17 +84,17 @@ export const useCollabApi = () => {
     async function deleteCollaborator(bid, oid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, "The collaborator has been deleted.")
+                toastStore.changeToast(true, 'The collaborator has been deleted.')
                 return { success: true, data: await response.json() } // Return success with data
             } else {
-                toastStore.changeToast(false, "Failed to delete the collaborator.")
+                toastStore.changeToast(false, 'Failed to delete the collaborator.')
                 return { success: false }
             }
         } catch (error) {
-            toastStore.changeToast(false, "An error has occurred, the collaborator could not be deleted.")
+            toastStore.changeToast(false, 'An error has occurred, the collaborator could not be deleted.')
             console.error(`Error deleting collaborator: ${error}`)
             return { success: false, error } // Return false with error info
         }
@@ -110,14 +110,14 @@ export const useCollabApi = () => {
 
             if (response.ok) {
                 // Check if the response is successful
-                toastStore.changeToast(true, "Collaborator access right has been updated.")
+                toastStore.changeToast(true, 'Collaborator access right has been updated.')
                 return { success: true, data: await response.json() } // Return success with data
             } else {
-                toastStore.changeToast(false, "Failed to update collaborator access right.")
+                toastStore.changeToast(false, 'Failed to update collaborator access right.')
                 return { success: false }
             }
         } catch (error) {
-            toastStore.changeToast(false, "You do not have permission to change collaborator access right.")
+            toastStore.changeToast(false, 'You do not have permission to change collaborator access right.')
             console.error(`Error updating collaborator access: ${error}`)
             return { success: false, error }
         }

@@ -15,7 +15,7 @@ const route = useRoute()
 const props = defineProps({
     action: {
         type: String,
-        required: true
+        required: true,
     },
     collaborator: {
         type: Object,
@@ -35,7 +35,7 @@ const closeModal = () => {
 
 const newCollaborator = {
     email: '',
-    accessRight: 'READ'
+    accessRight: 'READ',
 }
 
 
@@ -49,23 +49,18 @@ const deleteCollaborator = async (collaboratorId) => {
             closeModal()
         } else {
         }
-    } catch (error) {
-    }
+    } catch (error) {}
 }
 
 const updateCollaborator = async (collaboratorId, newCol) => {
-
     const updatedAccessRight = newCol.accessRight === 'READ' ? 'WRITE' : 'READ'
     newCol.accessRight = updatedAccessRight
-    console.log("Updating collaborator with accessRight:", newCol.accessRight)
     const response = await collabApi.updateCollaborator(route.params.bid, collaboratorId, newCol.accessRight)
 
     if (response.success) {
-        collabStore.updateCollaborator(collaboratorId, newCol)
-        console.log("Collaborator access right updated successfully.")
-        console.log(response.data)
+        collabStore.updateCollaborator(collaboratorId, response.data)
     } else {
-        console.error("Failed to update collaborator access right.")
+        console.error('Failed to update collaborator access right.')
     }
     closeModal()
 }
@@ -82,11 +77,9 @@ const deleteCollabBoard = (collabBoard) => {
 const handleSubmit = async () => {
     if (props.action === 'add') {
         try {
-            console.log('Adding collaborator:', newCollaborator)
             const response = await collabApi.addCollaborator(newCollaborator)
             if (response && response.success) {
                 collabStore.addCollaborator(response.data) // Add it to the store if success
-                console.log('Collaborator added:', response.data)
             }
         } catch (error) {
             console.error('Error adding collaborator:', error)
@@ -95,16 +88,12 @@ const handleSubmit = async () => {
     closeModal()
 }
 
-
-
 onMounted(() => {
     if (props.action === 'update') {
         newCollaborator.name = props.collaborator.name
         newCollaborator.email = props.collaborator.email
         newCollaborator.accessRight = props.collaborator.accessRight
         newCollaborator.oid = props.collaborator.oid
-        console.log("Collaborator to update:", newCollaborator)
-        console.log("Collaborator to update:", props.collaborator)
     }
     if (props.action === 'leaveBoard') {
         console.log("CollabBoard to delete:", props.collabBoard)
@@ -141,24 +130,19 @@ onMounted(() => {
                 <div class="grid grid-cols-6 gap-2" v-if="props.action === 'add'">
                     <div class="col-span-4">
                         <label for="title" class="block mb-1 font-medium"> Collaborator e-mail </label>
-                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email"
-                            class="w-full p-2 border border-gray-300 rounded-md" />
+                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" />
                     </div>
                     <div class="col-span-2">
                         <label for="accessRight" class="block mb-1 font-medium"> Access Right</label>
-                        <select class="itbkk-status select select-bordered" id="accessRight"
-                            v-model="newCollaborator.accessRight">
+                        <select class="itbkk-status select select-bordered" id="accessRight" v-model="newCollaborator.accessRight">
                             <option value="READ">READ</option>
                             <option value="WRITE">WRITE</option>
                         </select>
                     </div>
                 </div>
-                <div v-if="props.action === 'delete'" class="font-medium">
-                    Do you want to remove "{{ props.collaborator.name }}" from the board?
-                </div>
+                <div v-if="props.action === 'delete'" class="font-medium">Do you want to remove "{{ props.collaborator.name }}" from the board?</div>
                 <div v-if="props.action === 'update'" class="font-medium">
-                    Do you want to change access right of "{{ props.collaborator.name }}" to "{{
-                        props.collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}" ?
+                    Do you want to change access right of "{{ props.collaborator.name }}" to "{{ props.collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}" ?
                 </div>
                 <div v-if="props.action === 'leaveBoard'" class="font-medium">
                     Do you want to leave this "{{ props.collabBoard.name }}" board?

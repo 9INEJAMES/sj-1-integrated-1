@@ -64,7 +64,6 @@ const handleDeleteModal = (confirmed) => {
     deleteModal.value = false
 }
 
-console.log('boardStore.boards', boardStore.boards)
 </script>
 
 <template>
