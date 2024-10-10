@@ -1,39 +1,39 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useTheme } from '@/stores/theme.js';
-import { useCollabStore } from '@/stores/collab';
-import { useAuthStore } from '@/stores/auth';
-import { useRoute } from 'vue-router';
-import CollaboratorModal from '@/components/CollaboratorModal.vue';
+import { ref, onMounted } from 'vue'
+import { useTheme } from '@/stores/theme.js'
+import { useCollabStore } from '@/stores/collab'
+import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
+import CollaboratorModal from '@/components/CollaboratorModal.vue'
 
-const themeStore = useTheme();
-const collabStore = useCollabStore();
-const authStore = useAuthStore();
-const route = useRoute();
+const themeStore = useTheme()
+const collabStore = useCollabStore()
+const authStore = useAuthStore()
+const route = useRoute()
 
-const showModal = ref(false);
-const modalAction = ref('');
-const selectedCollaborator = ref(null); // Store the selected collaborator for deletion
+const showModal = ref(false)
+const modalAction = ref('')
+const selectedCollaborator = ref(null) // Store the selected collaborator for deletion
 
 
 const openModal = (action, collaborator = null , accessRight = null) => {
-    modalAction.value = action;
-    selectedCollaborator.value = collaborator; // Set the selected collaborator for deletion
-    showModal.value = true;
-};
+    modalAction.value = action
+    selectedCollaborator.value = collaborator // Set the selected collaborator for deletion
+    showModal.value = true
+}
 
 const closeCollabModal = () => {
-    // collabStore.fetchCollaborator(route.params.bid);
-    showModal.value = false;
-    modalAction.value = '';
-    selectedCollaborator.value = null; // Clear the selected collaborator
-};
+    // collabStore.fetchCollaborator(route.params.bid)
+    showModal.value = false
+    modalAction.value = ''
+    selectedCollaborator.value = null // Clear the selected collaborator
+}
 
 
 onMounted(async () => {
     collabStore.fetchCollaborator(route.params.bid)
     console.log(collabStore.collaborators)
-});
+})
 
 
 

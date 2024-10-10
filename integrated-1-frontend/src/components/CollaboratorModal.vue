@@ -1,32 +1,32 @@
 <script setup>
-import { defineProps, defineEmits, onMounted } from 'vue';
-import { useTheme } from '@/stores/theme.js';
-import { useCollabStore } from '@/stores/collab';
-import { useAuthStore } from '@/stores/auth';
-import { useCollabApi } from '@/composables/collab-api';
-import { useRoute } from 'vue-router';
+import { defineProps, defineEmits, onMounted } from 'vue'
+import { useTheme } from '@/stores/theme.js'
+import { useCollabStore } from '@/stores/collab'
+import { useAuthStore } from '@/stores/auth'
+import { useCollabApi } from '@/composables/collab-api'
+import { useRoute } from 'vue-router'
 
-const collabStore = useCollabStore();
-const themeStore = useTheme();
-const authStore = useAuthStore();
-const collabApi = useCollabApi();
-const route = useRoute();
+const collabStore = useCollabStore()
+const themeStore = useTheme()
+const authStore = useAuthStore()
+const collabApi = useCollabApi()
+const route = useRoute()
 
 const props = defineProps({
     action: {
         type: String,
         required: true
     },
-    collaborator: { 
+    collaborator: {
         type: Object,
-        required: false 
+        required: false
     }
 })
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close'])
 
 const closeModal = () => {
-    emit('close');
+    emit('close')
 }
 
 const newCollaborator = {
@@ -41,13 +41,11 @@ const deleteCollabBoard = async (collaboratorId) => {
     try {
         const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId)
         if (response.success) {
-            collabStore.removeCollaborator(collaboratorId);
-            closeModal(); // Close the modal only if the deletion is successful
+            collabStore.removeCollaborator(collaboratorId)
+            closeModal()
         } else {
-            console.error("Failed to delete collaborator.");
         }
     } catch (error) {
-        console.error("Error occurred while deleting collaborator:", error)
     }
 }
 
@@ -71,16 +69,16 @@ const updateCollaborator = async (collaboratorId, newCol) => {
 const handleSubmit = async () => {
     if (props.action === 'add') {
         try {
-            const response = await collabApi.addCollaborator(newCollaborator);
+            const response = await collabApi.addCollaborator(newCollaborator)
             if (response && response.success) {
-                collabStore.addCollaborator(response.data); // Add it to the store if success
-                console.log('Collaborator added:', response.data);
+                collabStore.addCollaborator(response.data) // Add it to the store if success
+                console.log('Collaborator added:', response.data)
             }
         } catch (error) {
-            console.error('Error adding collaborator:', error);
+            console.error('Error adding collaborator:', error)
         }
     }
-    closeModal();
+    closeModal()
 }
 
 
@@ -91,8 +89,8 @@ onMounted(() => {
         newCollaborator.email = props.collaborator.email
         newCollaborator.accessRight = props.collaborator.accessRight
         newCollaborator.oid = props.collaborator.oid
-        console.log("Collaborator to update:", newCollaborator);
-        console.log("Collaborator to update:", props.collaborator);
+        console.log("Collaborator to update:", newCollaborator)
+        console.log("Collaborator to update:", props.collaborator)
     }
 })
 </script>
