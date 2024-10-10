@@ -69,6 +69,7 @@ const updateCollaborator = async (collaboratorId, newCol) => {
 const handleSubmit = async () => {
     if (props.action === 'add') {
         try {
+            console.log('Adding collaborator:', newCollaborator)
             const response = await collabApi.addCollaborator(newCollaborator)
             if (response && response.success) {
                 collabStore.addCollaborator(response.data) // Add it to the store if success
@@ -92,6 +93,7 @@ onMounted(() => {
         console.log("Collaborator to update:", newCollaborator)
         console.log("Collaborator to update:", props.collaborator)
     }
+
 })
 </script>
 
