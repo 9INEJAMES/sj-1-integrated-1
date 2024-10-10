@@ -20,6 +20,10 @@ const props = defineProps({
     collaborator: {
         type: Object,
         required: false
+    },
+    collabBoard: {
+        type: Object,
+        required: false
     }
 })
 
@@ -37,7 +41,7 @@ const newCollaborator = {
 
 
 
-const deleteCollabBoard = async (collaboratorId) => {
+const deleteCollaborator = async (collaboratorId) => {
     try {
         const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId)
         if (response.success) {
@@ -64,6 +68,15 @@ const updateCollaborator = async (collaboratorId, newCol) => {
         console.error("Failed to update collaborator access right.")
     }
     closeModal()
+}
+
+const deleteCollabBoard = (collabBoard) => {
+    collabStore.removeCollabBoard(collabBoard.id)
+    console.log(authStore.getAuthData().oid, collabBoard.id)
+    collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
+
+    closeModal()
+
 }
 
 const handleSubmit = async () => {
@@ -93,6 +106,9 @@ onMounted(() => {
         console.log("Collaborator to update:", newCollaborator)
         console.log("Collaborator to update:", props.collaborator)
     }
+    if (props.action === 'leaveBoard') {
+        console.log("CollabBoard to delete:", props.collabBoard)
+    }
 
 })
 </script>
@@ -108,6 +124,9 @@ onMounted(() => {
                 </p>
                 <p v-if="props.action === 'update'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
                     Change access right
+                </p>
+                <p v-if="props.action === 'leaveBoard'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">
+                    Leave Board
                 </p>
                 <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
                     @click="closeModal">
@@ -141,16 +160,23 @@ onMounted(() => {
                     Do you want to change access right of "{{ props.collaborator.name }}" to "{{
                         props.collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}" ?
                 </div>
+                <div v-if="props.action === 'leaveBoard'" class="font-medium">
+                    Do you want to leave this "{{ props.collabBoard.name }}" board?
+                </div>
             </div>
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
             <div class="flex justify-end gap-2">
                 <button v-if="props.action === 'add'" @click="handleSubmit"
                     class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
-                <button v-if="props.action === 'delete'" @click="deleteCollabBoard(props.collaborator.oid)"
+                <button v-if="props.action === 'delete'" @click="deleteCollaborator(props.collaborator.oid)"
                     class="px-4 py-2 text-black rounded-md bg-pink-500 ">Delete</button>
                 <button v-if="props.action === 'update'"
                     @click="updateCollaborator(props.collaborator.oid, newCollaborator)"
                     class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
+                <button v-if="props.action === 'leaveBoard'"
+                    @click="deleteCollabBoard(props.collabBoard)"
+                    class="px-4 py-2 text-black rounded-md bg-pink-500 ">Confirm</button>
+                
                 <button @click="closeModal" class="px-4 py-2 text-black rounded-md bg-slate-100">Cancel</button>
             </div>
         </div>

@@ -100,12 +100,12 @@ export const useCollabApi = () => {
         }
     }
 
-    async function updateCollaborator(bid, oid, acessRight) {
+    async function updateCollaborator(bid, oid, accessRight) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" }, // Ensure JSON content type
-                body: JSON.stringify({ acessRight }), // Properly serialize the body
+                body: JSON.stringify({ accessRight }), // Properly serialize the body
             })
 
             if (response.ok) {

@@ -1,8 +1,12 @@
 <script setup>
 import { useTheme } from '@/stores/theme.js'
-import { useCollabStore } from '@/stores/collab';
-import { useCollabApi } from '@/composables/collab-api';
-import { useAuthStore } from '@/stores/auth';
+import { useCollabStore } from '@/stores/collab'
+import { useCollabApi } from '@/composables/collab-api'
+import { useAuthStore } from '@/stores/auth'
+import { ref } from 'vue'
+import CollaboratorModal from '@/components/CollaboratorModal.vue'
+
+
 
 
 const themeStore = useTheme()
@@ -10,12 +14,24 @@ const collabStore = useCollabStore()
 const collabApi = useCollabApi()
 const authStore = useAuthStore()
 
-const deleteCollabBoard = (collabBoard) => {
-    collabStore.removeCollabBoard(collabBoard.id)
-    console.log(authStore.getAuthData().oid , collabBoard.id)
-    collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
 
+const showModal = ref(false)
+const modalAction = ref('')
+const selectedCollabBoard = ref(null) 
+
+
+const openModal = (action, cb = null) => {
+    modalAction.value = action
+    selectedCollabBoard.value = cb 
+    showModal.value = true
 }
+
+const closeCollabModal = () => {
+    showModal.value = false
+    modalAction.value = ''
+    selectedCollabBoard.value = null 
+}
+
 
 </script>
 
@@ -48,7 +64,7 @@ const deleteCollabBoard = (collabBoard) => {
                         {{ collabBoard.accessRight }}
                     </td>
                     <td>
-                        <button class="btn" @click="deleteCollabBoard(collabBoard)">
+                        <button class="btn" @click="openModal('leaveBoard',collabBoard)">
                             Leave
                         </button>
                     </td>
@@ -58,6 +74,8 @@ const deleteCollabBoard = (collabBoard) => {
 
         </table>
     </div>
+        <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collabBoard="selectedCollabBoard"
+            class="z-[45]" />
 </template>
 
 <style lang="scss" scoped></style>
