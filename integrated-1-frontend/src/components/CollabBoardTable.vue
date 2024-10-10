@@ -5,10 +5,11 @@ import { useCollabApi } from '@/composables/collab-api'
 import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
 import CollaboratorModal from '@/components/CollaboratorModal.vue'
+import { useRouter } from 'vue-router'
 
 
 
-
+const router = useRouter()
 const themeStore = useTheme()
 const collabStore = useCollabStore()
 const collabApi = useCollabApi()
@@ -30,6 +31,16 @@ const closeCollabModal = () => {
     showModal.value = false
     modalAction.value = ''
     selectedCollabBoard.value = null 
+}
+
+const boardSelector = async (bid) => {
+    // boardStore.findBoard(bid)
+    router.push({
+        name: 'taskView',
+        params: {
+            bid: bid,
+        },
+    })
 }
 
 
@@ -55,7 +66,7 @@ const closeCollabModal = () => {
                         </div>
                     </td>
                     <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
-                        class="itbkk-title h-[30px]  break-all" >
+                        class="itbkk-title h-[30px]  break-all"  @click="boardSelector(collabBoard.id)">
                         {{  collabBoard.name }}
                     </td>
                     <td>{{ collabBoard.owner.name }}</td>
