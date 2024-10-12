@@ -43,7 +43,7 @@ onMounted(async () => {
     <div class="text-center text-3xl font-bold pt-[4vh]">Collaborator Management</div>
     <div class="flex justify-between pt-[2vh] pr-[5vh]">
         <div class="flex">
-            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500">{{ authStore.getAuthData().name }}</div>
+            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500">{{ authStore.getAuthData().name ? authStore.getAuthData().name : ''  }}</div>
             <div class="text-2xl font-bold"> > Collaborator</div>
         </div>
         <div class="btn" @click="openModal('add')">Add collaborator</div>

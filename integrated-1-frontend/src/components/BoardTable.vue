@@ -113,9 +113,6 @@ const handleDeleteModal = (confirmed) => {
                                     <li>
                                         <p :disabled="!isCanEdit" class="itbkk-button-delete" @click="deleteBoard(board, index + 1)">Delete</p>
                                     </li>
-                                    <li>
-                                        <p :disabled="!isCanEdit" @click="toCollabPage(board.id)">Collab</p>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
