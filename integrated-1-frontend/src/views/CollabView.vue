@@ -82,7 +82,7 @@ onMounted(async () => {
                     </td>
                     <td>
                         <button class="btn" @click="openModal('delete', collaborator)">
-                            Leave
+                            Remove
                         </button>
                     </td>
                 </tr>

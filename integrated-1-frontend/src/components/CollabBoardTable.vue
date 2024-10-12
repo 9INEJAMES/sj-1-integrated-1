@@ -51,15 +51,21 @@ const boardSelector = async (bid) => {
         <table class="myTable table-lg table-pin-rows shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
-                    <th style="width: 1%">No</th>
-                    <th style="width: 1%">Name</th>
-                    <th style="width: 1%">Owner</th>
-                    <th style="width: 1%">Access Right</th>
-                    <th style="width: 1%">Action</th>
+                    <th style="width: 1%"></th>
+                    <th style="width: 9%">No</th>
+                    <th style="width: 35%">Name</th>
+                    <th style="width: 25%">Owner</th>
+                    <th style="width: 20%">Access Right</th>
+                    <th style="width: 10%">Action</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(collabBoard, index) in collabStore.collabBoards" :key="collabBoard.id" class="itbkk-item">
+                     <td>
+                            <div class="flex">
+
+                            </div>
+                        </td>
                     <td>
                         <div class="flex">
                             {{ index + 1 }}
