@@ -28,6 +28,9 @@ export const useStatusApi = () => {
             headers,
         })
 
+        if (response.status == 401) {
+            authStore.refreshAccessToken()
+        }
         return response
     }
 

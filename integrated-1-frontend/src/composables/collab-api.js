@@ -27,6 +27,9 @@ export const useCollabApi = () => {
             headers,
         })
 
+        if (response.status == 401) {
+            authStore.refreshAccessToken()
+        }
         return response
     }
 
@@ -103,8 +106,8 @@ export const useCollabApi = () => {
     async function updateCollaborator(bid, oid, accessRight) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" }, // Ensure JSON content type
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' }, // Ensure JSON content type
                 body: JSON.stringify({ accessRight }), // Properly serialize the body
             })
 
