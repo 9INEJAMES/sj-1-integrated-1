@@ -1,4 +1,4 @@
-FROM nginx:alpine as run
+FROM nginx:alpine AS run
 COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
