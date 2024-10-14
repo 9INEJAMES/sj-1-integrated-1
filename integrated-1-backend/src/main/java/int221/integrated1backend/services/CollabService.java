@@ -64,7 +64,13 @@ public class CollabService {
 
     @Transactional("firstTransactionManager")
     public Collab createNewCollab(Board board, CollabCreateInputDTO input) {
+
+        if (input == null || !Objects.equals(input.getAccessRight(), "WRITE") && !Objects.equals(input.getAccessRight(), "READ")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+
         User user = userService.findByEmail(input.getEmail());
+
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email not found.");
         }
@@ -78,25 +84,28 @@ public class CollabService {
         Collab newCollab = new Collab();
         newCollab.setBoardId(board.getId());
         newCollab.setOwnerId(user.getOid());
-        newCollab.setAccessRight(input.getAccessRight() == null ? AccessRight.READ : input.getAccessRight());
+        newCollab.setAccessRight(AccessRight.valueOf(input.getAccessRight()));
         return repository.save(newCollab);
     }
 
     @Transactional("firstTransactionManager")
     public Collab updateCollab(String boardId, String userId, AccessRightDTO input) {
-        Collab collab = getCollabOfBoard(boardId, userId,true);
-
-        collab.setAccessRight(input.getAccessRight());
+        Collab collab = getCollabOfBoard(boardId, userId, true);
+        if (input == null || !Objects.equals(input.getAccessRight(), "WRITE") && !Objects.equals(input.getAccessRight(), "READ")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+        collab.setAccessRight(AccessRight.valueOf(input.getAccessRight()));
         return repository.save(collab);
     }
 
     @Transactional("firstTransactionManager")
     public Collab deleteCollab(String boardId, String userId) {
-        Collab collab = getCollabOfBoard(boardId, userId,true);
+        Collab collab = getCollabOfBoard(boardId, userId, true);
 
         repository.delete(collab);
         return collab;
     }
+
     @Transactional("firstTransactionManager")
     public void removeAllCollabOfBoard(String bid) {
         repository.deleteAllByBoardId(bid);

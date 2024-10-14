@@ -43,12 +43,18 @@ public class BoardService {
 
     @Transactional("firstTransactionManager")
     public Board getBoard(String id) {
+        if (id == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist");
+
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist"));
     }
 
     @Transactional("firstTransactionManager")
     public Board updateฺBoard(String id, BoardInputDTO boardInput) {
         Board board = getBoard(id);
+        if (boardInput == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
         board.setName(boardInput.getName() == null ? board.getName() : boardInput.getName());
         board.setVisibility(boardInput.getVisibility() == null ? board.getVisibility() : boardInput.getVisibility());
         board.setLimit(boardInput.getLimit() == null ? board.getLimit() : boardInput.getLimit());

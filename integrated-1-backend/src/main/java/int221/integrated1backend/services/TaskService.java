@@ -111,14 +111,18 @@ public class TaskService {
     }
 
     @Transactional("firstTransactionManager")
-    public Task updateTask(Integer taskId, TaskInputDTO taskDTO) {
-        Board board = boardService.getBoard(taskDTO.getBoardId());
-        taskDTO.setBoardId(null);
-        Task task = modelMapper.map(taskDTO, Task.class);
+    public Task updateTask(Integer taskId, TaskInputDTO input, String bid) {
+        Board board = boardService.getBoard(bid);
+        Task existingTask = findByIdAndAndBoardId(taskId, bid);
+
+        if (input == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+        input.setBoardId(null);
+        Task task = modelMapper.map(input, Task.class);
         task.setId(taskId);
         task.setBoard(board);
-        Status status = statusRepository.findById(Integer.valueOf(taskDTO.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status id " + taskDTO.getStatus() + " does not exists !!!"));
-        Task existingTask = findByIdAndAndBoardId(taskId, task.getBoard().getId());
+        Status status = statusRepository.findById(Integer.valueOf(input.getStatus())).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Status id " + input.getStatus() + " does not exists !!!"));
 
         if (!Objects.equals(status.getId(), existingTask.getStatus().getId()) && existingTask.getBoard().getLimit() && !Objects.equals(status.getName().toLowerCase(), "no status") && !Objects.equals(status.getName().toLowerCase(), "done") && status.getNoOfTasks() >= existingTask.getBoard().getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "THIS STATUS HAS REACHED ITS LIMIT");

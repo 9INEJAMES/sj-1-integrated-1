@@ -48,22 +48,29 @@ public class StatusService {
     }
 
     @Transactional("firstTransactionManager")
-    public Status createNewStatus(StatusInputDTO statusInputDTO, Board board) {
-        Status newStatus = modelMapper.map(statusInputDTO, Status.class);
+    public Status createNewStatus(StatusInputDTO input, Board board) {
+        if (input == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+        Status newStatus = modelMapper.map(input, Status.class);
         newStatus.setBoard(board);
         isUnique(newStatus);
         return repository.save(newStatus);
     }
 
     @Transactional("firstTransactionManager")
-    public Status updateStatus(Integer id, StatusInputDTO statusInputDTO) {
+    public Status updateStatus(Integer id, StatusInputDTO input) {
         //มันจับ exception ของ cannot be change no status ด้านล่างก่อนจึงต้อง force check name == null
         Status existStatus = findByID(id);
-        Status newStatus = modelMapper.map(statusInputDTO, Status.class);
+        if (input == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
+        }
+        Status newStatus = modelMapper.map(input, Status.class);
         if (newStatus.getName() == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status name must not be null");
         if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name " + existStatus.getName() + " cannot be change");
+
         newStatus.setId(id);
         newStatus.setBoard(existStatus.getBoard());
         isUnique(newStatus);
