@@ -29,6 +29,12 @@ export const useCollabApi = () => {
 
         if (response.status == 401) {
             authStore.refreshAccessToken()
+            if (authStore.getToken) {
+                response = await fetch(`${url}${endpoint}`, {
+                    ...options,
+                    headers,
+                })
+            }
         }
         return response
     }
@@ -71,12 +77,16 @@ export const useCollabApi = () => {
             })
             if (response.ok) {
                 toastStore.changeToast(true, 'The collaborator has been added.')
-                return { success: true, data: await response.json() } // Return success and data
             } else if (response.status === 409) {
                 toastStore.changeToast(false, 'This user is already a collaborator on this board.')
-            } else if (response.status === 400) {
-                toastStore.changeToast(false, 'Invalid data. Could not add the collaborator.')
+            } else if (response.status === 403) {
+                toastStore.changeToast(false, 'You do not have permission to add board collaborator.')
+            } else if (response.status === 404) {
+                toastStore.changeToast(false, 'The user does not exists.')
+            } else if (response.status === 500) {
+                toastStore.changeToast(false, 'There is a problem. Please try again later.')
             }
+            return response
         } catch (error) {
             toastStore.changeToast(false, 'An error occurred, the collaborator could not be added.')
             console.error(`Error adding collaborator: ${error}`)

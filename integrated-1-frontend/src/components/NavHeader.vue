@@ -8,6 +8,7 @@ import { useRouter, useRoute } from 'vue-router'
 import { useBoardStore } from '@/stores/board'
 import ConfirmDelete from './ConfirmDelete.vue'
 import { useBoardApi } from '@/composables/board-api'
+import { useCollabStore } from '@/stores/collab'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
@@ -20,12 +21,16 @@ const route = useRoute()
 const boardStore = useBoardStore()
 const boardApi = useBoardApi()
 const bName = ref('default')
+const collab = useCollabStore()
 
 const goBackHome = () => {
     if (!!authStore.checkToken()) {
-        router.push({ name: 'boardView' })
+        collab.resetCollabBoards()
+        collab.resetCollaborator()
+        boardStore.resetBoards()
         taskStore.resetTasks()
         status.resetStatuses()
+        router.push({ name: 'boardView' })
     } else {
         logout()
     }

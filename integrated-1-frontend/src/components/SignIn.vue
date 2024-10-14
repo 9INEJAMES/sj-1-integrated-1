@@ -3,17 +3,10 @@ import { ref, onMounted } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useAuthApi } from '@/composables/auth-api.js'
 import router from '@/router'
-import { useBoardStore } from '@/stores/board'
-import { useStatusesStore } from '@/stores/status'
-import { useTasksStore } from '@/stores/task'
 import { useAuthStore } from '@/stores/auth'
 
-const isChecked = ref(false)
 const themeStore = useTheme()
 const authApi = useAuthApi()
-const taskStore = useTasksStore()
-const statusStore = useStatusesStore()
-const boardStore = useBoardStore()
 const authStore = useAuthStore()
 
 const isPasswordVisible = ref(false)

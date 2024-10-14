@@ -21,26 +21,26 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
-            path: "/",
-            redirect: "/login",
+            path: '/',
+            redirect: '/login',
         },
         {
-            path: "/homepage",
-            name: "homepage",
+            path: '/homepage',
+            name: 'homepage',
             component: HomePage,
         },
         {
-            path: "/login",
-            name: "login",
+            path: '/login',
+            name: 'login',
             component: SignIn,
         },
         {
-            path: "/:pathMatch(.*)*",
-            redirect: "/login",
+            path: '/:pathMatch(.*)*',
+            redirect: '/login',
         },
         {
-            path: "/board",
-            name: "boardView",
+            path: '/board',
+            name: 'boardView',
             component: BoardView,
             children: [
                 {
@@ -51,76 +51,76 @@ const router = createRouter({
                     },
                 },
                 {
-                    path: "add",
-                    name: "boardAdd",
+                    path: 'add',
+                    name: 'boardAdd',
                     component: BoardModal,
                 },
                 {
-                    path: "delete",
-                    name: "boardDelete",
+                    path: 'delete',
+                    name: 'boardDelete',
                     component: BoardModal,
                 },
                 {
-                    path: ":bid/edit",
-                    name: "boardEdit",
+                    path: ':bid/edit',
+                    name: 'boardEdit',
                     component: BoardModal,
                 },
             ],
         },
         // Nested Status Routes
         {
-            path: "/board/:bid/status",
-            name: "statusView",
+            path: '/board/:bid/status',
+            name: 'statusView',
             component: StatusView,
             children: [
                 {
-                    path: "add",
-                    name: "statusAdd",
+                    path: 'add',
+                    name: 'statusAdd',
                     component: StatusModal,
                 },
                 {
-                    path: ":id/edit",
-                    name: "statusEdit",
+                    path: ':id/edit',
+                    name: 'statusEdit',
                     component: StatusModal,
                 },
             ],
         },
         {
-            path: "/board/:bid/collab",
-            name: "CollabView",
+            path: '/board/:bid/collab',
+            name: 'CollabView',
             component: CollabView,
         },
         // Nested Task Routes
         {
-            path: "/board/:bid/task",
-            name: "taskView",
+            path: '/board/:bid/task',
+            name: 'taskView',
             component: TaskView,
             children: [
                 {
-                    path: "add",
-                    name: "taskAdd",
+                    path: 'add',
+                    name: 'taskAdd',
                     component: TaskModal,
                 },
                 {
-                    path: ":taskId",
-                    name: "taskDetails",
+                    path: ':taskId',
+                    name: 'taskDetails',
                     component: TaskModal,
                 },
                 {
-                    path: ":taskId/edit",
-                    name: "taskEdit",
+                    path: ':taskId/edit',
+                    name: 'taskEdit',
                     component: TaskModal,
                 },
             ],
         },
         {
-            path: "/access-denied",
-            name: "accessDenied",
+            path: '/access-denied',
+            name: 'accessDenied',
             component: AccessDenied,
         },
         {
-            path: "/not-found",
-            name: "notFound",
+            path: '/not-found',
+            name: 'notFound',
             component: PageNotFound,
         },
     ],
@@ -165,6 +165,13 @@ router.beforeEach(async (to, from, next) => {
     } else {
         if (to.name === 'login' && !(await authStore.checkToken())) {
             next({ name: 'boardView' })
+            // } else if ((from.name === 'login' || from.name === 'boardAdd') && to.name === 'boardView') {
+            //     const result = await boardApi.getAllBoard()
+            //     if (result?.person_boards?.length == 1 && result?.collab_boards == 0) {
+            //         next({ name: 'taskView', params: { bid: result?.person_boards[0].id } })
+            //     } else {
+            //         next()
+            //     }
         } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             if (await authStore.isOwnerOrCollab(to.params.bid)) next()
             else next({ name: 'accessDenied' })

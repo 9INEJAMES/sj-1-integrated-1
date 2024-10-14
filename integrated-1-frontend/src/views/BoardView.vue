@@ -24,15 +24,15 @@ onMounted(async () => {
     if (authStore.checkToken) await collabStore.fetchCollabBoards()
 
     // onlyone board
-    // if (boardStore.filterBoards(authStore.getAuthData().oid).length >= 1) {
-    //     router.push({ name: 'taskView', params: { bid: boardStore.filterBoards(authStore.getAuthData().oid)[0] } })
-    // }
+    if (boardStore.boards.length == 1 && collabStore.collabBoards.length == 0) {
+        router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
+    }
 })
 </script>
 
 <template>
     <div v-show="$route.name == 'boardView' || 'boardAdd'">
-        <div class=" text-center text-3xl font-bold pt-[4vh] pb-[1vh]"> Personal boards</div>
+        <div class="text-center text-3xl font-bold pt-[4vh] pb-[1vh]">Personal boards</div>
         <div class="flex justify-between pl-[5vh] pr-[5vh]">
             <div class="flex gap-2">
                 <RouterLink :to="{ name: 'boardAdd' }">
@@ -46,7 +46,7 @@ onMounted(async () => {
                 <BoardTable />
             </div>
         </div>
-        <div class=" text-center text-3xl font-bold pt-[4vh] pb-[1vh]">Collab Boards </div>
+        <div class="text-center text-3xl font-bold pt-[4vh] pb-[1vh]">Collab Boards</div>
         <div class="px-[5vh] pt-[1vh]">
             <CollabBoardTable />
         </div>

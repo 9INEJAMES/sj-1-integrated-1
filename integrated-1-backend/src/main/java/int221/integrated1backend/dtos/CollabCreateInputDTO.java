@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class CollabCreateInputDTO {
     @NotNull
-    @Email
+//    @Email
     @Size(min = 0, max = 50)
     private String email;
     private AccessRight accessRight;

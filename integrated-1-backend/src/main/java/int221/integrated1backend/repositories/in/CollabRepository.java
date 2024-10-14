@@ -10,9 +10,12 @@ import java.util.List;
 @Repository
 public interface CollabRepository extends JpaRepository<Collab, CollabId> {
     public List<Collab> findAllByBoardId(String bid);
-    public Collab findByBoardIdAndOwnerId(String bid,String oid);
+
+    public Collab findByBoardIdAndOwnerId(String bid, String oid);
+
     public boolean existsByBoardIdAndOwnerId(String bid, String oid);
 
     public List<Collab> findAllByOwnerId(String oid);
+    public void deleteAllByBoardId(String id);
 
 }

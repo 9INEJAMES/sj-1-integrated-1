@@ -110,7 +110,12 @@ export const useAuthStore = defineStore('auth', () => {
         return isO
     }
 
-    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwnerOrCollab, refreshAccessToken }
+    const getUserEmail = () => {
+        const t = getToken()
+        return decodeToken(t)?.email
+    }
+
+    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwnerOrCollab, refreshAccessToken, getUserEmail }
 })
 
 if (import.meta.hot) {

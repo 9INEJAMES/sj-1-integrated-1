@@ -5,6 +5,7 @@ import { useBoardApi } from '@/composables/board-api'
 import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
 import { useTheme } from '@/stores/theme.js'
+
 const themeStore = useTheme()
 
 const route = useRoute()
@@ -15,6 +16,7 @@ const isDisabled = ref(false)
 const isChanged = ref(false)
 const authStore = useAuthStore()
 const user = authStore.getAuthData()
+
 const isCanEdit = ref(true)
 
 const newBoard = ref({
@@ -43,7 +45,10 @@ const submitBoard = async (isSave) => {
         } else {
             const board = await boardApi.createBoard(newBoard.value)
 
-            if (board) boardStore.addBoard(board)
+            if (board) {
+                boardStore.addBoard(board)
+            }
+            
         }
     }
     newBoard.value = {
@@ -64,7 +69,9 @@ const changeBoardVisibility = () => {
 
 onMounted(async () => {
     // authStore.checkToken()
+  
     await boardStore.fetchBoard()
+    
 
     if (route.name !== 'boardAdd') {
         // if (boardStore.boards.length === 0) await boardStore.fetchBoard()
@@ -101,7 +108,7 @@ watch(
             </div>
 
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
-
+            
             <div class="mb-5">
                 <label for="title" class="block mb-1 font-medium"> {{ $route.name == 'boardAdd' ? 'Name' : 'Change board name' }}<span class="text-red-600">*</span> </label>
                 <input
@@ -114,7 +121,7 @@ watch(
                     :disabled="isDisabled"
                 />
             </div>
-            
+
             <div class="flex items-center" v-if="isCanEdit && route.params.bid">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private

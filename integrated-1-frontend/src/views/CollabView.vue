@@ -15,8 +15,7 @@ const showModal = ref(false)
 const modalAction = ref('')
 const selectedCollaborator = ref(null) // Store the selected collaborator for deletion
 
-
-const openModal = (action, collaborator = null , accessRight = null) => {
+const openModal = (action, collaborator = null, accessRight = null) => {
     modalAction.value = action
     selectedCollaborator.value = collaborator // Set the selected collaborator for deletion
     showModal.value = true
@@ -24,27 +23,23 @@ const openModal = (action, collaborator = null , accessRight = null) => {
 
 const closeCollabModal = () => {
     // collabStore.fetchCollaborator(route.params.bid)
+
     showModal.value = false
     modalAction.value = ''
     selectedCollaborator.value = null // Clear the selected collaborator
 }
 
-
 onMounted(async () => {
     collabStore.fetchCollaborator(route.params.bid)
 })
-
-
-
 </script>
-
 
 <template>
     <div class="text-center text-3xl font-bold pt-[4vh]">Collaborator Management</div>
     <div class="flex justify-between pt-[2vh] pr-[5vh]">
         <div class="flex">
-            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500">{{ authStore.getAuthData().name ? authStore.getAuthData().name : ''  }}</div>
-            <div class="text-2xl font-bold"> > Collaborator</div>
+            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500">{{ authStore.getAuthData().name ? authStore.getAuthData().name : '' }}</div>
+            <div class="text-2xl font-bold">> Collaborator</div>
         </div>
         <div class="btn" @click="openModal('add')">Add collaborator</div>
     </div>
@@ -72,25 +67,25 @@ onMounted(async () => {
                             <option>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</option>
                         </select> -->
                         <div class="dropdown">
-                            <div tabindex="0" role="button" class="btn m-1">{{ collaborator.accessRight }} v </div>
+                            <div tabindex="0" role="button" class="btn m-1">{{ collaborator.accessRight }} v</div>
                             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                <li><a>{{ collaborator.accessRight }}</a></li>
-                                <li @click="openModal('update', collaborator)"><a>{{ collaborator.accessRight === 'WRITE' ?
-                                    'READ' : 'WRITE' }}</a></li>
+                                <li>
+                                    <a>{{ collaborator.accessRight }}</a>
+                                </li>
+                                <li @click="openModal('update', collaborator)">
+                                    <a>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</a>
+                                </li>
                             </ul>
                         </div>
                     </td>
                     <td>
-                        <button class="btn" @click="openModal('delete', collaborator)">
-                            Remove
-                        </button>
+                        <button class="btn" @click="openModal('delete', collaborator)">Remove</button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator"
-        class="z-[45]" />
+    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator" class="z-[45]" />
 </template>
 
 <style scoped></style>

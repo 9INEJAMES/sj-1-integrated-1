@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useTheme } from '@/stores/theme.js'
 import { useCollabStore } from '@/stores/collab'
 import { useAuthStore } from '@/stores/auth'
@@ -9,6 +9,7 @@ import { useRoute } from 'vue-router'
 const collabStore = useCollabStore()
 const themeStore = useTheme()
 const authStore = useAuthStore()
+const ownerEmail = authStore.getUserEmail()
 const collabApi = useCollabApi()
 const route = useRoute()
 
@@ -33,11 +34,10 @@ const closeModal = () => {
     emit('close')
 }
 
-const newCollaborator = {
+const newCollaborator = ref({
     email: '',
     accessRight: 'READ',
-}
-
+})
 const deleteCollaborator = async (collaboratorId) => {
     try {
         const response = await collabApi.deleteCollaborator(route.params.bid, collaboratorId)
@@ -63,32 +63,35 @@ const updateCollaborator = async (collaboratorId, newCol) => {
 }
 
 const deleteCollabBoard = (collabBoard) => {
-    collabStore.removeCollabBoard(collabBoard.id)
     collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
+    collabStore.removeCollabBoard(collabBoard.id)
 
     closeModal()
 }
 
 const handleSubmit = async () => {
     if (props.action === 'add') {
-        try {
-            const response = await collabApi.addCollaborator(newCollaborator)
-            if (response && response.success) {
-                collabStore.addCollaborator(response.data) // Add it to the store if success
-            }
-        } catch (error) {
-            console.error('Error adding collaborator:', error)
+        const response = await collabApi.addCollaborator(newCollaborator.value)
+        if (response && response.ok) {
+            collabStore.addCollaborator(await response.json()) // Add it to the store if success
+        }
+        if (response.status != 404 && response.status != 409) {
+            closeModal()
         }
     }
-    closeModal()
 }
+const validateEmail = (email) => {
+    const atIndex = email.indexOf('@')
+    const dotIndex = email.lastIndexOf('.')
 
+    return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1
+}
 onMounted(() => {
     if (props.action === 'update') {
-        newCollaborator.name = props.collaborator.name
-        newCollaborator.email = props.collaborator.email
-        newCollaborator.accessRight = props.collaborator.accessRight
-        newCollaborator.oid = props.collaborator.oid
+        newCollaborator.value.name = props.collaborator.name
+        newCollaborator.value.email = props.collaborator.email
+        newCollaborator.value.accessRight = props.collaborator.accessRight
+        newCollaborator.value.oid = props.collaborator.oid
     }
     if (props.action === 'leaveBoard') {
         console.log('CollabBoard to delete:', props.collabBoard)
@@ -115,7 +118,9 @@ onMounted(() => {
                 <div class="grid grid-cols-6 gap-2" v-if="props.action === 'add'">
                     <div class="col-span-4">
                         <label for="title" class="block mb-1 font-medium"> Collaborator e-mail </label>
+
                         <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" />
+                        <p v-if="newCollaborator.email == ownerEmail" class="text-xs pl-1 pt-2 overflow-auto">Board owner cannot be collaborator of his/her own board</p>
                     </div>
                     <div class="col-span-2">
                         <label for="accessRight" class="block mb-1 font-medium"> Access Right</label>
@@ -133,7 +138,14 @@ onMounted(() => {
             </div>
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
             <div class="flex justify-end gap-2">
-                <button v-if="props.action === 'add'" @click="handleSubmit" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
+                <button
+                    v-if="props.action === 'add'"
+                    @click="handleSubmit"
+                    class="px-4 py-2 text-black rounded-md bg-pink-500 hover:text-white disabled:bg-slate-300"
+                    :disabled="!validateEmail(newCollaborator.email) || !newCollaborator.email.length || newCollaborator.email == ownerEmail"
+                >
+                    Confirm
+                </button>
                 <button v-if="props.action === 'delete'" @click="deleteCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Delete</button>
                 <button v-if="props.action === 'update'" @click="updateCollaborator(props.collaborator.oid, newCollaborator)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'leaveBoard'" @click="deleteCollabBoard(props.collabBoard)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>

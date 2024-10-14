@@ -134,6 +134,7 @@ export const useBoardApi = () => {
             }
             if (response.status == 404) {
                 toastStore.changeToast(false, 'An error has occurred, page not found')
+                router.push({ name: 'login' })
             }
             const status = response.status
             return { response: await response?.json(), status: status }

@@ -148,6 +148,7 @@ public class BoardControllerV3 {
         //delete all task and status in board!!
         taskService.removeAllTaskOfBoard(id);
         statusService.removeAllStatusOfBoard(id);
+        collabService.removeAllCollabOfBoard(id);
 
         Board board = boardService.deleteBoard(id);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);

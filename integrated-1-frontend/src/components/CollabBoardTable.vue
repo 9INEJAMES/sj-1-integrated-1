@@ -7,30 +7,26 @@ import { ref } from 'vue'
 import CollaboratorModal from '@/components/CollaboratorModal.vue'
 import { useRouter } from 'vue-router'
 
-
-
 const router = useRouter()
 const themeStore = useTheme()
 const collabStore = useCollabStore()
 const collabApi = useCollabApi()
 const authStore = useAuthStore()
 
-
 const showModal = ref(false)
 const modalAction = ref('')
-const selectedCollabBoard = ref(null) 
-
+const selectedCollabBoard = ref(null)
 
 const openModal = (action, cb = null) => {
     modalAction.value = action
-    selectedCollabBoard.value = cb 
+    selectedCollabBoard.value = cb
     showModal.value = true
 }
 
 const closeCollabModal = () => {
     showModal.value = false
     modalAction.value = ''
-    selectedCollabBoard.value = null 
+    selectedCollabBoard.value = null
 }
 
 const boardSelector = async (bid) => {
@@ -42,8 +38,6 @@ const boardSelector = async (bid) => {
         },
     })
 }
-
-
 </script>
 
 <template>
@@ -61,38 +55,30 @@ const boardSelector = async (bid) => {
             </thead>
             <tbody>
                 <tr v-for="(collabBoard, index) in collabStore.collabBoards" :key="collabBoard.id" class="itbkk-item">
-                     <td>
-                            <div class="flex">
-
-                            </div>
-                        </td>
+                    <td>
+                        <div class="flex"></div>
+                    </td>
                     <td>
                         <div class="flex">
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
-                        class="itbkk-title h-[30px]  break-all"  @click="boardSelector(collabBoard.id)">
-                        {{  collabBoard.name }}
+                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title h-[30px] break-all" @click="boardSelector(collabBoard.id)">
+                        {{ collabBoard.name }}
                     </td>
                     <td>{{ collabBoard.owner.name }}</td>
-                    
+
                     <td>
                         {{ collabBoard.accessRight }}
                     </td>
                     <td>
-                        <button class="btn" @click="openModal('leaveBoard',collabBoard)">
-                            Leave
-                        </button>
+                        <button class="btn" @click="openModal('leaveBoard', collabBoard)">Leave</button>
                     </td>
-
                 </tr>
             </tbody>
-
         </table>
     </div>
-        <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collabBoard="selectedCollabBoard"
-            class="z-[45]" />
+    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collabBoard="selectedCollabBoard" class="z-[45]" />
 </template>
 
 <style lang="scss" scoped></style>

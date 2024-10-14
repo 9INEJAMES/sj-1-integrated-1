@@ -66,7 +66,7 @@ public class CollabService {
     public Collab createNewCollab(Board board, CollabCreateInputDTO input) {
         User user = userService.findByEmail(input.getEmail());
         if (user == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User with specified email not found.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email not found.");
         }
         if (isCollabExist(board.getId(), user.getOid())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "This user is already a collaborator on this board.");
@@ -96,5 +96,9 @@ public class CollabService {
 
         repository.delete(collab);
         return collab;
+    }
+    @Transactional("firstTransactionManager")
+    public void removeAllCollabOfBoard(String bid) {
+        repository.deleteAllByBoardId(bid);
     }
 }
