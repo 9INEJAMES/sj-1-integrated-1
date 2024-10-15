@@ -7,7 +7,9 @@ import router from '../router/index.js'
 import { useStatusApi } from '@/composables/status-api'
 import { useRoute } from 'vue-router'
 import { useTasksStore } from '../stores/task.js'
+import { useAuthStore } from '@/stores/auth.js'
 
+const authStore = useAuthStore()
 const statusesStore = useStatusesStore()
 const themeStore = useTheme()
 const deleteModal = ref(false)
@@ -17,12 +19,14 @@ const statusApi = useStatusApi()
 const base = import.meta.env.VITE_BASE
 const route = useRoute()
 const taskStore = useTasksStore()
+const isCanEdit = ref(false)
 
 const emit = defineEmits(['getStatus'])
 
 onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
+    isCanEdit.value = authStore.checkToken() ? (await authStore.isOwner(route.params.bid)) || (await authStore.isCollab(route.params.bid)) : false
 })
 const toEditPage = (id) => {
     router.push({
@@ -78,11 +82,26 @@ const handleDeleteModal = () => {
                     </td>
                     <td>
                         <div class="flex justify-center gap-1">
-                            <div class="itbkk-button-edit btn btn-sm" :class="themeStore.getButtonTheme()" @click="toEditPage(status.id)">
-                                Edit <img :src="`${base ? base : ''}/edit${themeStore.isLight ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
+                            <div :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')" :data-tip="'You need to be board owner to perform this action'">
+                                <button
+                                    class="itbkk-button-edit btn btn-sm flex"
+                                    :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled' : '')"
+                                    @click="toEditPage(status.id)"
+                                    :disabled="!isCanEdit"
+                                >
+                                    Edit <img :src="`${base ? base : ''}/edit${isCanEdit ? '' : '2'}.png`" alt="edit picture" class="w-4 h-4" />
+                                </button>
                             </div>
-                            <div class="itbkk-button-delete btn btn-sm" :class="themeStore.getButtonTheme()" @click="deleteStatus(status, index + 1)">
-                                Delete <img :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
+                            <div :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')" :data-tip="'You need to be board owner to perform this action'">
+                                <button
+                                    class="itbkk-button-delete btn btn-sm flex"
+                                    :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')"
+                                    @click="deleteStatus(status, index + 1)"
+                                    :disabled="!isCanEdit"
+                                    :data-tip="'You need to be board owner to perform this action'"
+                                >
+                                    Delete <img :src="`${base ? base : ''}/delete${isCanEdit ? '' : '2'}.png`" alt="delete picture" class="w-4 h-4" />
+                                </button>
                             </div>
                         </div>
                     </td>

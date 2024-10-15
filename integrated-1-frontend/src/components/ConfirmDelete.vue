@@ -49,7 +49,7 @@ const submitDelete = async () => {
         // authStore.checkToken()
         if (props.mode == 'task') {
             const result = await taskApi.deleteTask(route.params.bid, props.object.id)
-            if (result.ok) {
+            if (result) {
                 taskStore.removeTask(result.id)
                 emit('closeModal', true)
             } else {
@@ -59,7 +59,7 @@ const submitDelete = async () => {
             if (isInUsed.value) {
                 const newStatus = statusStore.findStatusById(newStatusId.value)
                 const result = await statusApi.deleteStatusAndTransfer(route.params.bid, props.object.id, newStatus, props.object.noOfTasks)
-                if (result.ok) {
+                if (result) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 } else {
@@ -67,7 +67,7 @@ const submitDelete = async () => {
                 }
             } else {
                 const result = await statusApi.deleteStatus(route.params.bid, props.object.id)
-                if (result.ok) {
+                if (result) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 } else {
@@ -76,7 +76,7 @@ const submitDelete = async () => {
             }
         } else if (props.mode == 'board') {
             const result = await boardApi.deleteBoard(props.object.id)
-            if (result.ok) {
+            if (result) {
                 boardStore.removeBoard(props.object.id)
                 statusStore.resetStatuses()
                 taskStore.resetTasks()
@@ -95,19 +95,18 @@ const cancelDelete = () => {
 }
 
 onMounted(async () => {
-    console.log('object', props.object)
     if (props.mode == 'status') {
-        isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || props?.object?.bid == 'kanbanbase'
+        isCanEdit.value = props?.object?.bid == 'kanbanbase' || (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
         if (props.object.noOfTasks > 0) {
             isInUsed.value = true
         }
     }
     if (props.mode == 'task') {
-        isCanEdit.value = await authStore.isCollab(props?.object?.bid)
+        isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
     }
     // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     else if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
-    else isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.id))
+    // else isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.id))
 })
 
 watch(newStatusId, (newVal) => {

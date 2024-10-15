@@ -172,9 +172,14 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next()
             }
-        } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit' || to.name === 'CollabView') {
+        } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
+            // const res = (await authStore.isOwner(to.params.bid)) || (await authStore.isCollab(to.params.bid))
+            // const res = await authStore.isOwner(to.params.bid)
             if ((await authStore.isOwner(to.params.bid)) || (await authStore.isCollab(to.params.bid))) next()
             else next({ name: 'accessDenied' })
+        } else if (bStatus === 403) {
+            reset()
+            next({ name: 'accessDenied' })
         } else if (bStatus === 404) {
             reset()
             next({ name: 'notFound' })
@@ -185,9 +190,6 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next()
             }
-        } else if (bStatus === 403) {
-            reset()
-            next({ name: 'accessDenied' })
         } else {
             next()
         }

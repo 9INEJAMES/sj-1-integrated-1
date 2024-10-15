@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRoute } from 'vue-router'
 import CollaboratorModal from '@/components/CollaboratorModal.vue'
 import VButton from '@/ui/VButton.vue'
+import router from '@/router'
 
 const themeStore = useTheme()
 const collabStore = useCollabStore()
@@ -41,13 +42,15 @@ onMounted(async () => {
     <div class="text-center text-3xl font-bold pt-[4vh]">Collaborator Management</div>
     <div class="flex justify-between pt-[2vh] pr-[5vh]">
         <div class="flex">
-            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500">{{ authStore.getAuthData()?.name ?
-                authStore.getAuthData()?.name : '' }}</div>
+            <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500 hover:cursor-pointer hover:text-blue-800" @click="router.back">
+                {{ authStore.getAuthData()?.name ? authStore.getAuthData()?.name : '' }}
+            </div>
             <div class="text-2xl font-bold">> Collaborator</div>
         </div>
         <!-- <button class="btn" :disabled="!isCanEdit" @click="openModal('add')">Add collaborator</button> -->
-        <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add collaborator" @click="openModal('add')" />
-
+        <div :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')" :data-tip="'You need to be board owner to perform this action'">
+            <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add collaborator" @click="openModal('add')" />
+        </div>
     </div>
     <div class="flex justify-between pt-[1vh] pl-[5vh] pr-[5vh]">
         <table class="myTable table-lg table-pin-rows shadow-lg">
@@ -73,28 +76,32 @@ onMounted(async () => {
                             <option>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</option>
                         </select> -->
                         <div class="dropdown">
-                            <button tabindex="0" :disabled="!isCanEdit" role="button" class="btn m-1">{{
-                                collaborator.accessRight }} v</button>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                <li>
-                                    <a>{{ collaborator.accessRight }}</a>
-                                </li>
-                                <li @click="openModal('update', collaborator)">
-                                    <a>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</a>
-                                </li>
-                            </ul>
+                            <div :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')" :data-tip="'You need to be board owner to perform this action'">
+                                <button tabindex="0" :disabled="!isCanEdit" role="button" class="btn m-1">{{ collaborator.accessRight }} v</button>
+                                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+                                    <li>
+                                        <a>{{ collaborator.accessRight }}</a>
+                                    </li>
+                                    <li @click="openModal('update', collaborator)">
+                                        <a>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </td>
                     <td>
-                        <button class="btn" :disabled="authStore.getAuthData().oid !== collaborator.oid && !isCanEdit"
-                            @click="openModal('delete', collaborator)">Remove</button>
+                        <div
+                            :class="(themeStore.getButtonTheme(), authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit ? 'disabled tooltip tooltip-left' : '')"
+                            :data-tip="'You need to be board owner to perform this action'"
+                        >
+                            <button class="btn" :disabled="authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit" @click="openModal('delete', collaborator)">Remove</button>
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator"
-        class="z-[45]" />
+    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator" class="z-[45]" />
 </template>
 
 <style scoped></style>

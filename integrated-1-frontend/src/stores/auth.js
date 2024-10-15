@@ -102,9 +102,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isCollab = async (bid) => {
         let isO = false
         if (isLogin.value) {
-            // const { response, status } = await boardApi.getBoardById(bid)
             const access = await boardApi.getAccess(bid)
-            // const authData = await getAuthData()
             if (access == 'WRITE') isO = true
         }
         return isO
@@ -114,6 +112,9 @@ export const useAuthStore = defineStore('auth', () => {
         let isO = false
         if (isLogin.value) {
             const { response, status } = await boardApi.getBoardById(bid)
+            if (status == '403') {
+                return false
+            }
             const authData = await getAuthData()
             if (authData.oid == response.owner.oid) isO = true
         }
@@ -125,7 +126,7 @@ export const useAuthStore = defineStore('auth', () => {
         return decodeToken(t)?.email
     }
 
-    return { isLogin, getAuthData, isOwner , addToken, getToken, checkToken, isTokenExpired, logout, isCollab, refreshAccessToken, getUserEmail }
+    return { isLogin, getAuthData, isOwner, addToken, getToken, checkToken, isTokenExpired, logout, isCollab, refreshAccessToken, getUserEmail }
 })
 
 if (import.meta.hot) {

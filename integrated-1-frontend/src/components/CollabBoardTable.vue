@@ -47,10 +47,11 @@ const boardSelector = async (bid) => {
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%"></th>
                     <th style="width: 9%">No</th>
-                    <th style="width: 35%">Name</th>
-                    <th style="width: 25%">Owner</th>
-                    <th style="width: 20%">Access Right</th>
-                    <th style="width: 10%">Action</th>
+                    <th style="width: 30%">Name</th>
+                    <th style="width: 20%">Owner</th>
+
+                    <th style="width: 20%" class="text-center">Access Right</th>
+                    <th style="width: 20%" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,16 +64,18 @@ const boardSelector = async (bid) => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title h-[30px] break-all" @click="boardSelector(collabBoard.id)">
+                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title h-[30px] break-all font-semibold" @click="boardSelector(collabBoard.id)">
                         {{ collabBoard.name }}
                     </td>
                     <td>{{ collabBoard.owner.name }}</td>
 
-                    <td>
+                    <td class="font-semibold text-center">
                         {{ collabBoard.accessRight }}
                     </td>
                     <td>
-                        <button class="btn" @click="openModal('leaveBoard', collabBoard)">Leave</button>
+                        <div class="flex justify-center items-center h-full">
+                            <button class="btn text-center" @click="openModal('leaveBoard', collabBoard)">Leave</button>
+                        </div>
                     </td>
                 </tr>
             </tbody>

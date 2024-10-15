@@ -113,8 +113,8 @@ public class BoardControllerV3 {
         }
         Board board = modelMapper.map(input, Board.class);
         board.setOid(oid);
-
         Board newBoard = boardService.createNewBoard(board);
+        statusService.createNewDefaultStatus(board);
         BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(newBoard);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(boardOutputDTO);

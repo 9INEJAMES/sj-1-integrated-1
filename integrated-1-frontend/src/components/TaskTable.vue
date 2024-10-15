@@ -8,6 +8,7 @@ import { useStatusesStore } from '@/stores/status.js'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 
+const authStore = useAuthStore()
 const base = import.meta.env.VITE_BASE
 const themeStore = useTheme()
 const deleteModal = ref(false)
@@ -16,7 +17,7 @@ const selectedTask = ref(null)
 const selectedIndex = ref(null)
 const statusesStore = useStatusesStore()
 const route = useRoute()
-const authStore = useAuthStore()
+const isCanEdit = ref(false)
 
 const getTask = (id) => {
     router.push({
@@ -50,6 +51,7 @@ const handleDeleteModal = () => {
 onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
+    isCanEdit.value = authStore.checkToken() ? (await authStore.isOwner(route.params.bid)) || (await authStore.isCollab(route.params.bid)) : false
 })
 </script>
 
@@ -98,11 +100,18 @@ onMounted(async () => {
                     </td>
                     <td>
                         <div class="flex justify-center items-center h-full">
-                            <div class="itbkk-button-action dropdown dropdown-hover">
-                                <div tabindex="0" role="button" class="">
-                                    <img src="/element/dots.png" class="w-[2vh] h-[2vh]" alt="list img" />
-                                </div>
-                                <ul tabindex="0" class="dropdown-content z-[1] w-fit menu p-2 shadow bg-base-100 rounded-box" :class="themeStore.getAlterTheme()">
+                            <div class="dropdown">
+                                <button
+                                    tabindex="0"
+                                    role="button"
+                                    class="m-1"
+                                    :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')"
+                                    :disabled="!isCanEdit"
+                                    :data-tip="'You need to be board owner to perform this action'"
+                                >
+                                    <img src="/element/dots.png" class="w-[3vh] h-[3vh]" alt="list img" />
+                                </button>
+                                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                     <li>
                                         <p class="itbkk-button-edit" @click="toEditPage(task.id)">Edit</p>
                                     </li>
