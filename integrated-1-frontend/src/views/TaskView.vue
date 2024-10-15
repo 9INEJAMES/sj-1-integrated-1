@@ -31,6 +31,7 @@ const isCanEdit = ref(false)
 const currentBoard = {}
 const boardApi = useBoardApi()
 const isViModal = ref(false)
+const isOwner = ref(false)
 
 const authStore = useAuthStore()
 const chosenTask = async (id) => {
@@ -50,6 +51,7 @@ onMounted(async () => {
 
     // currentBoard.value = await boardStore.findBoard(route.params.bid)
     isCanEdit.value = authStore.checkToken() ? await authStore.isCollab(route.params.bid) : false
+    isOwner.value = authStore.checkToken() ? await authStore.isOwner(route.params.bid) : false
 })
 const changeBoardVisibility = async (isConfirm) => {
     if (isConfirm) {
@@ -92,7 +94,7 @@ const fetchFilter = async (filter) => {
             <VisibleModal v-if="isViModal" :msg="currentBoard.value.isPublic" class="z-[45]"
                 @closeModal="changeBoardVisibility"></VisibleModal>
 
-            <div class="flex items-center" v-if="isCanEdit">
+            <div class="flex items-center" v-if="isOwner">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
                     <input id="theme" type="checkbox" value="synthwave"
