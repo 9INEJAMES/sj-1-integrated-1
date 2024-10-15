@@ -140,10 +140,10 @@ watch(newStatusId, (newVal) => {
                     <button
                         @click="submitDelete"
                         class="itbkk-button-confirm btn btn-success text-white rounded-md p-2"
-                        :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit ? 'disabled' : ''"
-                        :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && object.name == 'No Status') || !isCanEdit"
+                        :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && (object.name == 'No Status' || object.name == 'Done')) || !isCanEdit ? 'disabled' : ''"
+                        :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && (object.name == 'No Status' || object.name == 'Done')) || !isCanEdit"
                     >
-                        {{ mode == 'status' && isInUsed && (object.name !== 'No Status' || object.name !== 'Done') ? 'Transfer' : 'Confirm' }}
+                        {{ mode == 'status' && isInUsed && (object.name !== 'No Status' && object.name !== 'Done') ? 'Transfer' : 'Confirm' }}
                     </button>
                 </div>
             </div>
