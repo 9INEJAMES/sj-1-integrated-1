@@ -2,7 +2,9 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.StatusInputDTO;
 import int221.integrated1backend.entities.in.Board;
+import int221.integrated1backend.entities.in.ExceptStatus;
 import int221.integrated1backend.entities.in.Status;
+import int221.integrated1backend.repositories.in.ExceptStatusRepository;
 import int221.integrated1backend.repositories.in.StatusRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,10 @@ public class StatusService {
     @Autowired
     private StatusRepository repository;
     @Autowired
+    private ExceptStatusRepository exceptStatusRepository;
+    @Autowired
     private ModelMapper modelMapper;
+
 
     public List<Status> getAllStatus() {
         return repository.findAll();
@@ -66,11 +71,20 @@ public class StatusService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
         Status newStatus = modelMapper.map(input, Status.class);
-        if (newStatus.getName() == null)
+        if (newStatus.getName() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "status name must not be null");
-        if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done"))
+        }
+        if (Objects.equals(existStatus.getName().toLowerCase(), "no status") || Objects.equals(existStatus.getName().toLowerCase(), "done")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status name " + existStatus.getName() + " cannot be change");
-
+        }
+//        if (Objects.equals(existStatus.getName().toLowerCase(), "to do") || Objects.equals(existStatus.getName().toLowerCase(), "doing")) {
+//            ExceptStatus exceptStatus = new ExceptStatus();
+//            exceptStatus.setStatusId(id);
+//            exceptStatus.setBoardId(existStatus.getBoard().getId());
+//            exceptStatusRepository.save(exceptStatus);
+//            Status status = createNewStatus(input, existStatus.getBoard());
+//            return repository.save(status);
+//        }
         newStatus.setId(id);
         newStatus.setBoard(existStatus.getBoard());
         isUnique(newStatus);

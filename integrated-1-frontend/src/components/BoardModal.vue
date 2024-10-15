@@ -79,7 +79,7 @@ onMounted(async () => {
         const { response, status } = await boardApi.getBoardById(route.params.bid)
         oldBoard.value = { ...response, isPublic: response.visibility == 'PRIVATE' ? false : true }
         newBoard.value = { ...response, isPublic: response.visibility == 'PRIVATE' ? false : true }
-        isCanEdit.value = await authStore.isOwnerOrCollab(route.params.bid)
+        isCanEdit.value = await authStore.isOwner(route.params.bid)
     }
 })
 

@@ -47,7 +47,7 @@ export const useCollabApi = () => {
         }
     }
 
-    async function deleteCollabBoard(bid, oid) {
+    async function deleteCollabBoard(bid, oid ) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
                 method: 'DELETE',
@@ -81,7 +81,7 @@ export const useCollabApi = () => {
                 toastStore.changeToast(false, 'This user is already a collaborator on this board.')
             } else if (response.status === 403) {
                 toastStore.changeToast(false, 'You do not have permission to add board collaborator.')
-            } else if (response.status === 404) {
+            } else if (response.status === 404 || newCollaborator.email.length > 50) {
                 toastStore.changeToast(false, 'The user does not exists.')
             } else if (response.status === 500) {
                 toastStore.changeToast(false, 'There is a problem. Please try again later.')
@@ -101,7 +101,7 @@ export const useCollabApi = () => {
             })
             if (response.ok) {
                 toastStore.changeToast(true, 'The collaborator has been deleted.')
-                return { success: true, data: await response.json() } // Return success with data
+                return { success: true, data: await response.json() } 
             } else {
                 toastStore.changeToast(false, 'Failed to delete the collaborator.')
                 return { success: false }

@@ -75,7 +75,7 @@ const handleSubmit = async () => {
         if (response && response.ok) {
             collabStore.addCollaborator(await response.json()) // Add it to the store if success
         }
-        if (response.status != 404 && response.status != 409) {
+        if (response.status != 400 && response.status != 404 && response.status != 409) {
             closeModal()
         }
     }
@@ -119,7 +119,7 @@ onMounted(() => {
                     <div class="col-span-4">
                         <label for="title" class="block mb-1 font-medium"> Collaborator e-mail </label>
 
-                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" />
+                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" maxlength="50"/>
                         <p v-if="newCollaborator.email == ownerEmail" class="text-xs pl-1 pt-2 overflow-auto">Board owner cannot be collaborator of his/her own board</p>
                     </div>
                     <div class="col-span-2">

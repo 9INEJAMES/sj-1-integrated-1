@@ -42,11 +42,11 @@ public class CollabService {
     }
 
     public List<Collab> getAllCollabOfBoard(String bId) {
-        return repository.findAllByBoardId(bId);
+        return repository.findAllByBoardIdOrderByCreatedOn(bId);
     }
 
     public List<Collab> getAllCollabBoardByOid(String oid) {
-        return repository.findAllByOwnerId(oid);
+        return repository.findAllByOwnerIdOrderByCreatedOn(oid);
     }
 
     public Collab getCollabOfBoard(String bId, String oId, boolean isThrowError) {

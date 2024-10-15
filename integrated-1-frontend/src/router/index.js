@@ -173,7 +173,7 @@ router.beforeEach(async (to, from, next) => {
             //         next()
             //     }
         } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
-            if (await authStore.isOwnerOrCollab(to.params.bid)) next()
+            if (await authStore.isOwner(to.params.bid) || await authStore.isCollab(to.params.bid) ) next()
             else next({ name: 'accessDenied' })
         } else if (bStatus === 404) {
             reset()

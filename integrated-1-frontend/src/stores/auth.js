@@ -99,7 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
         // isLogin.value = false
     }
 
-    const isOwnerOrCollab = async (bid) => {
+    const isCollab = async (bid) => {
         let isO = false
         if (isLogin.value) {
             // const { response, status } = await boardApi.getBoardById(bid)
@@ -110,12 +110,22 @@ export const useAuthStore = defineStore('auth', () => {
         return isO
     }
 
+    const isOwner = async (bid) => {
+        let isO = false
+        if (isLogin.value) {
+            const { response, status } = await boardApi.getBoardById(bid)
+            const authData = await getAuthData()
+            if (authData.oid == response.owner.oid) isO = true
+        }
+        return isO
+    }
+
     const getUserEmail = () => {
         const t = getToken()
         return decodeToken(t)?.email
     }
 
-    return { isLogin, getAuthData, addToken, getToken, checkToken, isTokenExpired, logout, isOwnerOrCollab, refreshAccessToken, getUserEmail }
+    return { isLogin, getAuthData, isOwner , addToken, getToken, checkToken, isTokenExpired, logout, isCollab, refreshAccessToken, getUserEmail }
 })
 
 if (import.meta.hot) {

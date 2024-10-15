@@ -9,13 +9,13 @@ import java.util.List;
 
 @Repository
 public interface CollabRepository extends JpaRepository<Collab, CollabId> {
-    public List<Collab> findAllByBoardId(String bid);
+    public List<Collab> findAllByBoardIdOrderByCreatedOn(String bid);
 
     public Collab findByBoardIdAndOwnerId(String bid, String oid);
 
     public boolean existsByBoardIdAndOwnerId(String bid, String oid);
 
-    public List<Collab> findAllByOwnerId(String oid);
+    public List<Collab> findAllByOwnerIdOrderByCreatedOn(String oid);
     public void deleteAllByBoardId(String id);
 
 }

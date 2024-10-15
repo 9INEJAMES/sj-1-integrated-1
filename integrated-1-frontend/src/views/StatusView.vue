@@ -46,7 +46,7 @@ onMounted(async () => {
     }
 
     // currentBoard.value = await boardStore.findBoard(route.params.bid)
-    isCanEdit.value = authStore.checkToken() ? await authStore.isOwnerOrCollab(route.params.bid) : false
+    isCanEdit.value = authStore.checkToken() ? await authStore.isCollab(route.params.bid) : false
 })
 const changeBoardVisibility = async (isConfirm) => {
     if (isConfirm) {
@@ -75,8 +75,10 @@ const openVisibilityModal = () => {
 <template>
     <div class="flex justify-between pt-[5vh] pl-[5vh] pr-[5vh]">
         <div class="flex gap-2">
-            <div :class="!isCanEdit ? 'tooltip tooltip-right' : ''" data-tip="You need to be board owner to perform this action">
-                <VButton :disabled="!isCanEdit" @click="isSettingOpen = true" class="itbkk-status-setting" :iconurl="`${base ? base : ''}/settings.png`" />
+            <div :class="!isCanEdit ? 'tooltip tooltip-right' : ''"
+                data-tip="You need to be board owner to perform this action">
+                <VButton :disabled="!isCanEdit" @click="isSettingOpen = true" class="itbkk-status-setting"
+                    :iconurl="`${base ? base : ''}/settings.png`" />
             </div>
             <VButton msg="Manage Task" class="itbkk-button-home" @click="$router.push({ name: 'taskView' })" />
         </div>
@@ -86,26 +88,23 @@ const openVisibilityModal = () => {
             <div class="flex items-center" v-if="isCanEdit">
                 <label class="flex cursor-pointer items-center gap-3 p-2 bg-slate-500 bg-opacity-10 rounded-lg shadow">
                     private
-                    <input
-                        id="theme"
-                        type="checkbox"
-                        value="synthwave"
-                        class="itbkk-board-visibility toggle theme-controller hidden"
-                        @click="openVisibilityModal()"
-                        v-model="currentBoard.value.isPublic"
-                    />
+                    <input id="theme" type="checkbox" value="synthwave"
+                        class="itbkk-board-visibility toggle theme-controller hidden" @click="openVisibilityModal()"
+                        v-model="currentBoard.value.isPublic" />
                     <div class="relative inline-block w-12 h-6 transition duration-200 ease-in bg-gray-300 rounded-full">
                         <span
                             class="absolute left-0 w-6 h-6 transition-transform duration-200 ease-in bg-white rounded-full transform"
-                            :class="{ 'translate-x-full': currentBoard.value.isPublic }"
-                        ></span>
+                            :class="{ 'translate-x-full': currentBoard.value.isPublic }"></span>
                     </div>
                     public
                 </label>
             </div>
-            <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''" data-tip="You need to be board owner to perform this action">
-                <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh] " @click="router.push({ name: 'CollabView' })" />
-                <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status" @click="router.push({ name: 'statusAdd' })" />
+            <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh] "
+                @click="router.push({ name: 'CollabView' })" />
+            <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''"
+                data-tip="You need to be board owner to perform this action">
+                <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Status"
+                    @click="router.push({ name: 'statusAdd' })" />
             </div>
         </div>
     </div>
