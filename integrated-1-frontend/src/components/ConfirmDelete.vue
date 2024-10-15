@@ -8,7 +8,7 @@ import { useStatusApi } from '@/composables/status-api'
 import { useBoardApi } from '@/composables/board-api'
 import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const taskApi = useTaskApi()
 const statusApi = useStatusApi()
@@ -22,6 +22,7 @@ const boardStore = useBoardStore()
 const authStore = useAuthStore()
 const isCanEdit = ref(false)
 const route = useRoute()
+const router = useRouter()
 
 const props = defineProps({
     mode: {
@@ -48,23 +49,29 @@ const submitDelete = async () => {
         // authStore.checkToken()
         if (props.mode == 'task') {
             const result = await taskApi.deleteTask(route.params.bid, props.object.id)
-            if (result) {
+            if (result.ok) {
                 taskStore.removeTask(result.id)
                 emit('closeModal', true)
+            } else {
+                router.push({ name: 'accessDenied' })
             }
         } else if (props.mode == 'status') {
             if (isInUsed.value) {
                 const newStatus = statusStore.findStatusById(newStatusId.value)
                 const result = await statusApi.deleteStatusAndTransfer(route.params.bid, props.object.id, newStatus, props.object.noOfTasks)
-                if (result) {
+                if (result.ok) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
+                } else {
+                    router.push({ name: 'accessDenied' })
                 }
             } else {
                 const result = await statusApi.deleteStatus(route.params.bid, props.object.id)
                 if (result.ok) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
+                } else {
+                    router.push({ name: 'accessDenied' })
                 }
             }
         } else if (props.mode == 'board') {
@@ -74,6 +81,8 @@ const submitDelete = async () => {
                 statusStore.resetStatuses()
                 taskStore.resetTasks()
                 emit('closeModal', true)
+            } else {
+                router.push({ name: 'accessDenied' })
             }
         }
     } catch (error) {
