@@ -24,9 +24,9 @@ onMounted(async () => {
     if (authStore.checkToken) await collabStore.fetchCollabBoards()
 
     // onlyone board
-    if (boardStore.boards.length == 1 && collabStore.collabBoards.length == 0) {
-        router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
-    }
+    // if (boardStore.boards.length == 1 && collabStore.collabBoards.length == 0) {
+    //     router.push({ name: 'taskView', params: { bid: boardStore.boards[0].id } })
+    // }
 })
 </script>
 

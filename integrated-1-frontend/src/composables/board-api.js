@@ -101,7 +101,7 @@ export const useBoardApi = () => {
             })
             if (response.ok) {
                 toastStore.changeToast(true, 'The board has been deleted.')
-                return response.json()
+                return response
             }
         } catch (error) {
             toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
