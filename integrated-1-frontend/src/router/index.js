@@ -148,7 +148,7 @@ router.beforeEach(async (to, from, next) => {
     }
 
     if (!authStore.isLogin) {
-        if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit' || to.name === 'CollabView') {
+        if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
             next({ name: 'accessDenied' })
         } else if (bStatus == 404) {
             reset()
