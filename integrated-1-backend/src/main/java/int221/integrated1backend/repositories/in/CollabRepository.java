@@ -2,6 +2,7 @@ package int221.integrated1backend.repositories.in;
 
 import int221.integrated1backend.entities.in.Collab;
 import int221.integrated1backend.entities.in.CollabId;
+import int221.integrated1backend.entities.in.CollabStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,7 +16,7 @@ public interface CollabRepository extends JpaRepository<Collab, CollabId> {
 
     public boolean existsByBoardIdAndOwnerId(String bid, String oid);
 
-    public List<Collab> findAllByOwnerIdOrderByCreatedOn(String oid);
+    public List<Collab> findAllByOwnerIdAndStatusOrderByCreatedOn(String oid, CollabStatus status);
     public void deleteAllByBoardId(String id);
 
 }

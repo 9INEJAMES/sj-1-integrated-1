@@ -43,7 +43,7 @@ onMounted(async () => {
     <div class="flex justify-between pt-[2vh] pr-[5vh]">
         <div class="flex">
             <div class="pl-[5vh] pr-[1vh] text-2xl font-bold text-blue-500 hover:cursor-pointer hover:text-blue-800" @click="router.back">
-                {{ authStore.getAuthData()?.name ? authStore.getAuthData()?.name : '' }}
+                {{ authStore.getAuthData()?.name ? authStore.getAuthData()?.name : 'GUEST' }}
             </div>
             <div class="text-2xl font-bold">> Collaborator</div>
         </div>
@@ -57,10 +57,11 @@ onMounted(async () => {
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%">No</th>
-                    <th style="width: 35%">Name</th>
-                    <th style="width: 30%">Owner</th>
-                    <th style="width: 20%">Access Right</th>
-                    <th style="width: 14%">Action</th>
+                    <th style="width: 25%">Name</th>
+                    <th style="width: 20%">Email</th>
+                    <th style="width: 20%" class="text-center">Status</th>
+                    <th style="width: 20%" class="text-center">Access Right</th>
+                    <th style="width: 14%" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -70,11 +71,12 @@ onMounted(async () => {
                     </td>
                     <td>{{ collaborator.name }}</td>
                     <td>{{ collaborator.email }}</td>
-                    <td>
-                        <!-- <select name="accessRight" id="accessRight" class="btn">
-                            <option :value="collaborator.accessRight">{{ collaborator.accessRight }}</option>
-                            <option>{{ collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}</option>
-                        </select> -->
+                    <td class="text-center h-full break-all text-black">
+                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-semibold cursor-default" :class="collaborator.status == 'JOINED' ? 'bg-green-400' : 'bg-yellow-300'">
+                            {{ collaborator.status }}
+                        </button>
+                    </td>
+                    <td class="text-center">
                         <div class="dropdown">
                             <div :class="(themeStore.getButtonTheme(), !isCanEdit ? 'disabled tooltip tooltip-left' : '')" :data-tip="'You need to be board owner to perform this action'">
                                 <button tabindex="0" :disabled="!isCanEdit" role="button" class="btn m-1">{{ collaborator.accessRight }} v</button>
@@ -89,12 +91,14 @@ onMounted(async () => {
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <div
                             :class="(themeStore.getButtonTheme(), authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit ? 'disabled tooltip tooltip-left' : '')"
                             :data-tip="'You need to be board owner to perform this action'"
                         >
-                            <button class="btn" :disabled="authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit" @click="openModal('delete', collaborator)">Remove</button>
+                            <button class="btn" :disabled="authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit" @click="openModal('delete', collaborator)">
+                                {{ collaborator.status == 'JOINED' ? 'Remove' : 'Cancel' }}
+                            </button>
                         </div>
                     </td>
                 </tr>

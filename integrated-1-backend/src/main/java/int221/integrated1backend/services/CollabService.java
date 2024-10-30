@@ -7,6 +7,7 @@ import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.AccessRight;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Collab;
+import int221.integrated1backend.entities.in.CollabStatus;
 import int221.integrated1backend.repositories.in.CollabRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class CollabService {
     }
 
     public List<Collab> getAllCollabBoardByOid(String oid) {
-        return repository.findAllByOwnerIdOrderByCreatedOn(oid);
+        return repository.findAllByOwnerIdAndStatusOrderByCreatedOn(oid,CollabStatus.JOINED);
     }
 
     public Collab getCollabOfBoard(String bId, String oId, boolean isThrowError) {
@@ -84,6 +85,7 @@ public class CollabService {
         Collab newCollab = new Collab();
         newCollab.setBoardId(board.getId());
         newCollab.setOwnerId(user.getOid());
+        newCollab.setStatus(CollabStatus.PENDING);
         newCollab.setAccessRight(AccessRight.valueOf(input.getAccessRight()));
         return repository.save(newCollab);
     }

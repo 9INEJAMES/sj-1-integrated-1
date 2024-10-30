@@ -96,17 +96,17 @@ const cancelDelete = () => {
 
 onMounted(async () => {
     if (props.mode == 'status') {
-        isCanEdit.value = props?.object?.bid == 'kanbanbase' || (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
+        isCanEdit.value = props?.object?.bid == 'kanbanbase' || (await authStore.isEditor(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
         if (props.object.noOfTasks > 0) {
             isInUsed.value = true
         }
     }
     if (props.mode == 'task') {
-        isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
+        isCanEdit.value = (await authStore.isEditor(props?.object?.bid)) || (await authStore.isOwner(props?.object?.bid))
     }
     // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
     else if (props.mode == 'board') isCanEdit.value = await authStore.isOwner(props.object.id)
-    // else isCanEdit.value = (await authStore.isCollab(props?.object?.bid)) || (await authStore.isOwner(props?.object?.id))
+    // else isCanEdit.value = (await authStore.isEditor(props?.object?.bid)) || (await authStore.isOwner(props?.object?.id))
 })
 
 watch(newStatusId, (newVal) => {

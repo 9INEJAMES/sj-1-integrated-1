@@ -100,7 +100,7 @@ const handleDeleteModal = (confirmed) => {
                         {{ authStore.getAuthData() ? authStore.getAuthData().name : 'Guest' }}
                     </p>
                     <img
-                        v-show="authStore.isLogin"
+                        v-show="authStore.getLoginStatus()"
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
                         class="itbkk-sign-out w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"

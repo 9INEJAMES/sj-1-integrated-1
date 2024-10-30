@@ -123,7 +123,7 @@ onMounted(async () => {
         }
     }
     checkLimitStatus(oldTask.value.status)
-    isCanEdit.value = await authStore.isCollab(route.params.bid)
+    isCanEdit.value = await authStore.isEditor(route.params.bid)
 })
 const currStatus = ref(0)
 const isNotDefault = ref(false)

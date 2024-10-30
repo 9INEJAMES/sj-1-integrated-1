@@ -136,5 +136,13 @@ export const useCollabApi = () => {
         }
     }
 
-    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator, updateCollaborator }
+    async function getCollaboratorById(bid, oid) {
+        try {
+            return (await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`)).json()
+        } catch (error) {
+            console.error(`Error fetching collaborator: ${error}`)
+        }
+    }
+
+    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator, updateCollaborator, getCollaboratorById }
 }

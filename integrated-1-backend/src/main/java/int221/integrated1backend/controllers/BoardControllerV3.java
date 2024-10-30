@@ -39,6 +39,7 @@ public class BoardControllerV3 {
 
 
     private String getOidFromHeader(String header) {
+        if (header == null) return null;
         String token = header.substring(7);
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
     }
@@ -47,23 +48,23 @@ public class BoardControllerV3 {
         boolean isOwner = Objects.equals(board.getOid(), userOid);
         Collab collab = isOwner ? null : collabService.getCollabOfBoard(board.getId(), userOid, false);
 
-        boolean isCollab = isOwner || collab != null;
+        boolean isCollab = isOwner || (collab != null && collab.getStatus() == CollabStatus.JOINED);
         boolean isWriteAccess = isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE);
         boolean isCanDoOp = Objects.equals(method, "get") || isCollabCanDoOperation;
         if (!Objects.equals(method, "get") && !isWriteAccess && !Objects.equals(board.getId(), "kanbanbase")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board1");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
         if (!isOwner && !isCanDoOp && !Objects.equals(board.getId(), "kanbanbase")) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board2");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
         }
 
         if (visibility == Visibility.PRIVATE) {
             if (!isCollab && !Objects.equals(board.getId(), "kanbanbase")) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board3");
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You don't have permission on this board");
             }
         }
 
-        return isOwner || (collab != null && collab.getAccessRight() == AccessRight.WRITE) ? AccessRight.WRITE : AccessRight.READ;
+        return isOwner || (collab != null && collab.getStatus() == CollabStatus.JOINED && collab.getAccessRight() == AccessRight.WRITE) ? AccessRight.WRITE : AccessRight.READ;
     }
 
     private Board permissionCheck(String authorizationHeader, String bid, String method, Boolean isCollabCanDoOperation) {
@@ -79,7 +80,9 @@ public class BoardControllerV3 {
     @GetMapping("/{id}/access")
     public ResponseEntity<Object> getBoardAccess(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
-        return ResponseEntity.ok(oidCheck(board, getOidFromHeader(authorizationHeader), "get", board.getVisibility(), true));
+        AccessRightDTO output = new AccessRightDTO();
+        output.setAccessRight(String.valueOf(oidCheck(board, getOidFromHeader(authorizationHeader), "get", board.getVisibility(), true)));
+        return ResponseEntity.ok(output);
     }
 
     @GetMapping("")
@@ -90,6 +93,7 @@ public class BoardControllerV3 {
         List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTO(boardList);
         List<CollabBoardOutputDTO> collabBoards = new ArrayList<>();
 
+        /////////////
         List<Collab> collabs = collabService.getAllCollabBoardByOid(userId);
         for (Collab collab : collabs) {
             CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId())), CollabBoardOutputDTO.class);

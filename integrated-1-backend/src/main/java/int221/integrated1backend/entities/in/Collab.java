@@ -27,6 +27,10 @@ public class Collab {
     @Column(name = "access_right", nullable = false)
     private AccessRight accessRight = AccessRight.READ;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private CollabStatus status = CollabStatus.PENDING;
+
 //    @Column(name = "createdOn", nullable = false, updatable = false)
 //    @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;

@@ -26,7 +26,7 @@ const emit = defineEmits(['getStatus'])
 onMounted(async () => {
     if (taskStore.tasks.length === 0) await taskStore.fetchTasks(route.params.bid)
     if (statusesStore.statuses.length === 0) await statusesStore.fetchStatuses(route.params.bid)
-    isCanEdit.value = authStore.checkToken() ? (await authStore.isOwner(route.params.bid)) || (await authStore.isCollab(route.params.bid)) : false
+    isCanEdit.value = authStore.checkToken() ? (await authStore.isOwner(route.params.bid)) || (await authStore.isEditor(route.params.bid)) : false
 })
 const toEditPage = (id) => {
     router.push({

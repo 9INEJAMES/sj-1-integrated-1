@@ -50,7 +50,7 @@ onMounted(async () => {
     }
 
     // currentBoard.value = await boardStore.findBoard(route.params.bid)
-    isCanEdit.value = authStore.checkToken() ? await authStore.isCollab(route.params.bid) : false
+    isCanEdit.value = authStore.checkToken() ? await authStore.isEditor(route.params.bid) : false
     isOwner.value = authStore.checkToken() ? await authStore.isOwner(route.params.bid) : false
 })
 const changeBoardVisibility = async (isConfirm) => {
@@ -111,7 +111,7 @@ const fetchFilter = async (filter) => {
             <VButton @click="isFilterOpen = true" msg="Filter" class="itbkk-status-filter"
                 :iconurl="`${base ? base : ''}/filter.png`" />
             <VButton msg="Manage Collaborator" class="itbkk-button-home mr-[1vh] "
-                @click="router.push({ name: 'CollabView' })" />
+                @click="router.push({ name: 'collabView' })" />
             <div :class="!isCanEdit ? 'tooltip tooltip-left' : ''"
                 data-tip="You need to be board owner to perform this action">
                 <VButton :disabled="!isCanEdit" class="itbkk-button-add" msg="Add Task"

@@ -64,7 +64,7 @@ const boardSelector = async (bid) => {
                             {{ index + 1 }}
                         </div>
                     </td>
-                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title h-[30px] break-all font-semibold" @click="boardSelector(collabBoard.id)">
+                    <td :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'" class="itbkk-title h-[30px] break-all font-semibold cursor-pointer" @click="boardSelector(collabBoard.id)">
                         {{ collabBoard.name }}
                     </td>
                     <td>{{ collabBoard.owner.name }}</td>

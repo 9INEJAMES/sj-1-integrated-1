@@ -15,7 +15,7 @@ import { useTasksStore } from '@/stores/task'
 import { useStatusesStore } from '@/stores/status'
 import PageNotFound from '@/components/PageNotFound.vue'
 import CollabView from '@/views/CollabView.vue'
-import CollaboratorModal from '@/components/CollaboratorModal.vue'
+import CollabInviteView from '@/views/CollabInviteView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +42,8 @@ const router = createRouter({
             path: '/board',
             name: 'boardView',
             component: BoardView,
+            meta: { requireViewer: true },
+
             children: [
                 {
                     path: '/board/:bid',
@@ -54,62 +56,79 @@ const router = createRouter({
                     path: 'add',
                     name: 'boardAdd',
                     component: BoardModal,
+                    meta: { requireOwner: true },
                 },
                 {
                     path: 'delete',
                     name: 'boardDelete',
                     component: BoardModal,
+                    meta: { requireOwner: true },
                 },
                 {
                     path: ':bid/edit',
                     name: 'boardEdit',
                     component: BoardModal,
+                    meta: { requireOwner: true },
                 },
             ],
         },
-        // Nested Status Routes
         {
             path: '/board/:bid/status',
             name: 'statusView',
             component: StatusView,
+            meta: { requireViewer: true },
+
             children: [
                 {
                     path: 'add',
                     name: 'statusAdd',
                     component: StatusModal,
+                    meta: { requireEditor: true },
                 },
                 {
                     path: ':id/edit',
                     name: 'statusEdit',
                     component: StatusModal,
+                    meta: { requireEditor: true },
                 },
             ],
         },
         {
             path: '/board/:bid/collab',
-            name: 'CollabView',
+            name: 'collabView',
             component: CollabView,
+            meta: { requireViewer: true },
         },
-        // Nested Task Routes
+        {
+            path: '/board/:bid/collab/invitations',
+            name: 'collabInviteView',
+            component: CollabInviteView,
+            meta: { requireLogin: true },
+        },
         {
             path: '/board/:bid/task',
             name: 'taskView',
             component: TaskView,
+            meta: { requireViewer: true },
+
             children: [
                 {
                     path: 'add',
                     name: 'taskAdd',
                     component: TaskModal,
+                    meta: { requireEditor: true },
                 },
                 {
                     path: ':taskId',
                     name: 'taskDetails',
                     component: TaskModal,
+                    meta: { requireViewer: true },
                 },
                 {
                     path: ':taskId/edit',
                     name: 'taskEdit',
                     component: TaskModal,
+                    meta: { requireEditor: true },
                 },
             ],
         },
@@ -130,7 +149,6 @@ router.beforeEach(async (to, from, next) => {
     const boardApi = useBoardApi()
     const boardStore = useBoardStore()
     const authStore = useAuthStore()
-    const toastStore = useTasksStore()
     const taskStore = useTasksStore()
     const statusStore = useStatusesStore()
     let board
@@ -141,28 +159,28 @@ router.beforeEach(async (to, from, next) => {
         statusStore.resetStatuses()
         taskStore.resetTasks()
     }
-    if (to.params.bid) {
+    if (to.meta.requireViewer && to.params.bid) {
         const { response, status } = await boardApi.getBoardById(to.params.bid)
         board = response
         bStatus = status
     }
-
-    if (!authStore.isLogin) {
-        if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
+    const isLogin = await authStore.getLoginStatus()
+    if (to.meta.requireOwner) {
+        if (await authStore.isOwner(to.params.bid)) {
+            next()
+        } else {
             next({ name: 'accessDenied' })
-        } else if (bStatus == 404) {
-            reset()
-            next({ name: 'notFound' })
-        } else if ((to.name != 'login' && to.name != 'accessDenied' && to.name != 'notFound' && board?.visibility === 'PRIVATE') || to.name === 'boardView') {
-            reset()
+        }
+    } else if (to.meta.requireEditor || (to.meta.requireViewer && bStatus == 403)) {
+        if ((await authStore.isOwner(to.params.bid)) || (await authStore.isEditor(to.params.bid))) next()
+        else next({ name: 'accessDenied' })
+    } else if (!isLogin) {
+        if (to.meta.requireLogin) {
             next({ name: 'login' })
-        } else if (bStatus === 403) {
-            reset()
-            next({ name: 'accessDenied' })
         } else {
             next()
         }
-    } else {
+    } else if (isLogin) {
         if (to.name === 'login' && !(await authStore.checkToken())) {
             next({ name: 'boardView' })
         } else if ((from.name === 'login' || from.name === 'boardAdd') && to.name === 'boardView') {
@@ -172,17 +190,6 @@ router.beforeEach(async (to, from, next) => {
             } else {
                 next()
             }
-        } else if (to.name === 'taskAdd' || to.name === 'taskEdit' || to.name === 'statusAdd' || to.name === 'statusEdit') {
-            // const res = (await authStore.isOwner(to.params.bid)) || (await authStore.isCollab(to.params.bid))
-            // const res = await authStore.isOwner(to.params.bid)
-            if ((await authStore.isOwner(to.params.bid)) || (await authStore.isCollab(to.params.bid))) next()
-            else next({ name: 'accessDenied' })
-        } else if (bStatus === 403) {
-            reset()
-            next({ name: 'accessDenied' })
-        } else if (bStatus === 404) {
-            reset()
-            next({ name: 'notFound' })
         } else if (await authStore.checkToken()) {
             if (to.name !== 'login') {
                 reset()
@@ -193,6 +200,14 @@ router.beforeEach(async (to, from, next) => {
         } else {
             next()
         }
+    } else if (bStatus == 404) {
+        reset()
+        next({ name: 'notFound' })
+    } else if (bStatus === 403) {
+        reset()
+        next({ name: 'accessDenied' })
+    } else {
+        next()
     }
 })
 export default router

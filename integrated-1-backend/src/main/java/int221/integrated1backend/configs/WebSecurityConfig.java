@@ -1,6 +1,7 @@
 package int221.integrated1backend.configs;
 
 import int221.integrated1backend.Filter.JwtAuthFilter;
+import int221.integrated1backend.exceptions.SimpleAuthenticationEntryPoint;
 import int221.integrated1backend.services.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,9 @@ public class WebSecurityConfig {
                                 .requestMatchers("/v3/boards/*/*/*").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults());
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling.authenticationEntryPoint(new SimpleAuthenticationEntryPoint())
+                );
         httpSecurity.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
