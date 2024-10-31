@@ -76,7 +76,7 @@ public class CollabService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email not found.");
         }
         if (isCollabExist(board.getId(), user.getOid())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This user is already a collaborator on this board.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "This user is already the collaborator or pending collaborator on this board.");
         }
         if (Objects.equals(board.getOid(), user.getOid())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "The board owner cannot be added as a collaborator.");

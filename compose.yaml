@@ -21,10 +21,8 @@ services:
       - database
     environment:
       - DB_HOST=database
-      - DB_PORT=3306
-      - DB_NAME=integrated
-      - DB_USER=dev
-      - DB_PASS=Mysql@sit123
+      - WEB_HOST=https://intproj23.sit.kmutt.ac.th/sj1/
+
 
   frontend:
     build: ./integrated-1-frontend

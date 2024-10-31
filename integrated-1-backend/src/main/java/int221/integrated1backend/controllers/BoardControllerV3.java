@@ -3,9 +3,12 @@ package int221.integrated1backend.controllers;
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.services.*;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +39,20 @@ public class BoardControllerV3 {
     private UserService userService;
     @Autowired
     private CollabService collabService;
+    @Autowired
+    private EmailService emailService;
 
 
     private String getOidFromHeader(String header) {
         if (header == null) return null;
         String token = header.substring(7);
         return jwtTokenUtil.getClaimValueFromToken(token, "oid");
+    }
+
+    private String getNameFromHeader(String header) {
+        if (header == null) return null;
+        String token = header.substring(7);
+        return jwtTokenUtil.getClaimValueFromToken(token, "name");
     }
 
     private AccessRight oidCheck(Board board, String userOid, String method, Visibility visibility, Boolean isCollabCanDoOperation) {
@@ -309,12 +320,14 @@ public class BoardControllerV3 {
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
         return ResponseEntity.ok(collab);
     }
-
     @PostMapping("/{id}/collabs")
-    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) {
+    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException {
         Board board = permissionCheck(authorizationHeader, id, "post", false);
 
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input));
+        String userName = null;
+        if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader);
+//        emailService.sendInviteEmail(input.getEmail(),userName,newCollab.getAccessRight(), board);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }
 
