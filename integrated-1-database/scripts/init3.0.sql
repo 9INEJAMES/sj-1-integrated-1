@@ -241,6 +241,7 @@ DELIMITER ;
 CREATE TABLE collabs (
     boardId VARCHAR(10),
     ownerId VARCHAR(36),
+    status ENUM('PENDING', 'JOINED') DEFAULT 'PENDING',
     access_right ENUM('READ', 'WRITE') DEFAULT 'READ',
     createdOn DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedOn DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -264,6 +265,9 @@ BEGIN
     END IF;
     IF NEW.access_right IS NULL THEN
         SET NEW.access_right = 'READ';
+    END IF; 
+    IF NEW.status IS NULL THEN
+        SET NEW.status = 'PENDING';
     END IF;
     IF NEW.createdOn IS NULL THEN
         SET NEW.createdOn = CURRENT_TIMESTAMP;
@@ -290,6 +294,9 @@ BEGIN
 
     IF NEW.access_right IS NULL THEN
         SET NEW.access_right = OLD.access_right;
+    END IF;
+    IF NEW.status IS NULL THEN
+        SET NEW.status = OLD.status;
     END IF;
 	SET NEW.createdOn = OLD.createdOn;
     IF NEW.updatedOn IS NULL THEN
