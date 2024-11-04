@@ -322,12 +322,12 @@ public class BoardControllerV3 {
     }
     @PostMapping("/{id}/collabs")
     public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException {
-        Board board = permissionCheck(authorizationHeader, id, "post", false);
+        Board board = permissionCheck(authorizationHeader, id,  "post", false);
 
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input));
         String userName = null;
         if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader);
-//        emailService.sendInviteEmail(input.getEmail(),userName,newCollab.getAccessRight(), board);
+        emailService.sendInviteEmail(input.getEmail(),userName,newCollab.getAccessRight(), board);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }
 

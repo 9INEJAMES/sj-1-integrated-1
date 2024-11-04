@@ -42,7 +42,7 @@ const router = createRouter({
             path: '/board',
             name: 'boardView',
             component: BoardView,
-            meta: { requireViewer: true },
+            // meta: { requireViewer: true },
 
             children: [
                 {
@@ -56,7 +56,7 @@ const router = createRouter({
                     path: 'add',
                     name: 'boardAdd',
                     component: BoardModal,
-                    meta: { requireOwner: true },
+                    // meta: { requireOwner: true },
                 },
                 {
                     path: 'delete',

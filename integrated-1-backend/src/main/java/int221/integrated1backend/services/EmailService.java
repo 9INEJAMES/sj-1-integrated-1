@@ -2,6 +2,7 @@ package int221.integrated1backend.services;
 import int221.integrated1backend.entities.in.AccessRight;
 import int221.integrated1backend.entities.in.Board;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class EmailService {
 
         helper.setTo(toEmail);
         helper.setSubject(inviterName + " has invited you to collaborate with " + accessRight + " access on the " + board.getName() + " board");
-        helper.setFrom("noreply@intproj23.sit.kmutt.ac.th");
+        helper.setFrom(new InternetAddress("noreply@intproj23.sit.kmutt.ac.th"));
         helper.setText(htmlMsg, true);  // true indicates HTML content
 
         mailSender.send(mimeMessage);
