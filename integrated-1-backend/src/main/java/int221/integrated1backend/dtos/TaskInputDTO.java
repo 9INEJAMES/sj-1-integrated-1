@@ -1,8 +1,11 @@
 package int221.integrated1backend.dtos;
 
+import int221.integrated1backend.entities.in.Attachment;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class TaskInputDTO {
@@ -15,6 +18,7 @@ public class TaskInputDTO {
     private String assignees;
     private String status;
     private String boardId;
+    private List<Attachment> attachmentList;
 
     public String getStatus() {
         return status == null ? "1" : status;

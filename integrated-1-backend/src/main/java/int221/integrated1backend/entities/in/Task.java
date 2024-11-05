@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 
@@ -49,6 +50,10 @@ public class Task {
     @ManyToOne
     @JoinColumn(name = "boardId")
     private Board board;
+
+    @OneToMany(mappedBy = "task",fetch = FetchType.EAGER)
+    private List<Attachment> attachments;
+
 
 
     private String isStringNull(String string) {

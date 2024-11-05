@@ -2,6 +2,7 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
+import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -10,10 +11,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +46,10 @@ public class BoardControllerV3 {
     private CollabService collabService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private AttachmentRepository attachmentRepository;
 
 
     private String getOidFromHeader(String header) {
@@ -215,13 +224,37 @@ public class BoardControllerV3 {
     }
 
 
-    @PutMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestBody(required = false) TaskInputDTO input) {
+    @PutMapping(path = "/{id}/tasks/{taskId}" )
+    public ResponseEntity<Object> updateTask(
+            @RequestHeader(value = "Authorization") String authorizationHeader,
+            @PathVariable String id,
+            @PathVariable Integer taskId,
+            @Valid @RequestPart(required = false) TaskInputDTO input,
+            @RequestPart(required = false) List<MultipartFile> attachmentFiles) {
+
+        // Check permissions for updating the task within the board
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
+        // Update the task with the provided input
         Task task = taskService.updateTask(taskId, input, id);
+
+        // If attachment files are provided, store each one and create an Attachment entity
+        if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
+            for (MultipartFile attachmentFile : attachmentFiles) {
+                if (!attachmentFile.isEmpty()) {
+                    try {
+                        fileService.storeAttachment(attachmentFile, taskId);
+                    } catch (IOException e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body("Failed to store attachment: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
         boardService.updateฺInBoard(id);
+
         return ResponseEntity.ok(outputDTO);
     }
 
