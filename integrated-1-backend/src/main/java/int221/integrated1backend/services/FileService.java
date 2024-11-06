@@ -17,10 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
@@ -105,5 +102,33 @@ public class FileService {
         }
     }
 
+    public String deleteFile(Integer attachmentId) throws Exception {
+        // Fetch file information from the database
+        Attachment fileEntity =  attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
+
+        Path filePath = Paths.get(fileEntity.getLocation()).toAbsolutePath();
+        Path directoryPath = filePath.getParent();
+
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (Exception e) {
+            throw new Exception("Failed to delete file: " + e.getMessage());
+        }
+
+        // Delete the file entry from the database
+        attachmentRepository.deleteById(attachmentId);
+
+        // Check if the directory is empty, and if so, delete it
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath)) {
+            if (!directoryStream.iterator().hasNext()) {
+                Files.deleteIfExists(directoryPath);
+            }
+        } catch (Exception e) {
+            throw new Exception("Failed to delete directory: " + e.getMessage());
+        }
+
+        return "File and directory deleted successfully.";
+    }
 
 }

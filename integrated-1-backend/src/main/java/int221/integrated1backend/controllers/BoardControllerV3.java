@@ -398,5 +398,16 @@ public class BoardControllerV3 {
         }
     }
 
+    @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
+    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader , @PathVariable String id  ,@PathVariable Integer attachmentId) {
+        Board board = permissionCheck(authorizationHeader, id, "get", true);
+        try {
+            String result = fileService.deleteFile(attachmentId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
 }
 
