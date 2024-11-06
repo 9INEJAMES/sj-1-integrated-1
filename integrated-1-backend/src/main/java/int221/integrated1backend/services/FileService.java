@@ -66,20 +66,17 @@ public class FileService {
         Task task = taskOptional.get();
         String boardName = task.getBoard().getName();
 
-        // Define the board/task directory structure
         Path taskDirectory = rootStorageLocation.resolve( boardName  + taskID);
         if (!Files.exists(taskDirectory)) {
             Files.createDirectories(taskDirectory);
         }
 
-        // Save the file in the task-specific directory
         Path targetLocation = taskDirectory.resolve(originalFileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        // Create and save attachment entity with the file path and metadata
         Attachment attachment = new Attachment();
         attachment.setTask(task);
-        attachment.setLocation(targetLocation.toString());  // Store the complete file path
+        attachment.setLocation(targetLocation.toString());
         attachment.setFileSize((int) file.getSize());
         attachment.setUploadDate(LocalDateTime.now());
 
@@ -91,7 +88,6 @@ public class FileService {
 
 
     public ResponseEntity<Resource> loadFile(Integer attachmentId) throws Exception {
-        // Fetch file information from the database
         Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
 
@@ -100,9 +96,8 @@ public class FileService {
         System.out.println( resource);
 
         if (resource.exists() && resource.isReadable()) {
-            // Return the file as a response entity
             return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)  // Set content type to text/plain
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } else {
