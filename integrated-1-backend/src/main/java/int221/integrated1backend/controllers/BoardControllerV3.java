@@ -4,12 +4,15 @@ import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.services.*;
+import org.springframework.core.io.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
 
 @RestController
 @RequestMapping("/v3/boards")
@@ -384,5 +387,16 @@ public class BoardControllerV3 {
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.deleteCollab(id, collab_oid));
         return ResponseEntity.ok().body(new HashMap<>());
     }
+
+    @GetMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
+    public ResponseEntity<Resource> loadFile( @RequestHeader(value = "Authorization", required = false) String authorizationHeader , @PathVariable String id , @PathVariable Integer attachmentId) {
+        Board board = permissionCheck(authorizationHeader, id, "get", true);
+        try {
+            return fileService.loadFile(attachmentId);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
 

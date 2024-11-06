@@ -5,12 +5,18 @@ import int221.integrated1backend.entities.in.Attachment;
 import int221.integrated1backend.entities.in.Task;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.repositories.in.TaskRepository;
-import lombok.Getter;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,6 +24,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
+
+
 
 @Service
 public class FileService {
@@ -79,5 +87,28 @@ public class FileService {
 
         return "File uploaded successfully to task-specific directory: " + targetLocation.toString();
     }
+
+
+
+    public ResponseEntity<Resource> loadFile(Integer attachmentId) throws Exception {
+        // Fetch file information from the database
+        Attachment attachment = attachmentRepository.findById(attachmentId)
+                .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
+
+        Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
+        Resource resource = new UrlResource(filePath.toUri());
+        System.out.println( resource);
+
+        if (resource.exists() && resource.isReadable()) {
+            // Return the file as a response entity
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)  // Set content type to text/plain
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } else {
+            throw new Exception("File not found or not readable: " + attachment.getLocation());
+        }
+    }
+
 
 }
