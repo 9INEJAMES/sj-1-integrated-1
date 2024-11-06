@@ -50,20 +50,19 @@ public class FileService {
 
     public String storeAttachment(MultipartFile file, Integer taskID) throws IOException {
         String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
-        System.out.println(file.getOriginalFilename());
         if (originalFileName.contains("..")) {
             throw new RuntimeException("Invalid file name: " + originalFileName);
         }
-
 
         Optional<Task> taskOptional = taskRepository.findById(taskID);
         if (taskOptional.isEmpty()) {
             throw new RuntimeException("Task not found with ID: " + taskID);
         }
         Task task = taskOptional.get();
-        String boardName = task.getBoard().getName();
+        String boardId = task.getBoard().getId();
 
-        Path taskDirectory = rootStorageLocation.resolve( boardName  + taskID);
+        // Create nested directory path with boardId and taskID
+        Path taskDirectory = rootStorageLocation.resolve(Paths.get(boardId, taskID.toString()));
         if (!Files.exists(taskDirectory)) {
             Files.createDirectories(taskDirectory);
         }
@@ -71,7 +70,15 @@ public class FileService {
         Path targetLocation = taskDirectory.resolve(originalFileName);
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-        Attachment attachment = new Attachment();
+        // Check if an attachment with the same location already exists for the task
+        Optional<Attachment> existingAttachment = attachmentRepository.findByLocationAndTaskId(targetLocation.toString(), taskID);
+        Attachment attachment;
+        if (existingAttachment.isPresent()) {
+            attachment = existingAttachment.get();
+        } else {
+            attachment = new Attachment();
+        }
+
         attachment.setTask(task);
         attachment.setLocation(targetLocation.toString());
         attachment.setFileSize((int) file.getSize());
@@ -79,8 +86,10 @@ public class FileService {
 
         attachmentRepository.save(attachment);
 
-        return "File uploaded successfully to task-specific directory: " + targetLocation.toString();
+        return "File uploaded successfully to nested task directory: " + targetLocation.toString();
     }
+
+
 
 
 
@@ -103,32 +112,44 @@ public class FileService {
     }
 
     public String deleteFile(Integer attachmentId) throws Exception {
-        // Fetch file information from the database
-        Attachment fileEntity =  attachmentRepository.findById(attachmentId)
+        // Find the attachment by its ID and get its file location
+        Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
 
-        Path filePath = Paths.get(fileEntity.getLocation()).toAbsolutePath();
-        Path directoryPath = filePath.getParent();
+        Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
+        Path taskDirectoryPath = filePath.getParent(); // taskID directory
+        Path boardDirectoryPath = taskDirectoryPath.getParent(); // boardId directory
 
+        // Delete the file itself
         try {
             Files.deleteIfExists(filePath);
         } catch (Exception e) {
             throw new Exception("Failed to delete file: " + e.getMessage());
         }
 
-        // Delete the file entry from the database
+        // Remove the attachment record from the database
         attachmentRepository.deleteById(attachmentId);
 
-        // Check if the directory is empty, and if so, delete it
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directoryPath)) {
-            if (!directoryStream.iterator().hasNext()) {
-                Files.deleteIfExists(directoryPath);
+        // Check if the taskID directory is empty, and delete it if so
+        try (DirectoryStream<Path> taskDirStream = Files.newDirectoryStream(taskDirectoryPath)) {
+            if (!taskDirStream.iterator().hasNext()) {
+                Files.deleteIfExists(taskDirectoryPath);
             }
         } catch (Exception e) {
-            throw new Exception("Failed to delete directory: " + e.getMessage());
+            throw new Exception("Failed to delete task directory: " + e.getMessage());
         }
 
-        return "File and directory deleted successfully.";
+        // Check if the boardId directory is empty, and delete it if so
+        try (DirectoryStream<Path> boardDirStream = Files.newDirectoryStream(boardDirectoryPath)) {
+            if (!boardDirStream.iterator().hasNext()) {
+                Files.deleteIfExists(boardDirectoryPath);
+            }
+        } catch (Exception e) {
+            throw new Exception("Failed to delete board directory: " + e.getMessage());
+        }
+
+        return "File and related directories deleted successfully if empty.";
     }
+
 
 }
