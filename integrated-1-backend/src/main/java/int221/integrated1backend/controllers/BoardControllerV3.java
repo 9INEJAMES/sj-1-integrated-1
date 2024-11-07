@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -219,18 +220,17 @@ public class BoardControllerV3 {
     }
 
 
-    @PutMapping(path = "/{id}/tasks/{taskId}" )
+    @PutMapping(path = "/{id}/tasks/{taskId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> updateTask(
-            @RequestHeader(value = "Authorization") String authorizationHeader,
-            @PathVariable String id,
-            @PathVariable Integer taskId,
-            @Valid @RequestPart(required = false) TaskInputDTO input,
-            @RequestPart(required = false) List<MultipartFile> attachmentFiles) {
-
+        @RequestHeader(value = "Authorization") String authorizationHeader,
+        @PathVariable String id,
+        @PathVariable Integer taskId,
+        @RequestPart("input") TaskInputDTO input,
+        @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles
+    ) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
         Task task = taskService.updateTask(taskId, input, id);
-
 
         if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
             for (MultipartFile attachmentFile : attachmentFiles) {

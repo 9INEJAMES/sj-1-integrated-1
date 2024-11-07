@@ -57,9 +57,14 @@ const isNullStr = (str) => {
 }
 
 const handleFileUpload = async (e) => {
-    const file = e.target.files[0]
-    if (file) {
-        taskStore.uploadFiles.push(file)
+    const files = e.target.files
+    if (files) {
+        // Clear previous files
+        taskStore.uploadFiles = []
+        // Add all selected files
+        for (let i = 0; i < files.length; i++) {
+            taskStore.uploadFiles.push(files[i])
+        }
     }
 }
 

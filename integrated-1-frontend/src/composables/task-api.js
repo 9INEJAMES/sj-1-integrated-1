@@ -99,7 +99,9 @@ export const useTaskApi = () => {
             const formData = new FormData()
             const taskData = { ...task }
             delete taskData.attachments
-            formData.append("input", JSON.stringify(taskData))
+            formData.append("input", new Blob([JSON.stringify(taskData)], {
+                type: 'application/json'
+            }))
 
             if (files && files.length > 0) {
                 files.forEach(file => {
@@ -114,6 +116,12 @@ export const useTaskApi = () => {
                 },
                 body: formData
             })
+
+            if (!response.ok) {
+                console.error('Response status:', response.status)
+                const errorText = await response.text()
+                console.error('Error details:', errorText)
+            }
 
             if (response.status >= 500) {
                 const status = statusesStore.findStatusById(task.status)
