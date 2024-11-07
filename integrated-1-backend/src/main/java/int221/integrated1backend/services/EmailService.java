@@ -19,9 +19,6 @@ public class EmailService {
     @Value("${web.host}")
     private String WEB_HOST;
     public void sendInviteEmail(String toEmail, String inviterName, AccessRight accessRight, Board board) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-
         String link = WEB_HOST+"board/"+board.getId()+"/collab/invitations";
         String htmlMsg = "<p>You have been invited to collaborate on the <strong>" + board.getName() + "</strong> board.</p>"
                 + "<p>Inviter: " + inviterName + "<br>"
@@ -29,11 +26,16 @@ public class EmailService {
                 + "<p>Please click the link below to accept the invitation:</p>"
                 + "<a href=\"" + link + "\">Accept Invitation</a>";
 
-        helper.setTo(toEmail);
-        helper.setSubject(inviterName + " has invited you to collaborate with " + accessRight + " access on the " + board.getName() + " board");
-        helper.setFrom(new InternetAddress("noreply@intproj23.sit.kmutt.ac.th"));
-        helper.setText(htmlMsg, true);  // true indicates HTML content
+        String subject = inviterName + " has invited you to collaborate with " + accessRight + " access on the " + board.getName() + " board";
 
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+        helper.setTo(toEmail);
+        helper.setSubject(subject);
+        helper.setReplyTo("noreply@intproj23.sit.kmutt.ac.th");
+        helper.setFrom("noreply@intproj23.sit.kmutt.ac.th");
+        helper.setText(htmlMsg, true);  // true indicates HTML content
         mailSender.send(mimeMessage);
+
     }
 }
