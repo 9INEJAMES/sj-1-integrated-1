@@ -197,7 +197,8 @@ const checkLimitStatus = (id) => {
                                 class="text-xs pl-3 pt-1 absolute overflow-auto">
                                 The description have a maximum length of 500 characters.
                             </p>
-                            <div v-if="$route.name == 'taskDetails'">
+                            
+                            <div v-if="$route.name == 'taskDetails' || $route.name == 'taskEdit'">
                                 <p :class="themeStore.getTextHeaderTheme()" class=" pt-[2vh]">Attachments</p>
                                 <div v-for="(attachments, attachmentId) in newTask.attachments" :key="attachmentId">
                                     <div class=" flex gap-2 items-center hover:text-pink-500 hover:underline" @click="attachmentApi.downloadFile(route.params.bid,newTask.id, attachments.attachmentId , attachments.location)">
