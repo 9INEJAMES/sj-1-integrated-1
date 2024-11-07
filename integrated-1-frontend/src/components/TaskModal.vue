@@ -56,38 +56,33 @@ const isNullStr = (str) => {
     } else return str
 }
 
-const handleFileUpload = async (e) => {
-    const files = e.target.files
+const handleFileUpload = (e) => {
+    const files = e.target.files;
     if (files) {
-        // Clear previous files
-        taskStore.uploadFiles = []
-        // Add all selected files
-        for (let i = 0; i < files.length; i++) {
-            taskStore.uploadFiles.push(files[i])
-        }
+        taskStore.uploadFiles = Array.from(files); // Convert to array
     }
-}
+};
 
 const submitTask = async (isSave) => {
     if (isSave) {
-        newTask.value.description = isNullStr(newTask.value.description)
-        newTask.value.assignees = isNullStr(newTask.value.assignees)
+        newTask.value.description = isNullStr(newTask.value.description);
+        newTask.value.assignees = isNullStr(newTask.value.assignees);
 
         if (route.params.taskId) {
-            const updated = await taskApi.updateTask(route.params.bid, newTask.value , taskStore.uploadFiles)
+            const updated = await taskApi.updateTask(route.params.bid, newTask.value, taskStore.uploadFiles);
             if (updated) {
                 taskStore.updateTask({
                     ...updated,
-                })
+                });
             }
         } else {
-            const task = await taskApi.addTask(route.params.bid, newTask.value)
-            if (task) taskStore.addTask(task)
+            const task = await taskApi.addTask(route.params.bid, newTask.value);
+            if (task) taskStore.addTask(task);
         }
     }
-    taskStore.uploadFiles = []
-    router.back()
-}
+    taskStore.uploadFiles = [];
+    router.back();
+};
 
 const checkLength = (name, value, length) => {
     if (value.trim().length > length) {

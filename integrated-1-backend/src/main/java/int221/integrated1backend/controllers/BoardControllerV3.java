@@ -219,14 +219,13 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(outputDTO);
     }
 
-
-    @PutMapping(path = "/{id}/tasks/{taskId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(path = "/{id}/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(
-        @RequestHeader(value = "Authorization") String authorizationHeader,
-        @PathVariable String id,
-        @PathVariable Integer taskId,
-        @RequestPart("input") TaskInputDTO input,
-        @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles
+            @RequestHeader(value = "Authorization") String authorizationHeader,
+            @PathVariable String id,
+            @PathVariable Integer taskId,
+            @RequestPart("input") TaskInputDTO input,
+            @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles
     ) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
@@ -236,9 +235,7 @@ public class BoardControllerV3 {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
-                        attachmentFiles.forEach(file -> {
-                            System.out.println("Received file: " + file.getOriginalFilename() + ", size: " + file.getSize());
-                        });
+                        System.out.println("Received file: " + attachmentFile.getOriginalFilename() + ", size: " + attachmentFile.getSize());
                         fileService.storeAttachment(attachmentFile, taskId);
                     } catch (IOException e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -94,55 +94,46 @@ export const useTaskApi = () => {
         }
     }
 
-    async function updateTask(bid, task, files) {
-        try {
-            const formData = new FormData()
-            const taskData = { ...task }
-            delete taskData.attachments
-            formData.append("input", new Blob([JSON.stringify(taskData)], {
-                type: 'application/json'
-            }))
+async function updateTask(bid, task, files) {
+    try {
+        const formData = new FormData()
+        const taskData = { ...task }
+        delete taskData.attachments // Remove any unnecessary fields
 
-            if (files && files.length > 0) {
-                files.forEach(file => {
-                    formData.append("attachmentFiles", file)
-                })
-            }
-
-            const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
-                method: "PUT",
-                headers: {
-                    'Authorization': `Bearer ${authStore.getToken()}`
-                },
-                body: formData
+        // Add JSON payload
+        formData.append(
+            "input",
+            new Blob([JSON.stringify(taskData)], {
+                type: "application/json",
             })
+        )
 
-            if (!response.ok) {
-                console.error('Response status:', response.status)
-                const errorText = await response.text()
-                console.error('Error details:', errorText)
-            }
-
-            if (response.status >= 500) {
-                const status = statusesStore.findStatusById(task.status)
-                toastStore.changeToast(false, `The status ${status.name} will have too many tasks. Please make progress and update the status of existing tasks first.`)
-                return
-            }
-            if (response.status >= 400) {
-                toastStore.changeToast(false, "The update was unsuccessful")
-                return
-            }
-            if (response.ok) {
-                const updatedTask = await response.json()
-                toastStore.changeToast(true, "The task has been updated")
-                return updatedTask
-            }
-        } catch (error) {
-            toastStore.changeToast(false, "The update was unsuccessful")
-            console.error(`Error updating task: ${error}`)
+        // Add files
+        if (files && files.length > 0) {
+            files.forEach((file) => {
+                formData.append("attachmentFiles", file)
+            })
         }
-    }
 
+        const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
+            method: "PUT",
+            body: formData,
+        })
+
+        if (response.ok) {
+            const updatedTask = await response.json()
+            toastStore.changeToast(true, "The task has been updated")
+            return updatedTask
+        } else {
+            const errorText = await response.text()
+            console.error("Error details:", errorText)
+            toastStore.changeToast(false, response.status >= 500 ? "Please make progress and update the status of existing tasks first." : "The update was unsuccessful")
+        }
+    } catch (error) {
+        toastStore.changeToast(false, "The update was unsuccessful")
+        console.error(`Error updating task: ${error}`)
+    }
+}
     async function deleteTask(bid, id) {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${id}`, {
