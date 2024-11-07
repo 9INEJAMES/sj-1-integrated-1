@@ -32,6 +32,7 @@ function declineInvitation() {
 </script>
 
 <template>
+    <div>{{ invite ? 'you have invitation on thi board' : 'you dont have an invitation now' }}</div>
     <div class="min-h-screen flex items-center justify-center bg-pink-100">
         <div class="w-[30rem] bg-white p-10 rounded-lg shadow-lg text-center space-y-6">
             <p class="text-gray-400 text-sm">{{ currentDate }}</p>
