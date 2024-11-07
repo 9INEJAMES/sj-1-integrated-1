@@ -22,7 +22,8 @@ services:
     environment:
       - DB_HOST=database
       - WEB_HOST=https://intproj23.sit.kmutt.ac.th/sj1/
-
+    env_file:
+      - ./integrated-1-backend/.env
 
   frontend:
     build: ./integrated-1-frontend

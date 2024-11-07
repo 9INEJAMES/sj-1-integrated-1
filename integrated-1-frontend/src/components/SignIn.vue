@@ -4,7 +4,9 @@ import { useTheme } from '@/stores/theme.js'
 import { useAuthApi } from '@/composables/auth-api.js'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const themeStore = useTheme()
 const authApi = useAuthApi()
 const authStore = useAuthStore()
@@ -24,6 +26,12 @@ const submitSignIn = async () => {
     try {
         const token = await authApi.signIn(loginField.value)
         if (token) {
+            const redirectTo = route.query.redirectTo
+            if (redirectTo) {
+                router.push(redirectTo)
+                return
+            }
+
             router.push({ name: 'boardView' })
         }
     } catch (error) {
