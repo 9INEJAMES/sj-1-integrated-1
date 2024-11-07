@@ -94,20 +94,24 @@ export const useTaskApi = () => {
         }
     }
 
-    async function updateTask(bid, task, file) {
+    async function updateTask(bid, task, files) {
         try {
             const formData = new FormData()
             const taskData = { ...task }
             delete taskData.attachments
             formData.append("input", JSON.stringify(taskData))
 
-            if (file) {
-                formData.append("attachmentFiles", file)
+            if (files && files.length > 0) {
+                files.forEach(file => {
+                    formData.append("attachmentFiles", file)
+                })
             }
-            console.log(formData)
 
             const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
                 method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${authStore.getToken()}`
+                },
                 body: formData
             })
 
@@ -130,7 +134,6 @@ export const useTaskApi = () => {
             console.error(`Error updating task: ${error}`)
         }
     }
-
 
     async function deleteTask(bid, id) {
         try {

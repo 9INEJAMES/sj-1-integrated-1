@@ -101,7 +101,11 @@ export const useTasksStore = defineStore("tasks", () => {
             if (!task.attachments) {
                 task.attachments = []
             }
-            task.attachments.push(uploadedFile)
+            if (Array.isArray(uploadedFile)) {
+                task.attachments.push(...uploadedFile)
+            } else {
+                task.attachments.push(uploadedFile)
+            }
         }
     }
 

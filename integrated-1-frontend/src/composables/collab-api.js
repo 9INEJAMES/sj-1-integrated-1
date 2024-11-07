@@ -22,7 +22,7 @@ export const useCollabApi = () => {
             headers['Authorization'] = `Bearer ${token}`
         }
 
-        const response = await fetch(`${url}${endpoint}`, {
+        let response = await fetch(`${url}${endpoint}`, {
             ...options,
             headers,
         })
