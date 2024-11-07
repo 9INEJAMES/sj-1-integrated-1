@@ -1,20 +1,19 @@
 import { useToast } from "@/stores/toast"
 import { useAuthStore } from "@/stores/auth.js"
-import router from "@/router"
 import { useRoute } from "vue-router"
+import { useTasksStore } from "@/stores/task"
 
 export const useAttachmentApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
+    const tasksStore = useTasksStore()
+
     const route = useRoute()
-    let filename;
 
     async function fetchWithToken(endpoint, options = {}) {
         await authStore.checkToken()
-
         const token = authStore.getToken()
-
         const headers = {
             "Content-Type": "application/json",
             ...options.headers,
@@ -29,13 +28,21 @@ export const useAttachmentApi = () => {
             headers,
         })
 
-        if (response.status == 401) {
-            authStore.refreshAccessToken()
+        if (response.status === 401) {
+            await authStore.refreshAccessToken()
+            return fetchWithToken(endpoint, options) // Retry with refreshed token
         }
-        return response
+
+        // Check if the response is JSON
+        const contentType = response.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+            return response.json()
+        } else {
+            return response.text() // Return as text if not JSON
+        }
     }
 
-    async function downloadFile(bid, taskId, id , location) {
+    async function downloadFile(bid, taskId, id, location) {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/${id}`)
 
@@ -69,51 +76,29 @@ export const useAttachmentApi = () => {
         }
     }
 
-    async function updateTaskWithAttachments(boardId, taskId, taskData, attachmentFiles) {
-        const url = `https://your-backend-url/v3/boards/${boardId}/tasks/${taskId}`
 
-        // Prepare headers with the authorization token
-        const headers = new Headers()
-        headers.append("Authorization", "Bearer your-token-here")
 
-        // Create a FormData object to handle both JSON and file data
-        const formData = new FormData()
-
-        // Append task data fields (as JSON) if any
-        if (taskData) {
-            formData.append("input", new Blob([JSON.stringify(taskData)], { type: "application/json" }))
-        }
-
-        // Append each attachment file
-        if (attachmentFiles && attachmentFiles.length > 0) {
-            attachmentFiles.forEach((file) => {
-                formData.append("attachmentFiles", file)
-            })
-        }
-
+    const deleteAttachmentFromTask = async (bid, taskId, attachmentId) => {
         try {
-            const response = await fetch(url, {
-                method: "PUT",
-                headers: headers,
-                body: formData,
+            const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/${attachmentId}`, {
+                method: "DELETE",
             })
 
-            if (!response.ok) {
-                throw new Error(`Failed to update task: ${response.statusText}`)
+            if (response.status >= 400) {
+                const errorMessage = typeof response === "string" ? response : "An error occurred, the attachment could not be deleted."
+                toastStore.changeToast(false, errorMessage)
+                return
             }
 
-            const result = await response.json()
-            console.log("Task updated successfully:", result)
-            return result // Return the result or handle it in your frontend
+            if (response.ok) {
+                tasksStore.removeAttachmentFromTask(taskId, attachmentId)
+                toastStore.changeToast(true, "The attachment has been deleted successfully")
+            }
         } catch (error) {
-            console.error("Error updating task:", error)
+            toastStore.changeToast(false, "An error occurred, the attachment could not be deleted.")
+            console.error(`Error deleting attachment: ${error}`)
         }
     }
 
-
-
-
-    
-
-    return { downloadFile, updateTaskWithAttachments }
+    return { downloadFile, deleteAttachmentFromTask }
 }

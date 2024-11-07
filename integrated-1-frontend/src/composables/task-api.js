@@ -94,11 +94,21 @@ export const useTaskApi = () => {
         }
     }
 
-    async function updateTask(bid, task) {
+    async function updateTask(bid, task, file) {
         try {
+            const formData = new FormData()
+            const taskData = { ...task }
+            delete taskData.attachments
+            formData.append("input", JSON.stringify(taskData))
+
+            if (file) {
+                formData.append("attachmentFiles", file)
+            }
+            console.log(formData)
+
             const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
-                method: 'PUT',
-                body: JSON.stringify({ ...task }),
+                method: "PUT",
+                body: formData
             })
 
             if (response.status >= 500) {
@@ -107,19 +117,20 @@ export const useTaskApi = () => {
                 return
             }
             if (response.status >= 400) {
-                toastStore.changeToast(false, 'The update was unsuccessful')
+                toastStore.changeToast(false, "The update was unsuccessful")
                 return
             }
             if (response.ok) {
                 const updatedTask = await response.json()
-                toastStore.changeToast(true, 'The task has been updated')
+                toastStore.changeToast(true, "The task has been updated")
                 return updatedTask
             }
         } catch (error) {
-            toastStore.changeToast(false, 'The update was unsuccessful')
+            toastStore.changeToast(false, "The update was unsuccessful")
             console.error(`Error updating task: ${error}`)
         }
     }
+
 
     async function deleteTask(bid, id) {
         try {

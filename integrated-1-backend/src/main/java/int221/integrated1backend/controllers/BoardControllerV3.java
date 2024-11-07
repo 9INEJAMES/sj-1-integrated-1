@@ -227,17 +227,18 @@ public class BoardControllerV3 {
             @Valid @RequestPart(required = false) TaskInputDTO input,
             @RequestPart(required = false) List<MultipartFile> attachmentFiles) {
 
-        // Check permissions for updating the task within the board
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
-        // Update the task with the provided input
         Task task = taskService.updateTask(taskId, input, id);
 
-        // If attachment files are provided, store each one and create an Attachment entity
+
         if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
+                        attachmentFiles.forEach(file -> {
+                            System.out.println("Received file: " + file.getOriginalFilename() + ", size: " + file.getSize());
+                        });
                         fileService.storeAttachment(attachmentFile, taskId);
                     } catch (IOException e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -33,14 +33,12 @@ const newTask = ref({
     title: '',
     description: '',
     assignees: '',
-    attachments: [],
     status: 1,
 })
 const oldTask = ref({
     title: '',
     description: '',
     assignees: '',
-    attachments: [],
     status: 1,
 })
 watch(
@@ -57,24 +55,35 @@ const isNullStr = (str) => {
         return null
     } else return str
 }
+
+const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (file) {
+        taskStore.uploadFiles.push(file)
+    }
+}
+
 const submitTask = async (isSave) => {
     if (isSave) {
         newTask.value.description = isNullStr(newTask.value.description)
         newTask.value.assignees = isNullStr(newTask.value.assignees)
-        // newTask.value.status = statusStore.findStatusById(newTask.value.status)
+
         if (route.params.taskId) {
-            const updated = await taskApi.updateTask(route.params.bid, newTask.value)
-            if (updated)
+            const updated = await taskApi.updateTask(route.params.bid, newTask.value , taskStore.uploadFiles)
+            if (updated) {
                 taskStore.updateTask({
                     ...updated,
                 })
+            }
         } else {
             const task = await taskApi.addTask(route.params.bid, newTask.value)
             if (task) taskStore.addTask(task)
         }
     }
+    taskStore.uploadFiles = []
     router.back()
 }
+
 const checkLength = (name, value, length) => {
     if (value.trim().length > length) {
         if (name === 'title') newTask.value.title = value.trim().slice(0, length)
@@ -197,14 +206,23 @@ const checkLimitStatus = (id) => {
                                 class="text-xs pl-3 pt-1 absolute overflow-auto">
                                 The description have a maximum length of 500 characters.
                             </p>
-                            
+
                             <div v-if="$route.name == 'taskDetails' || $route.name == 'taskEdit'">
                                 <p :class="themeStore.getTextHeaderTheme()" class=" pt-[2vh]">Attachments</p>
+                                <div v-if="$route.name == 'taskEdit'">
+                                    <input type="file" @change="handleFileUpload" multiple/>
+                                </div>
+
                                 <div v-for="(attachments, attachmentId) in newTask.attachments" :key="attachmentId">
-                                    <div class=" flex gap-2 items-center hover:text-pink-500 hover:underline" @click="attachmentApi.downloadFile(route.params.bid,newTask.id, attachments.attachmentId , attachments.location)">
-                                        <p class=" ">{{ fileName =
-                                        attachments.location.split('/').pop() }}</p>
+                                    <div class=" flex gap-2 items-center hover:text-pink-500 hover:underline">
+                                        <p
+                                            @click="attachmentApi.downloadFile(route.params.bid, newTask.id, attachments.attachmentId, attachments.location)">
+                                            {{ fileName =
+                                            attachments.location.split('/').pop() }}</p>
                                         <img src="/file.png" alt="file" class="w-[15px] h-[15px]">
+                                        <img src="/delete.png" alt="delete" class="w-[15px] h-[15px]"
+                                            @click="attachmentApi.deleteAttachmentFromTask(route.params.bid, newTask.id, attachments.attachmentId)">
+
                                     </div>
                                 </div>
                             </div>
