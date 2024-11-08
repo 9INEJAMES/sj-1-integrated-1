@@ -18,7 +18,6 @@ public class TaskInputDTO {
     private String assignees;
     private String status;
     private String boardId;
-    private List<Attachment> attachmentList;
 
     public String getStatus() {
         return status == null ? "1" : status;

@@ -59,21 +59,23 @@ const isNullStr = (str) => {
 const handleFileUpload = (e) => {
     const files = e.target.files;
     if (files) {
-        taskStore.uploadFiles = Array.from(files); // Convert to array
+        taskStore.uploadFiles.value = files
     }
+
+    console.log(taskStore.uploadFiles)  
 };
 
 const submitTask = async (isSave) => {
     if (isSave) {
-        newTask.value.description = isNullStr(newTask.value.description);
-        newTask.value.assignees = isNullStr(newTask.value.assignees);
+        newTask.value.description = isNullStr(newTask.value.description)
+        newTask.value.assignees = isNullStr(newTask.value.assignees)
 
         if (route.params.taskId) {
-            const updated = await taskApi.updateTask(route.params.bid, newTask.value, taskStore.uploadFiles);
+            const updated = await taskApi.updateTask(route.params.bid, newTask.value, taskStore.uploadFiles.value)
             if (updated) {
                 taskStore.updateTask({
                     ...updated,
-                });
+                })
             }
         } else {
             const task = await taskApi.addTask(route.params.bid, newTask.value);

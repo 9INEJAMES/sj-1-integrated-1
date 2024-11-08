@@ -221,17 +221,57 @@ public class BoardControllerV3 {
         return ResponseEntity.ok(outputDTO);
     }
 
+//    @PutMapping(path = "/{id}/tasks/{taskId}")
+//    public ResponseEntity<Object> updateTask(
+//            @RequestHeader(value = "Authorization") String authorizationHeader,
+//            @PathVariable String id,
+//            @PathVariable Integer taskId,
+//            @RequestParam("input") TaskInputDTO input,
+//            @RequestParam(value = "attachmentFiles", required = false) MultipartFile[] attachmentFiles
+//    ) {
+//        Board board = permissionCheck(authorizationHeader, id, "put", true);
+//
+//        Task task = taskService.updateTask(taskId, input, id);
+//
+//        if (attachmentFiles != null && !(attachmentFiles.length == 0)) {
+//            for (MultipartFile attachmentFile : attachmentFiles) {
+//                if (!attachmentFile.isEmpty()) {
+//                    try {
+//                        System.out.println("Received file: " + attachmentFile.getOriginalFilename() + ", size: " + attachmentFile.getSize());
+//                        fileService.storeAttachment(attachmentFile, taskId);
+//                    } catch (IOException e) {
+//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                                .body("Failed to store attachment: " + e.getMessage());
+//                    }
+//                }
+//            }
+//        }
+//
+//        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
+//        boardService.updateฺInBoard(id);
+//
+//        return ResponseEntity.ok(outputDTO);
+//    }
+
     @PutMapping(path = "/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @RequestPart("input") TaskInputDTO input, @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles) {
+    public ResponseEntity<Object> updateTask(
+            @RequestHeader(value = "Authorization") String authorizationHeader,
+            @PathVariable String id,
+            @PathVariable Integer taskId,
+            @Valid @RequestPart("input") TaskInputDTO input,
+            @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
+
+        // Check permissions for updating the task within the board
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
+        // Update the task with the provided input
         Task task = taskService.updateTask(taskId, input, id);
 
-        if (attachmentFiles != null && !attachmentFiles.isEmpty()) {
+        // If attachment files are provided, store each one and create an Attachment entity
+        if (attachmentFiles != null && !(attachmentFiles.length ==0)) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
-                        System.out.println("Received file: " + attachmentFile.getOriginalFilename() + ", size: " + attachmentFile.getSize());
                         fileService.storeAttachment(attachmentFile, taskId);
                     } catch (IOException e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to store attachment: " + e.getMessage());
@@ -245,6 +285,7 @@ public class BoardControllerV3 {
 
         return ResponseEntity.ok(outputDTO);
     }
+
 
     @DeleteMapping("/{id}/tasks/{taskId}")
     public ResponseEntity<Object> deleteTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId) {
