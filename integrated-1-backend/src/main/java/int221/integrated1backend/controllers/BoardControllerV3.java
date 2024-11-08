@@ -4,20 +4,22 @@ import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.services.*;
-import org.springframework.core.io.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -220,13 +222,7 @@ public class BoardControllerV3 {
     }
 
     @PutMapping(path = "/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(
-            @RequestHeader(value = "Authorization") String authorizationHeader,
-            @PathVariable String id,
-            @PathVariable Integer taskId,
-            @RequestPart("input") TaskInputDTO input,
-            @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles
-    ) {
+    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @RequestPart("input") TaskInputDTO input, @RequestPart(value = "attachmentFiles", required = false) List<MultipartFile> attachmentFiles) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
         Task task = taskService.updateTask(taskId, input, id);
@@ -238,8 +234,7 @@ public class BoardControllerV3 {
                         System.out.println("Received file: " + attachmentFile.getOriginalFilename() + ", size: " + attachmentFile.getSize());
                         fileService.storeAttachment(attachmentFile, taskId);
                     } catch (IOException e) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body("Failed to store attachment: " + e.getMessage());
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to store attachment: " + e.getMessage());
                     }
                 }
             }
@@ -317,9 +312,7 @@ public class BoardControllerV3 {
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
-
-    ////
-
+    
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
     public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "patch", true);
@@ -346,14 +339,15 @@ public class BoardControllerV3 {
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
         return ResponseEntity.ok(collab);
     }
+
     @PostMapping("/{id}/collabs")
     public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException {
-        Board board = permissionCheck(authorizationHeader, id,  "post", false);
+        Board board = permissionCheck(authorizationHeader, id, "post", false);
 
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input));
         String userName = null;
         if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader);
-        emailService.sendInviteEmail(input.getEmail(),userName,newCollab.getAccessRight(), board);
+        emailService.sendInviteEmail(input.getEmail(), userName, newCollab.getAccessRight(), board);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }
 
@@ -379,7 +373,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<Resource> loadFile( @RequestHeader(value = "Authorization", required = false) String authorizationHeader , @PathVariable String id , @PathVariable Integer attachmentId) {
+    public ResponseEntity<Resource> loadFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         try {
             return fileService.loadFile(attachmentId);
@@ -389,7 +383,7 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader , @PathVariable String id  ,@PathVariable Integer attachmentId) {
+    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         try {
             String result = fileService.deleteFile(attachmentId);
