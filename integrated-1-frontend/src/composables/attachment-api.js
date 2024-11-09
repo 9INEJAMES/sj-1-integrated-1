@@ -30,15 +30,14 @@ export const useAttachmentApi = () => {
 
         if (response.status === 401) {
             await authStore.refreshAccessToken()
-            return fetchWithToken(endpoint, options) // Retry with refreshed token
+            return fetchWithToken(endpoint, options)
         }
 
-        // Check if the response is JSON
         const contentType = response.headers.get("content-type")
         if (contentType && contentType.includes("application/json")) {
             return response.json()
         } else {
-            return response.text() // Return as text if not JSON
+            return response
         }
     }
 
@@ -46,37 +45,29 @@ export const useAttachmentApi = () => {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/${id}`)
 
-            if (!response.ok) {
-                throw new Error("File not found")
-            }
+            console.log(response.status)
 
             const contentDisposition = response.headers.get("Content-Disposition")
             const filename = contentDisposition ? contentDisposition.split("filename=")[1].replace(/"/g, "") : `${location.split("/").pop()}`
 
-            // Convert response to a Blob for downloading
             const blob = await response.blob()
             const url = window.URL.createObjectURL(blob)
 
-            // Trigger file download
             const link = document.createElement("a")
             link.href = url
-            link.setAttribute("download", filename) // Set the filename
+            link.setAttribute("download", filename)
             document.body.appendChild(link)
             link.click()
 
-            // Clean up
             document.body.removeChild(link)
             window.URL.revokeObjectURL(url)
 
             return response
         } catch (error) {
-            // Display error message
             toastStore.changeToast(false, "An error has occurred, the attachment does not exist.")
             console.error(`Error fetching attachment by ID: ${error}`)
         }
     }
-
-
 
     const deleteAttachmentFromTask = async (bid, taskId, attachmentId) => {
         try {
