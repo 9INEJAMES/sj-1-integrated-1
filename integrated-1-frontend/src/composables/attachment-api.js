@@ -45,7 +45,9 @@ export const useAttachmentApi = () => {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/${id}`)
 
-            console.log(response.status)
+            if (!response.ok) {
+                throw new Error(`Error fetching attachment, status: ${response.status}`)
+            }
 
             const contentDisposition = response.headers.get("Content-Disposition")
             const filename = contentDisposition ? contentDisposition.split("filename=")[1].replace(/"/g, "") : `${location.split("/").pop()}`
@@ -53,14 +55,34 @@ export const useAttachmentApi = () => {
             const blob = await response.blob()
             const url = window.URL.createObjectURL(blob)
 
-            const link = document.createElement("a")
-            link.href = url
-            link.setAttribute("download", filename)
-            document.body.appendChild(link)
-            link.click()
 
-            document.body.removeChild(link)
-            window.URL.revokeObjectURL(url)
+            const contentType = response.headers.get("Content-Type")
+            const fileExtension = filename.split(".").pop().toLowerCase()
+
+            if (contentType.startsWith("image") || ["png", "jpeg", "jpg", "gif"].includes(fileExtension)) {
+                const imageWindow = window.open("", "_blank")
+                imageWindow.document.write(`<img src="${url}" alt="${filename}" style="max-width: 100%; height: auto;">`)
+
+                const link = document.createElement("a")
+                link.href = url
+                link.setAttribute("download", filename)
+                document.body.appendChild(link)
+                link.click()
+            }
+            else if (contentType === "application/pdf" || fileExtension === "pdf") {
+                const pdfWindow = window.open(url, "_blank")
+                pdfWindow.document.title = filename
+            }
+
+            else {
+                const link = document.createElement("a")
+                link.href = url
+                link.setAttribute("download", filename)
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                window.URL.revokeObjectURL(url)
+            }
 
             return response
         } catch (error) {
@@ -91,5 +113,48 @@ export const useAttachmentApi = () => {
         }
     }
 
-    return { downloadFile, deleteAttachmentFromTask }
+    async function loadFileDisplay(bid, taskId, filename) {
+        try {
+            const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/displays/${filename}`, {
+                headers: {
+                    Accept: "application/octet-stream", // Make sure backend sends arraybuffer
+                },
+            })
+
+            if (response.status >= 400) {
+                toastStore.changeToast(false, "An error has occurred, the attachment does not exist.")
+                return
+            }
+
+            const contentType = response.headers.get("Content-Type")
+            const arrayBuffer = await response.arrayBuffer()
+
+            let binary = ""
+            const bytes = new Uint8Array(arrayBuffer)
+            bytes.forEach((byte) => {
+                binary += String.fromCharCode(byte)
+            })
+            const base64String = window.btoa(binary)
+
+            const base64URL = `data:${contentType};base64,${base64String}`
+            // const fileWindow = window.open(base64URL, "_blank")
+            // if (fileWindow) {
+            //     fileWindow.document.title = filename
+            //     if (contentType.includes("image")) {
+            //         fileWindow.document.body.innerHTML = `<img src="${base64URL}" alt="${filename}" />`
+            //     } else if (contentType.includes("pdf")) {
+            //         fileWindow.document.body.innerHTML = `<embed src="${base64URL}" width="100%" height="100%" type="application/pdf" />`
+            //     } else {
+            //         fileWindow.document.body.innerHTML = `<a href="${base64URL}" download="${filename}">Download ${filename}</a>`
+            //     }
+            // }
+
+            return base64URL
+        } catch (error) {
+            toastStore.changeToast(false, "An error has occurred, the attachment does not exist.")
+            console.error(`Error fetching attachment by filename: ${error}`)
+        }
+    }
+
+    return { downloadFile, deleteAttachmentFromTask, loadFileDisplay }
 }

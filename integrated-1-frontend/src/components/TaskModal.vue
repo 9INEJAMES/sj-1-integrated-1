@@ -62,7 +62,7 @@ const handleFileUpload = (e) => {
         taskStore.uploadFiles.value = files
     }
 
-    console.log(taskStore.uploadFiles)  
+    console.log(taskStore.uploadFiles)
 };
 
 const submitTask = async (isSave) => {
@@ -103,46 +103,46 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    // if (authStore.checkToken() && boardStore.boards.length === 0) await boardStore.fetchBoard()
+    // Load status, limit, etc.
     await statusStore.fetchStatuses(route.params.bid)
     limitTask.value = boardStore.findBoard(route.params.bid)
     statusList.value = statusStore.statuses
+
     if (route.name === 'taskDetails') {
         isDisibled.value = true
     }
-    if (route.name != 'taskAdd') {
+
+    if (route.name !== 'taskAdd') {
         const id = route.params.taskId
         task = await taskApi.getTaskById(route.params.bid, id)
         if (!task) {
             router.push({ name: 'taskView' })
-            // router.back()
         } else {
             newTask.value = {
                 id: task.id,
                 title: task.title,
-                description: task.description == null ? '' : task.description,
-                assignees: task.assignees == null ? '' : task.assignees,
+                description: task.description ?? '',
+                assignees: task.assignees ?? '',
                 status: task.status.id,
                 attachments: task.attachments,
                 createdOn: task.createdOn,
                 updatedOn: task.updatedOn,
             }
-            oldTask.value = {
-                id: task.id,
-                title: task.title,
-                description: task.description == null ? '' : task.description,
-                assignees: task.assignees == null ? '' : task.assignees,
-                status: task.status.id,
-                attachments: task.attachments,
-                createdOn: task.createdOn,
-                updatedOn: task.updatedOn,
-            }
+            oldTask.value = { ...newTask.value }
             switchTimeZone(task)
+
+            // Load file previews for all attachments
+            if (newTask.value.attachments) {
+                for (const attachment of newTask.value.attachments) {
+                    loadFileLocation(attachment.location.split('/').pop())
+                }
+            }
         }
     }
     checkLimitStatus(oldTask.value.status)
     isCanEdit.value = await authStore.isEditor(route.params.bid)
 })
+
 const currStatus = ref(0)
 const isNotDefault = ref(false)
 const checkLimitStatus = (id) => {
@@ -153,6 +153,16 @@ const checkLimitStatus = (id) => {
         isNotDefault.value = newStatus.name != 'No Status' && newStatus.name != 'Done'
     }
 }
+
+const fileUrls = ref({})
+
+const loadFileLocation = async (fileName) => {
+    // Use the task ID and file name to generate unique keys for each file URL
+    fileUrls.value[fileName] = await attachmentApi.loadFileDisplay(route.params.bid, newTask.value.id, fileName)
+};
+
+
+
 </script>
 
 <template>
@@ -212,21 +222,23 @@ const checkLimitStatus = (id) => {
                             <div v-if="$route.name == 'taskDetails' || $route.name == 'taskEdit'">
                                 <p :class="themeStore.getTextHeaderTheme()" class=" pt-[2vh]">Attachments</p>
                                 <div v-if="$route.name == 'taskEdit'">
-                                    <input type="file" @change="handleFileUpload" multiple/>
+                                    <input type="file" @change="handleFileUpload" multiple />
                                 </div>
-
-                                <div v-for="(attachments, attachmentId) in newTask.attachments" :key="attachmentId">
-                                    <div class=" flex gap-2 items-center hover:text-pink-500 hover:underline">
+                                <div v-for="(attachments, attachmentId) in newTask.attachments" :key="attachmentId" class=" overflow-auto ">
+                                    <div class="flex gap-2 items-center hover:text-pink-500 hover:underline">
                                         <p
                                             @click="attachmentApi.downloadFile(route.params.bid, newTask.id, attachments.attachmentId, attachments.location)">
-                                            {{ fileName =
-                                            attachments.location.split('/').pop() }}</p>
-                                        <img src="/file.png" alt="file" class="w-[15px] h-[15px]">
+                                            {{ fileName = attachments.location.split('/').pop() }}
+                                        </p>
+
+                                        <img v-if="fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpg')" :src="fileUrls[fileName]" alt="Attachment preview"
+                                            class="w-[20px] h-[20px]" />
+                                        <img v-else src="/file.png" alt="file" class="w-[15px] h-[15px]" />
                                         <img src="/delete.png" alt="delete" class="w-[15px] h-[15px]"
                                             @click="attachmentApi.deleteAttachmentFromTask(route.params.bid, newTask.id, attachments.attachmentId)">
-
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>

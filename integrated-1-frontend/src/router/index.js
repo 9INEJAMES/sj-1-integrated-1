@@ -34,10 +34,10 @@ const router = createRouter({
             name: 'login',
             component: SignIn,
         },
-        {
-            path: '/:pathMatch(.*)*',
-            redirect: '/login',
-        },
+        // {
+        //     path: '/:pathMatch(.*)*',
+        //     redirect: '/login',
+        // },
         {
             path: '/board',
             name: 'boardView',
