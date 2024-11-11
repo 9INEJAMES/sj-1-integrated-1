@@ -265,14 +265,30 @@ public class BoardControllerV3 {
             @Valid @RequestPart("input") TaskInputDTO input,
             @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
 
-        // Check permissions for updating the task within the board
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
-        // Update the task with the provided input
         Task task = taskService.updateTask(taskId, input, id);
 
-        // If attachment files are provided, store each one and create an Attachment entity
-        if (attachmentFiles != null && !(attachmentFiles.length ==0)) {
+        Long taskFileSize = attachmentRepository.getTotalFileSizeByTaskId(taskId);
+
+
+        final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024;
+        long totalSize = 0;
+
+        if (attachmentFiles != null && attachmentFiles.length > 0) {
+            for (MultipartFile attachmentFile : attachmentFiles) {
+                totalSize += attachmentFile.getSize();
+            }
+
+            // Check if total size exceeds the limit
+            if (taskFileSize > MAX_ATTACHMENT_SIZE){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size in  the 20MB limit.");
+            }
+
+            if (totalSize + taskFileSize > MAX_ATTACHMENT_SIZE) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size exceeds the 20MB limit.");
+            }
+
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
@@ -289,6 +305,7 @@ public class BoardControllerV3 {
 
         return ResponseEntity.ok(outputDTO);
     }
+
 
 
     @DeleteMapping("/{id}/tasks/{taskId}")
