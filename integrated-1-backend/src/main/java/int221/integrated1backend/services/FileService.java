@@ -144,6 +144,35 @@ public class FileService {
         }
 
         return "File and related directories deleted successfully if empty.";
+
+    }
+
+    public Resource loadFileAsResource(Integer taskId, String fileName) {
+        // Find the task by taskId
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found with ID: " + taskId));
+
+        Optional<Attachment> attachmentOpt = task.getAttachments().stream()
+                .filter(attachment -> attachment.getLocation().endsWith(fileName))
+                .findFirst();
+
+        if (attachmentOpt.isPresent()) {
+            Attachment attachment = attachmentOpt.get();
+            Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
+
+            try {
+                Resource resource = new UrlResource(filePath.toUri());
+                if (resource.exists() && resource.isReadable()) {
+                    return resource;
+                } else {
+                    throw new RuntimeException("File not found or not readable: " + fileName);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Could not load file: " + fileName, ex);
+            }
+        } else {
+            throw new RuntimeException("Attachment not found with filename: " + fileName);
+        }
     }
 
 

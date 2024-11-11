@@ -58,7 +58,6 @@ export const useTaskApi = () => {
             if (response.status >= 400) {
                 toastStore.changeToast(false, "The requested task does not exist")
                 router.push({ name: "notFound" })
-                return
             }
             return response.json()
         } catch (error) {

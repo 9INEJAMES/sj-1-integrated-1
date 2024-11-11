@@ -6,10 +6,14 @@ import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.bouncycastle.crypto.signers.ISOTrailers;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.assign.TypeCasting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -421,6 +425,32 @@ public class BoardControllerV3 {
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
+    public ResponseEntity<Resource> loadFileDisplay(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable String id,
+            @PathVariable Integer taskId,
+            @PathVariable String filename) {
+
+        Board board = permissionCheck(authorizationHeader, id, "get", true);
+        Resource fileResource = fileService.loadFileAsResource(taskId, filename);
+        String contentType;
+        if (filename.endsWith(".png")) {
+            contentType = MediaType.IMAGE_PNG_VALUE;
+        } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+            contentType = MediaType.IMAGE_JPEG_VALUE;
+        } else if (filename.endsWith(".pdf")) {
+            contentType = MediaType.APPLICATION_PDF_VALUE;
+        } else {
+            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"")
+                .body(fileResource);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
