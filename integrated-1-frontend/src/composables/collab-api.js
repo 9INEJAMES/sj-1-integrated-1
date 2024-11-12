@@ -47,7 +47,7 @@ export const useCollabApi = () => {
         }
     }
 
-    async function deleteCollabBoard(bid, oid ) {
+    async function deleteCollabBoard(bid, oid) {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
                 method: 'DELETE',
@@ -101,7 +101,7 @@ export const useCollabApi = () => {
             })
             if (response.ok) {
                 toastStore.changeToast(true, 'The collaborator has been deleted.')
-                return { success: true, data: await response.json() } 
+                return { success: true, data: await response.json() }
             } else {
                 toastStore.changeToast(false, 'Failed to delete the collaborator.')
                 return { success: false }
@@ -144,5 +144,21 @@ export const useCollabApi = () => {
         }
     }
 
-    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator, updateCollaborator, getCollaboratorById }
+    async function getCollaboratorInvitation(bid) {
+        try {
+            return (await fetchWithToken(`/v3/boards/${bid}/collabs/invitation`)).json()
+        } catch (error) {
+            console.error(`Error fetching collaborator: ${error}`)
+        }
+    }
+    async function updateCollabStatus(bid, isAccept) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/invitation/${isAccept}`, {
+                method: 'PATCH',
+            })
+        } catch (error) {
+            console.error(`Error fetching collaborator: ${error}`)
+        }
+    }
+    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator, updateCollaborator, getCollaboratorById, getCollaboratorInvitation, updateCollabStatus }
 }

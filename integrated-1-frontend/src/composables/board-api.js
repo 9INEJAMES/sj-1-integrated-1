@@ -113,7 +113,7 @@ export const useBoardApi = () => {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}`)
             if (response.status == 403) {
-                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                // toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
                 return
             }
             if (response.status == 404) {

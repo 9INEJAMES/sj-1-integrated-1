@@ -18,5 +18,6 @@ public interface CollabRepository extends JpaRepository<Collab, CollabId> {
 
     public List<Collab> findAllByOwnerIdAndStatusOrderByCreatedOn(String oid, CollabStatus status);
     public void deleteAllByBoardId(String id);
+    public List<Collab> findAllByBoardIdAndStatusOrderByCreatedOn(String bid,CollabStatus status);
 
 }

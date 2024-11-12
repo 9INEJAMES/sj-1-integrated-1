@@ -12,27 +12,37 @@ const route = useRoute()
 const authStore = useAuthStore()
 const collabStore = useCollabStore()
 const invite = ref({})
+const localTimeZone = ref('')
+const currentDate = ref('')
+
 onMounted(async () => {
-    invite.value = collabApi.getCollaboratorById(route.params.bid, authStore.getAuthData()?.oid)
-})
-const currentDate = new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    invite.value = await collabApi.getCollaboratorInvitation(route.params.bid)
+    switchTimeZone(invite.value)
 })
 
-function acceptInvitation() {
-    alert('Invitation accepted!')
+const switchTimeZone = (coll) => {
+    localTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone
+    currentDate.value = new Date(coll.updatedOn).toLocaleDateString('en-US', {
+        timeZone: localTimeZone.value,
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    })
+}
+console.log(currentDate)
+function acceptInvitation(isAccepted) {
+    // alert(`Invitation ${isAccepted ? '' : ''}!`)
+
+    collabApi.updateCollabStatus(route.params.bid, isAccepted)
 }
 
-function declineInvitation() {
-    alert('Invitation declined!')
-}
+function declineInvitation() {}
 </script>
 
 <template>
-    <div>{{ invite ? 'you have invitation on thi board' : 'you dont have an invitation now' }}</div>
+    {{ invite.status == 'PENDING' ? 'you have invitation on this board' : 'you dont have an invitation now' }}
+    {{ invite }}
     <div class="min-h-screen flex items-center justify-center bg-pink-100">
         <div class="w-[30rem] bg-white p-10 rounded-lg shadow-lg text-center space-y-6">
             <p class="text-gray-400 text-sm">{{ currentDate }}</p>
@@ -40,31 +50,29 @@ function declineInvitation() {
             <h2 class="text-3xl font-bold text-pink-500">Pending invite</h2>
 
             <div class="flex flex-col items-center space-y-2">
-                <div class="h-16 w-16 rounded-full bg-pink-500 flex items-center justify-center text-white text-2xl font-semibold">
-                    {{ inviterInitial }} S
-                </div>
+                <div class="h-16 w-16 rounded-full bg-pink-500 flex items-center justify-center text-white text-2xl font-semibold">{{ invite?.ownerName?.split(' ')[1].slice(0,1) }}</div>
                 <p class="text-xl font-semibold text-gray-800">
-                    <span class="font-semibold">{{ inviterName }}</span> has invited you to collaborate with
-                    <span class="font-semibold">{{ accessRight }}</span> access right on
-                    <span class="text-pink-500 font-semibold">"{{ boardName }}"</span>
+                    <span class="font-semibold text-pink-500">{{ invite.ownerName }}</span> has invited you to collaborate with <span class="font-semibold">{{ invite.accessRight }}</span> access right
+                    on
+                    <span class="text-pink-500 font-semibold">"{{ invite.boardName }}"</span>
                 </p>
-                <p class="text-gray-500 font-semibold">You can accept or decline the invitation.</p>
+                <p class="text-gray-500 font-semibold">You can accept or decline this invitation.</p>
             </div>
-
-            <div class="flex justify-center items-center space-x-1">
-                <div class="flex -space-x-2">
-                    <div class="h-8 w-8 rounded-full bg-pink-500 flex items-center justify-center text-white font-medium">S</div>
-                    <div class="h-8 w-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">M</div>
-                    <div class="h-8 w-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-medium">E</div>
-                    <div class="h-8 w-8 rounded-full bg-red-400 flex items-center justify-center text-white font-medium">A</div>
+            <div v-if="invite.collaborators > 0">
+                <div class="flex justify-center items-center space-x-1">
+                    <div class="flex -space-x-2">
+                        <div class="h-8 w-8 rounded-full bg-pink-500 flex items-center justify-center text-white font-medium">S</div>
+                        <div class="h-8 w-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-medium">M</div>
+                        <div class="h-8 w-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-medium">E</div>
+                        <div class="h-8 w-8 rounded-full bg-red-400 flex items-center justify-center text-white font-medium">A</div>
+                    </div>
+                    <span class="text-gray-500 text-sm">+5</span>
                 </div>
-                <span class="text-gray-500 text-sm">+5</span>
+                <p class="text-gray-500 text-sm">{{ invite.collaborators }} members have already become collaborators on this board.</p>
             </div>
-            <p class="text-gray-500 text-sm">6 members have already become collaborators on this board.</p>
-
             <div class="flex justify-center space-x-4 mt-4">
-                <button class="w-1/3 py-2 rounded-lg border border-gray-300 text-gray-500 font-semibold hover:bg-gray-100" @click="declineInvitation">Decline</button>
-                <button class="w-1/3 py-2 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600" @click="acceptInvitation">Accept invitation</button>
+                <button class="w-1/3 py-2 rounded-lg border border-gray-300 text-gray-500 font-semibold hover:bg-gray-100" @click="acceptInvitation(false)">Decline</button>
+                <button class="w-1/3 py-2 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600" @click="acceptInvitation(true)">Accept invitation</button>
             </div>
         </div>
     </div>

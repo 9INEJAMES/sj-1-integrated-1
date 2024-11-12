@@ -374,7 +374,7 @@ public class BoardControllerV3 {
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok().body(new HashMap<>());
     }
-    
+
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
     public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "patch", true);
@@ -399,6 +399,26 @@ public class BoardControllerV3 {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
+        return ResponseEntity.ok(collab);
+    }
+
+    @GetMapping("/{id}/collabs/invitation")
+    public ResponseEntity<Object> getInvitation(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
+        String oid = getOidFromHeader(authorizationHeader);
+
+        CollabOutputDTOWithOwner collab = modelMapper.map(collabService.mapOutputDTO(collabService.getCollabOfBoard(id, oid, true)), CollabOutputDTOWithOwner.class);
+        Board board = boardService.getBoard(id);
+        collab.setBoardName(board.getName());
+        collab.setOwnerName(userService.findByOid(board.getOid()).getName());
+        collab.setCollaborators(collabService.getNumOfCollab(id));
+        return ResponseEntity.ok(collab);
+    }
+
+    @PatchMapping("/{id}/collabs/invitation/{isAccept}")
+    public ResponseEntity<Object> acceptedInvite(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Boolean isAccept) {
+        String oid = getOidFromHeader(authorizationHeader);
+
+        CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollabStatus(id, oid, isAccept));
         return ResponseEntity.ok(collab);
     }
 

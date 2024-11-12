@@ -50,6 +50,10 @@ public class CollabService {
         return repository.findAllByOwnerIdAndStatusOrderByCreatedOn(oid,CollabStatus.JOINED);
     }
 
+    public Integer getNumOfCollab(String bId){
+        return repository.findAllByBoardIdAndStatusOrderByCreatedOn(bId,CollabStatus.JOINED).size();
+    }
+
     public Collab getCollabOfBoard(String bId, String oId, boolean isThrowError) {
         Collab collab = repository.findByBoardIdAndOwnerId(bId, oId);
         if (isThrowError && collab == null) {
@@ -100,6 +104,17 @@ public class CollabService {
         return repository.save(collab);
     }
 
+    @Transactional("firstTransactionManager")
+    public Collab updateCollabStatus(String boardId, String userId, Boolean isAccept) {
+        Collab collab = getCollabOfBoard(boardId, userId, true);
+        if(isAccept){
+            collab.setStatus(CollabStatus.JOINED);
+            repository.save(collab);
+        }else {
+            deleteCollab(boardId,userId);
+        }
+        return collab;
+    }
     @Transactional("firstTransactionManager")
     public Collab deleteCollab(String boardId, String userId) {
         Collab collab = getCollabOfBoard(boardId, userId, true);
