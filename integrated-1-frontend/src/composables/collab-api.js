@@ -81,7 +81,7 @@ export const useCollabApi = () => {
             if (response.ok) {
                 toastStore.changeToast('success', 'Success', 'The collaborator has been added.')
             } else if (response.status === 409) {
-                toastStore.changeToast('error', 'Error', 'This user is already a collaborator on this board.')
+                toastStore.changeToast('error', 'Error', 'This user is already a collaborator or pending collaborator on this board.')
             } else if (response.status === 403) {
                 toastStore.changeToast('error', 'Error', 'You do not have permission to add board collaborator.')
             } else if (response.status === 404 || newCollaborator.email.length > 50) {

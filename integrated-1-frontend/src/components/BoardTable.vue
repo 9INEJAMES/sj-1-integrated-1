@@ -94,8 +94,8 @@ const handleDeleteModal = (confirmed) => {
                     >
                         {{ board.name }}
                     </td>
-                    <td class="flex justify-center items-center h-full font-semibold text-[2vh] break-all text-black">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-semibold cursor-default" :class="board.visibility == 'PUBLIC' ? 'bg-green-400' : 'bg-red-400'">
+                    <td class="flex justify-center items-center h-full font-semibold break-all text-black">
+                        <button class="rounded-2xl w-[100px] h-[30px] font-semibold cursor-default" :class="board.visibility == 'PUBLIC' ? 'bg-green-400' : 'bg-red-400'">
                             {{ board.visibility }}
                         </button>
                     </td>

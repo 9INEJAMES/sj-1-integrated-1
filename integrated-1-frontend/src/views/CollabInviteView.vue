@@ -46,6 +46,12 @@ const replyInvitation = async (isAccepted) => {
         })
     }
 }
+const goBack = () => {
+    // router.push({
+    //     name: 'boardView',
+    // })
+    router.back()
+}
 </script>
 
 <template>

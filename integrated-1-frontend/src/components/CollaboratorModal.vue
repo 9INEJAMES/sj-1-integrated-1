@@ -105,6 +105,7 @@ onMounted(() => {
             <div class="flex justify-between items-center mb-4">
                 <p v-if="props.action === 'add'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Add Collaborator</p>
                 <p v-if="props.action === 'delete'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Remove Collaborator</p>
+                <p v-if="props.action === 'cancel'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Cancel Pending Invited</p>
                 <p v-if="props.action === 'update'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Change access right</p>
                 <p v-if="props.action === 'leaveBoard'" class="text-2xl font-semibold" :class="themeStore.getTextHeaderTheme()">Leave Board</p>
                 <button class="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100" @click="closeModal">
@@ -119,7 +120,7 @@ onMounted(() => {
                     <div class="col-span-4">
                         <label for="title" class="block mb-1 font-medium"> Collaborator e-mail </label>
 
-                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" maxlength="50"/>
+                        <input type="email" id="title" placeholder="Enter e-mail" v-model="newCollaborator.email" class="w-full p-2 border border-gray-300 rounded-md" maxlength="50" />
                         <p v-if="newCollaborator.email == ownerEmail" class="text-xs pl-1 pt-2 overflow-auto">Board owner cannot be collaborator of his/her own board</p>
                     </div>
                     <div class="col-span-2">
@@ -130,10 +131,11 @@ onMounted(() => {
                         </select>
                     </div>
                 </div>
-                <div v-if="props.action === 'delete'" class="font-medium">Do you want to remove "{{ props.collaborator.name }}" from the board?</div>
+                <div v-if="props.action === 'delete'" class="font-medium">Do you want to remove "{{ props.collaborator.name }}" from the board ?</div>
                 <div v-if="props.action === 'update'" class="font-medium">
                     Do you want to change access right of "{{ props.collaborator.name }}" to "{{ props.collaborator.accessRight === 'WRITE' ? 'READ' : 'WRITE' }}" ?
                 </div>
+                <div v-if="props.action === 'cancel'" class="font-medium">Do you want to cancel invitation to "{{ props.collaborator.name }}" ?</div>
                 <div v-if="props.action === 'leaveBoard'" class="font-medium">Do you want to leave this "{{ props.collabBoard.name }}" board?</div>
             </div>
             <hr class="my-3 border-gray-300 dark:border-gray-600" />
@@ -147,6 +149,7 @@ onMounted(() => {
                     Confirm
                 </button>
                 <button v-if="props.action === 'delete'" @click="deleteCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Delete</button>
+                <button v-if="props.action === 'cancel'" @click="deleteCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'update'" @click="updateCollaborator(props.collaborator.oid, newCollaborator)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'leaveBoard'" @click="deleteCollabBoard(props.collabBoard)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
 

@@ -72,7 +72,7 @@ onMounted(async () => {
                     <td>{{ collaborator.name }}</td>
                     <td>{{ collaborator.email }}</td>
                     <td class="text-center h-full break-all text-black">
-                        <button class="rounded-2xl w-[100px] h-[30px] text-[2vh] font-semibold cursor-default" :class="collaborator.status == 'JOINED' ? 'bg-green-400' : 'bg-yellow-300'">
+                        <button class="rounded-2xl w-[100px] h-[30px] font-semibold cursor-default" :class="collaborator.status == 'JOINED' ? 'bg-green-400' : 'bg-yellow-300'">
                             {{ collaborator.status }}
                         </button>
                     </td>
@@ -96,7 +96,11 @@ onMounted(async () => {
                             :class="(themeStore.getButtonTheme(), authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit ? 'disabled tooltip tooltip-left' : '')"
                             :data-tip="'You need to be board owner to perform this action'"
                         >
-                            <button class="btn" :disabled="authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit" @click="openModal('delete', collaborator)">
+                            <button
+                                class="btn"
+                                :disabled="authStore.getAuthData()?.oid !== collaborator?.oid && !isCanEdit"
+                                @click="openModal(collaborator.status == 'JOINED' ? 'delete' : 'cancel', collaborator)"
+                            >
                                 {{ collaborator.status == 'JOINED' ? 'Remove' : 'Cancel' }}
                             </button>
                         </div>

@@ -75,9 +75,9 @@ const goBoardInvite = (bid) => {
                     <td
                         :class="themeStore.isLight ? 'hover:text-pink-300' : 'hover:text-cyan-500'"
                         class="itbkk-title h-[30px] break-all font-semibold cursor-pointer"
-                        @click="boardSelector(collabBoard.id)"
+                        @click="collabBoard.status == 'PENDING' ? goBoardInvite(collabBoard.id) : boardSelector(collabBoard.id)"
                     >
-                        {{ collabBoard.name }}
+                        {{ collabBoard.name }}{{ collabBoard.status == 'PENDING' ? ' (Pending Invite)' : '' }}
                     </td>
                     <td>{{ collabBoard.owner.name }}</td>
 
