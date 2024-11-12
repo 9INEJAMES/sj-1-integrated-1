@@ -78,6 +78,7 @@ const submitTask = async (isSave) => {
                     ...updated,
                 })
             }
+            console.log( 'new Task: '+ newTask.value.attachments)
         } else {
             const task = await taskApi.addTask(route.params.bid, newTask.value)
             if (task) taskStore.addTask(task)
@@ -104,7 +105,6 @@ const switchTimeZone = (task) => {
     })
 }
 onMounted(async () => {
-    // Load status, limit, etc.
     await statusStore.fetchStatuses(route.params.bid)
     limitTask.value = boardStore.findBoard(route.params.bid)
     statusList.value = statusStore.statuses
@@ -133,7 +133,6 @@ onMounted(async () => {
             oldTask.value = { ...newTask.value }
             switchTimeZone(task)
 
-            // Load file previews for all attachments
             if (newTask.value.attachments) {
                 for (const attachment of newTask.value.attachments) {
                     loadFileLocation(attachment.location.split('/').pop())
@@ -149,7 +148,6 @@ const currStatus = ref(0)
 const isNotDefault = ref(false)
 const checkLimitStatus = (id) => {
     currStatus.value = taskStore.tasks.filter((t) => t.status.id == newTask.value.status).length
-
     if (id) {
         const newStatus = statusStore.findStatusById(id)
         isNotDefault.value = newStatus.name != 'No Status' && newStatus.name != 'Done'
@@ -159,8 +157,14 @@ const checkLimitStatus = (id) => {
 const fileUrls = ref({})
 
 const loadFileLocation = async (fileName) => {
-    // Use the task ID and file name to generate unique keys for each file URL
     fileUrls.value[fileName] = await attachmentApi.loadFileDisplay(route.params.bid, newTask.value.id, fileName)
+}
+
+const removeAttachmentFromTask = ( attachments ) =>{
+        taskStore.deleteFiles.push(attachments)
+        console.log(taskStore.deleteFiles)
+        newTask.value.attachments = newTask.value.attachments.filter((attachment) => attachment.attachmentId !== attachments.attachmentId)
+
 }
 </script>
 
@@ -259,7 +263,7 @@ const loadFileLocation = async (fileName) => {
                                             src="/delete.png"
                                             alt="delete"
                                             class="w-[15px] h-[15px]"
-                                            @click="attachmentApi.deleteAttachmentFromTask(route.params.bid, newTask.id, attachments.attachmentId)"
+                                            @click="removeAttachmentFromTask( attachments)"
                                         />
                                     </div>
                                 </div>

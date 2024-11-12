@@ -24,6 +24,8 @@ services:
       - WEB_HOST=https://intproj23.sit.kmutt.ac.th/sj1/
     env_file:
       - ./integrated-1-backend/.env
+    volumes:
+      - /home/sysadmin/deploy/integrated-1-backend/public/testfile:/uploads/testfile
 
   frontend:
     build: ./integrated-1-frontend

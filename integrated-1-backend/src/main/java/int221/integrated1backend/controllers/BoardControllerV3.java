@@ -3,6 +3,7 @@ package int221.integrated1backend.controllers;
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
+import int221.integrated1backend.repositories.in.TaskRepository;
 import int221.integrated1backend.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -21,7 +22,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -32,6 +35,8 @@ public class BoardControllerV3 {
     private BoardService boardService;
     @Autowired
     private TaskService taskService;
+    @Autowired
+    private TaskRepository taskRepository;
     @Autowired
     private StatusService statusService;
     @Autowired
@@ -262,29 +267,47 @@ public class BoardControllerV3 {
             @PathVariable String id,
             @PathVariable Integer taskId,
             @Valid @RequestPart("input") TaskInputDTO input,
-            @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
-
+            @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles
+    ) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
         Task task = taskService.updateTask(taskId, input, id);
-        long taskFileSize = Optional.ofNullable(attachmentRepository.getTotalFileSizeByTaskId(taskId)).orElse(0L);
 
+        // Retrieve current attachments
+        List<Attachment> currentAttachments = task.getAttachments();
+
+        // Calculate the total size of existing attachments
+        long taskFileSize = Optional.ofNullable(attachmentRepository.getTotalFileSizeByTaskId(taskId)).orElse(0L);
         final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024;
         long totalSize = 0;
 
-        if (attachmentFiles != null && attachmentFiles.length > 0) {
+        // Identify attachments in the request
+        List<String> requestAttachmentLocations = new ArrayList<>();
+        if (attachmentFiles != null) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 totalSize += attachmentFile.getSize();
+                if (attachmentFile.getOriginalFilename() != null) {
+                    requestAttachmentLocations.add(attachmentFile.getOriginalFilename());
+                }
             }
+        }
 
-            // Check if total size exceeds the limit
-            if (taskFileSize > MAX_ATTACHMENT_SIZE){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size in  the 20MB limit.");
+        if (taskFileSize + totalSize > MAX_ATTACHMENT_SIZE) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size exceeds the 20MB limit.");
+        }
+
+        // Delete attachments not present in the request
+        for (Attachment currentAttachment : currentAttachments) {
+            String fileName = Paths.get(currentAttachment.getLocation()).getFileName().toString();
+            if (!requestAttachmentLocations.contains(fileName)) {
+                try {
+                    fileService.deleteFile(currentAttachment.getAttachmentId());
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete unused attachment: " + e.getMessage());
+                }
             }
+        }
 
-            if (totalSize + taskFileSize > MAX_ATTACHMENT_SIZE) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size exceeds the 20MB limit.");
-            }
-
+        if (attachmentFiles != null) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
@@ -301,6 +324,8 @@ public class BoardControllerV3 {
 
         return ResponseEntity.ok(outputDTO);
     }
+
+
 
 
 

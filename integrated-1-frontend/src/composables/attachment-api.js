@@ -1,11 +1,9 @@
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
-import { useTasksStore } from '@/stores/task'
 export const useAttachmentApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
-    const tasksStore = useTasksStore()
 
     async function fetchWithToken(endpoint, options = {}) {
         await authStore.checkToken()
@@ -98,7 +96,6 @@ export const useAttachmentApi = () => {
             }
 
             if (response.ok) {
-                tasksStore.removeAttachmentFromTask(taskId, attachmentId)
                 toastStore.changeToast('success', 'Success', 'The attachment has been deleted successfully')
             }
         } catch (error) {
