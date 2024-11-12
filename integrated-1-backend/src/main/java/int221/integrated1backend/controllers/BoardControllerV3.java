@@ -21,10 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @RestController
@@ -121,6 +118,7 @@ public class BoardControllerV3 {
         for (Collab collab : collabs) {
             CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId())), CollabBoardOutputDTO.class);
             collabOutputDTO.setAccessRight(collab.getAccessRight());
+            collabOutputDTO.setStatus(collab.getStatus());
             collabBoards.add(collabOutputDTO);
         }
 
@@ -268,7 +266,7 @@ public class BoardControllerV3 {
 
         Board board = permissionCheck(authorizationHeader, id, "put", true);
         Task task = taskService.updateTask(taskId, input, id);
-        Long taskFileSize = attachmentRepository.getTotalFileSizeByTaskId(taskId);
+        long taskFileSize = Optional.ofNullable(attachmentRepository.getTotalFileSizeByTaskId(taskId)).orElse(0L);
 
         final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024;
         long totalSize = 0;
@@ -307,8 +305,9 @@ public class BoardControllerV3 {
 
 
     @DeleteMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> deleteTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId) {
+    public ResponseEntity<Object> deleteTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId) throws Exception {
         Board board = permissionCheck(authorizationHeader, id, "delete", true);
+        fileService.removeAllFileOfTask(taskService.findByID(taskId));
         TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId, id);
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(taskWithIdDTO);

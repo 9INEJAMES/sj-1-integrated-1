@@ -2,10 +2,12 @@ import { useStatusesStore } from '@/stores/status.js'
 import { useToast } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth.js'
 import { useRoute, useRouter } from 'vue-router'
+import { useTasksStore } from '@/stores/task'
 
 export const useTaskApi = () => {
     const toastStore = useToast()
     const statusesStore = useStatusesStore()
+    const tasksStore = useTasksStore()
     const authStore = useAuthStore()
     const url = import.meta.env.VITE_BASE_URL
     const route = useRoute()
@@ -31,9 +33,13 @@ export const useTaskApi = () => {
         })
         await toastStore.resetToast()
 
+        if (!response.ok) {
+            tasksStore.fetchTasks(route.params.bid)
+        }
         if (response.status == 401) {
             authStore.refreshAccessToken()
         }
+        
         return response
     }
 

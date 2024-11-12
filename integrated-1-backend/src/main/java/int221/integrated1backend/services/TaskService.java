@@ -106,7 +106,6 @@ public class TaskService {
 
     @Transactional("firstTransactionManager")
     public void removeAllTaskOfBoard(String bid) {
-        List<Task> tasks = getAllTaskOfBoard(bid);
         repository.deleteAllByBoardId(bid);
     }
 

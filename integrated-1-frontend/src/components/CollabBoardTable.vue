@@ -38,6 +38,14 @@ const boardSelector = async (bid) => {
         },
     })
 }
+const goBoardInvite = (bid) => {
+    router.push({
+        name: 'collabInviteView',
+        params: {
+            bid: bid,
+        },
+    })
+}
 </script>
 
 <template>
@@ -78,7 +86,8 @@ const boardSelector = async (bid) => {
                     </td>
                     <td>
                         <div class="flex justify-center items-center h-full">
-                            <button class="btn text-center" @click="openModal('leaveBoard', collabBoard)">Leave</button>
+                            <button v-if="collabBoard.status == 'PENDING'" class="btn text-center" @click="goBoardInvite(collabBoard.id)">Accept/Decline</button>
+                            <button v-else class="btn text-center" @click="openModal('leaveBoard', collabBoard)">Leave</button>
                         </div>
                     </td>
                 </tr>

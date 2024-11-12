@@ -5,23 +5,22 @@ import int221.integrated1backend.entities.in.Attachment;
 import int221.integrated1backend.entities.in.Task;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.repositories.in.TaskRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
 
 
 @Service
@@ -47,7 +46,7 @@ public class FileService {
             throw new RuntimeException("Could not create the root directory for uploaded files", ex);
         }
     }
-
+    @Transactional("firstTransactionManager")
     public String storeAttachment(MultipartFile file, Integer taskID) throws IOException {
         String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
         if (originalFileName.contains("..")) {
@@ -86,18 +85,14 @@ public class FileService {
 
         return "File uploaded successfully to nested task directory: " + targetLocation.toString();
     }
-
-
-
-
-
+    @Transactional("firstTransactionManager")
     public ResponseEntity<Resource> loadFile(Integer attachmentId) throws Exception {
         Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
 
         Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
         Resource resource = new UrlResource(filePath.toUri());
-        System.out.println( resource);
+        System.out.println(resource);
 
         if (resource.exists() && resource.isReadable()) {
             return ResponseEntity.ok()
@@ -108,7 +103,7 @@ public class FileService {
             throw new Exception("File not found or not readable: " + attachment.getLocation());
         }
     }
-
+    @Transactional("firstTransactionManager")
     public String deleteFile(Integer attachmentId) throws Exception {
         Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new Exception("File not found with ID: " + attachmentId));
@@ -146,7 +141,7 @@ public class FileService {
         return "File and related directories deleted successfully if empty.";
 
     }
-
+    @Transactional("firstTransactionManager")
     public Resource loadFileAsResource(Integer taskId, String fileName) {
         // Find the task by taskId
         Task task = taskRepository.findById(taskId)
@@ -174,6 +169,12 @@ public class FileService {
             throw new RuntimeException("Attachment not found with filename: " + fileName);
         }
     }
-
+    @Transactional("firstTransactionManager")
+    public void removeAllFileOfTask(Task task) throws Exception {
+        List<Attachment> attachments = attachmentRepository.findAllByTask(task);
+        for (Attachment attachment : attachments) {
+            deleteFile(attachment.getAttachmentId());
+        }
+    }
 
 }

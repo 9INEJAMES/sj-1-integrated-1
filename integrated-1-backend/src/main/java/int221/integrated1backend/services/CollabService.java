@@ -47,7 +47,7 @@ public class CollabService {
     }
 
     public List<Collab> getAllCollabBoardByOid(String oid) {
-        return repository.findAllByOwnerIdAndStatusOrderByCreatedOn(oid,CollabStatus.JOINED);
+        return repository.findAllByOwnerIdOrderByCreatedOn(oid);
     }
 
     public Integer getNumOfCollab(String bId){
