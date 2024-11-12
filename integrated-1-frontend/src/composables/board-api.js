@@ -21,11 +21,12 @@ export const useBoardApi = () => {
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
         }
-
+        toastStore.displayLoading()
         const response = await fetch(`${url}${endpoint}`, {
             ...options,
             headers,
         })
+        await toastStore.resetToast()
 
         if (response.status == 401) {
             authStore.refreshAccessToken()
@@ -49,11 +50,11 @@ export const useBoardApi = () => {
                 body: JSON.stringify({ ...board }),
             })
             if (response.ok) {
-                toastStore.changeToast(true, 'The board has been created.')
+                toastStore.changeToast('success', 'Success', 'The board has been created.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the board could not be created.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the board could not be created.')
             console.error(`Error adding board: ${error}`)
         }
     }
@@ -65,11 +66,11 @@ export const useBoardApi = () => {
                 body: JSON.stringify({ ...board }),
             })
             if (response.ok) {
-                toastStore.changeToast(true, 'The board has been updated.')
+                toastStore.changeToast('success', 'Success', 'The board has been updated.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the board could not be updated.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the board could not be updated.')
             console.error(`Error updating board: ${error}`)
         }
     }
@@ -81,15 +82,15 @@ export const useBoardApi = () => {
             })
 
             if (response.ok) {
-                toastStore.changeToast(true, 'The board visibility has been change to ' + board.visibility.toLowerCase() + '.')
+                toastStore.changeToast('success', 'Success', 'The board visibility has been change to ' + board.visibility.toLowerCase() + '.')
                 return response.json()
             } else if (response.status == 403) {
-                toastStore.changeToast(false, 'You do not have permission to change board visibility mode')
+                toastStore.changeToast('error', 'Error', 'You do not have permission to change board visibility mode')
             } else {
-                toastStore.changeToast(false, 'There is a problem, Please try again later.')
+                toastStore.changeToast('error', 'Error', 'There is a problem, Please try again later.')
             }
         } catch (error) {
-            toastStore.changeToast(false, 'There is a problem, Please try again later.')
+            toastStore.changeToast('error', 'Error', 'There is a problem, Please try again later.')
             console.error(`Error updating board: ${error}`)
         }
     }
@@ -100,11 +101,11 @@ export const useBoardApi = () => {
                 method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, 'The board has been deleted.')
+                toastStore.changeToast('success', 'Success', 'The board has been deleted.')
                 return response
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the board could not be deleted.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the board could not be deleted.')
             console.error(`Error deleting board: ${error}`)
         }
     }
@@ -113,11 +114,11 @@ export const useBoardApi = () => {
         try {
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}`)
             if (response.status == 403) {
-                // toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                // toastStore.changeToast("error", 'Accsess denied, you do not have permission to view this page')
                 return
             }
             if (response.status == 404) {
-                toastStore.changeToast(false, 'An error has occurred, page not found')
+                toastStore.changeToast('error', 'Error', 'An error has occurred, page not found')
                 return response.status
             }
             if (response.ok) return response.json()
@@ -130,10 +131,10 @@ export const useBoardApi = () => {
             const response = await fetchWithToken(`/v3/boards/${bid}`)
             // if (response.ok) return response.json()
             if (response.status == 403) {
-                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                toastStore.changeToast('error', 'Error', 'Accsess denied, you do not have permission to view this page')
             }
             if (response.status == 404) {
-                toastStore.changeToast(false, 'An error has occurred, page not found')
+                toastStore.changeToast('error', 'Error', 'An error has occurred, page not found')
                 router.push({ name: 'login' })
             }
             const status = response.status
@@ -151,19 +152,19 @@ export const useBoardApi = () => {
             })
 
             if (response.status >= 400) {
-                toastStore.changeToast(false, 'The update was unsuccessful')
+                toastStore.changeToast('error', 'Error', 'The update was unsuccessful')
                 return
             }
 
             if (board.limit) {
-                toastStore.changeToast(true, `The Kanban board now limits ${board.limitMaximumTask} tasks in each status`)
+                toastStore.changeToast('success', 'Success', `The Kanban board now limits ${board.limitMaximumTask} tasks in each status`)
             } else {
-                toastStore.changeToast(true, `The Kanban board has disabled the task limit in each status`)
+                toastStore.changeToast('success', 'Success', `The Kanban board has disabled the task limit in each status`)
             }
 
             return response.json()
         } catch (error) {
-            toastStore.changeToast(false, 'The update was unsuccessful')
+            toastStore.changeToast('error', 'Error', 'The update was unsuccessful')
             console.error(`Error updating limit: ${error}`)
         }
     }
@@ -171,10 +172,10 @@ export const useBoardApi = () => {
         try {
             const response = await fetchWithToken(`/v3/boards/${bid}/access`)
             if (response.status == 403) {
-                toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+                toastStore.changeToast('error', 'Error', 'Accsess denied, you do not have permission to view this page')
             }
             if (response.status == 404) {
-                toastStore.changeToast(false, 'An error has occurred, page not found')
+                toastStore.changeToast('error', 'Error', 'An error has occurred, page not found')
             }
             return response.json()
         } catch (error) {

@@ -53,7 +53,7 @@ onMounted(async () => {
         </div>
     </div>
     <div class="flex justify-between pt-[1vh] pl-[5vh] pr-[5vh]">
-        <table class="myTable table-lg table-pin-rows shadow-lg">
+        <table class="myTable table-lg shadow-lg">
             <thead class="w-full">
                 <tr class="text-lg" :class="themeStore.getTableTheme()">
                     <th style="width: 1%">No</th>
@@ -105,7 +105,7 @@ onMounted(async () => {
             </tbody>
         </table>
     </div>
-    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator" class="z-[45]" />
+    <CollaboratorModal v-if="showModal" @close="closeCollabModal" :action="modalAction" :collaborator="selectedCollaborator" class="z-45" />
 </template>
 
 <style scoped></style>

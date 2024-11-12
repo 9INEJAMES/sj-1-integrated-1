@@ -6,13 +6,14 @@ import { useRoute } from 'vue-router'
 
 export const useToast = defineStore('toast', () => {
     const route = useRoute()
-    const currToast = ref({ style: '', msg: '' })
+    const currToast = ref({ style: '', header: '', msg: '' })
     let myTimeout = null
-    const changeToast = async (isSuccess, msg) => {
+    const changeToast = async (status, head, msg) => {
         resetToast()
         clearTimeout(myTimeout)
-        isSuccess ? (currToast.value.style = 'alert-success') : (currToast.value.style = 'alert-error')
-        if (!isSuccess || msg.toLowerCase().includes('tranferred') || msg.toLowerCase().includes('the status has been updated.')) {
+        currToast.value.header = head
+        currToast.value.style = status == 'success' ? 'alert-success' : status == 'error' ? 'alert-error' : status == 'load' || 'warn' ? 'alert-warning' : ''
+        if (!status || msg.toLowerCase().includes('tranferred') || msg.toLowerCase().includes('the status has been updated.')) {
             if (msg.toLowerCase().includes('task') || msg.toLowerCase().includes('the status does not exist.') || msg.toLowerCase().includes('the status has been updated.')) {
                 await useTasksStore().fetchTasks(route.params.bid)
             }
@@ -25,10 +26,13 @@ export const useToast = defineStore('toast', () => {
             resetToast()
         }, 5000)
     }
-    const resetToast = () => {
-        currToast.value = { style: '', msg: '' }
+    const resetToast = async () => {
+        currToast.value = { style: '', header: '', msg: '' }
     }
-    return { currToast, changeToast, resetToast }
+    const displayLoading = async () => {
+        changeToast('load', 'Loading', '')
+    }
+    return { currToast, changeToast, resetToast, displayLoading }
 })
 
 if (import.meta.hot) {

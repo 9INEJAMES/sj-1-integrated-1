@@ -4,7 +4,6 @@ import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
-import VLoading from '@/ui/VLoading.vue'
 
 const authStore = useAuthStore()
 const themeStore = useTheme()
@@ -15,7 +14,6 @@ onMounted(async () => {
 </script>
 
 <template>
-    <VLoading class="z-50" />
 
     <VToast class="z-50" />
     <div class="roboto-light min-h-screen max-h-fit pb-16" :class="themeStore.getTheme()">

@@ -23,7 +23,7 @@ const applyFilter = () => {
 </script>
 
 <template>
-    <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50 w-full">
+    <div class="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-40 w-full">
         <div class="my-[25vh] mx-[10vh] p-[2vh] rounded-lg w-full h-fit" :class="themeStore.getTheme()">
             <div class="flex justify-between items-center mb-4">
                 <p class="text-lg font-semibold">Filter Tasks</p>

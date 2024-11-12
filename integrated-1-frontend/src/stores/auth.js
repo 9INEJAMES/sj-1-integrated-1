@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (isTokenExpired()) {
             const success = await refreshAccessToken()
             if (!success) {
-                toastStore.changeToast(false, 'Your token is expired. Please log in again')
+                toastStore.changeToast('error', 'Error', 'Your token is expired. Please log in again')
                 logout()
             } else {
             }
@@ -51,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const refreshAccessToken = async () => {
         try {
+            getToken() // test
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${refreshToken.value}` },

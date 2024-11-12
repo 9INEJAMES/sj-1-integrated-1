@@ -4,7 +4,7 @@ import { onMounted } from 'vue'
 
 const toastStore = useToast()
 onMounted(() => {
-    toastStore.changeToast(false, 'Accsess denied, you do not have permission to view this page')
+    toastStore.changeToast('error', 'Error', 'Accsess denied, you do not have permission to view this page')
 })
 </script>
 

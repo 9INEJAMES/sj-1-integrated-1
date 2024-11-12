@@ -14,7 +14,7 @@ const confirm = () => {
 
 <template>
     <div class="itbkk-modal-alert">
-        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-40">
             <div class="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full text-center relative">
                 <h1 class="text-4xl font-bold text-pink-600 mb-4">Board visibility changed!</h1>
 

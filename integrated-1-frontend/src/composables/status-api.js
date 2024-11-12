@@ -22,11 +22,12 @@ export const useStatusApi = () => {
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
         }
-
+        toastStore.displayLoading()
         const response = await fetch(`${url}/v3/boards/${endpoint}`, {
             ...options,
             headers,
         })
+        await toastStore.resetToast()
 
         if (response.status == 401) {
             authStore.refreshAccessToken()
@@ -46,7 +47,7 @@ export const useStatusApi = () => {
         try {
             return (await fetchWithToken(`${bid}/statuses/${id}`)).json()
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the status does not exist.')
             console.error(`Error fetching status by ID: ${error}`)
         }
     }
@@ -58,15 +59,15 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...status }),
             })
             // if (response.status >= 400) {
-            //     toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
+            //     toastStore.changeToast("error", 'An error has occurred, the status could not be added.')
             //     return
             // }
             if (response.ok) {
-                toastStore.changeToast(true, 'The status has been added.')
+                toastStore.changeToast('success', 'Success', 'The status has been added.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the status could not be added.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the status could not be added.')
             console.error(`Error adding status: ${error}`)
         }
     }
@@ -78,11 +79,11 @@ export const useStatusApi = () => {
                 body: JSON.stringify({ ...status }),
             })
             if (response.ok) {
-                toastStore.changeToast(true, 'The status has been updated.')
+                toastStore.changeToast('success', 'Success', 'The status has been updated.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the status could not be updated.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the status could not be updated.')
             console.error(`Error updating status: ${error}`)
         }
     }
@@ -93,11 +94,11 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, 'The status has been deleted.')
+                toastStore.changeToast('success', 'Success', 'The status has been deleted.')
                 return response.json()
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the status does not exist.')
             console.error(`Error deleting status: ${error}`)
         }
     }
@@ -108,13 +109,13 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast(true, `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
+                toastStore.changeToast('success', 'Success', `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
                 return response.json()
             } else {
-                toastStore.changeToast(false, 'can not move all taks to new status because its over limit.')
+                toastStore.changeToast('error', 'Error', 'can not move all taks to new status because its over limit.')
             }
         } catch (error) {
-            toastStore.changeToast(false, 'An error has occurred, the status does not exist.')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the status does not exist.')
             console.error(`Error deleting status and transferring tasks: ${error}`)
         }
     }
