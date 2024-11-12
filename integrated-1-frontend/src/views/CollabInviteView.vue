@@ -49,9 +49,7 @@ const replyInvitation = async (isAccepted) => {
 </script>
 
 <template>
-    {{ invite.status == 'PENDING' ? 'you have invitation on this board' : 'you dont have an invitation now' }}
-    {{ invite }}
-    <div class="min-h-screen flex items-center justify-center bg-pink-100">
+    <div v-if="invite.status === 'PENDING'" class="min-h-screen flex items-center justify-center bg-pink-100">
         <div class="w-[30rem] bg-white p-10 rounded-lg shadow-lg text-center space-y-6">
             <p class="text-gray-400 text-sm">{{ currentDate }}</p>
 
@@ -81,6 +79,27 @@ const replyInvitation = async (isAccepted) => {
             <div class="flex justify-center space-x-4 mt-4">
                 <button class="w-1/3 py-2 rounded-lg border border-gray-300 text-gray-500 font-semibold hover:bg-gray-100" @click="replyInvitation(false)">Decline</button>
                 <button class="w-1/3 py-2 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600" @click="replyInvitation(true)">Accept invitation</button>
+            </div>
+        </div>
+    </div>
+
+    <div v-else class="min-h-screen flex items-center justify-center bg-red-100">
+        <div class="w-[36rem] bg-white p-12 rounded-lg shadow-md text-center space-y-6">
+            <div class="flex justify-center text-red-500 text-7xl">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+
+            <h1 class="text-2xl font-bold text-red-600">Sorry, we couldn't find your active invitation to this board</h1>
+            <p class="text-gray-600 text-lg">It looks like the invitation link might be outdated or invalid.</p>
+            <p class="text-gray-600">If you believe this is an error, please check the link or contact the board owner to request a new invitation.</p>
+
+            <div class=" flex justify-center">
+                <button @click="goBack" class="mt-4 bg-red-400 text-white px-6 py-3 rounded-full flex items-center justify-center hover:bg-red-500 transition duration-200 ease-in-out">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Back
+                </button>
             </div>
         </div>
     </div>
