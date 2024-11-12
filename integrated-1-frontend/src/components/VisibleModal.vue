@@ -19,7 +19,8 @@ const confirm = () => {
                 <h1 class="text-4xl font-bold text-pink-600 mb-4">Board visibility changed!</h1>
 
                 <p class="itbkk-message text-gray-700 mb-4">
-                    In public, anyone can view the board, task list, and task details. Do you want to change the visibility to {{ msg ? 'Public' : 'Private' }}?
+                    In {{ msg ? 'public, anyone ' : 'private, only board owner and collaborators ' }}can view the board, task list, and task details. Do you want to change the visibility to
+                    {{ msg ? 'Public' : 'Private' }}?
                 </p>
 
                 <div class="flex justify-center space-x-4 mt-6">

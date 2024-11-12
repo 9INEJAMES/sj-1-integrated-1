@@ -266,11 +266,8 @@ public class BoardControllerV3 {
             @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
 
         Board board = permissionCheck(authorizationHeader, id, "put", true);
-
         Task task = taskService.updateTask(taskId, input, id);
-
         Long taskFileSize = attachmentRepository.getTotalFileSizeByTaskId(taskId);
-
 
         final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024;
         long totalSize = 0;

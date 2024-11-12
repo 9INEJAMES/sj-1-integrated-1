@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <button class="w-fit h-[3vh] transition-all ease-i btn btn-sm sm:btn-sm md:btn-md lg:btn-lg" :class="themeStore.getButtonTheme()">
+    <button class="w-fit h-[3vh] transition-all ease-i btn btn-md" :class="themeStore.getButtonTheme()">
         {{ msg }} <img v-if="iconurl" :src="iconurl" alt="icon" class="w-8 h-8" />
     </button>
 </template>
