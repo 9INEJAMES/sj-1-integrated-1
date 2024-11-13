@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -92,13 +94,18 @@ public class FileService {
 
         Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
         Resource resource = new UrlResource(filePath.toUri());
-        System.out.println(resource);
 
         if (resource.exists() && resource.isReadable()) {
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
+            String filename = resource.getFilename();
+            try {
+                String encodedFilename = URLEncoder.encode(filename, "UTF-8").replaceAll("\\+", "%20");
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFilename + "\"")
+                        .body(resource);
+            } catch (UnsupportedEncodingException e) {
+                throw new Exception("Error encoding the filename: " + e.getMessage());
+            }
         } else {
             throw new Exception("File not found or not readable: " + attachment.getLocation());
         }
