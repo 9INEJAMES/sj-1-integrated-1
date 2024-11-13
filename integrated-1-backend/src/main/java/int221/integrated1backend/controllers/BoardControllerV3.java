@@ -516,16 +516,8 @@ public class BoardControllerV3 {
 
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         Resource fileResource = fileService.loadFileAsResource(taskId, filename);
-        String contentType;
-        if (filename.endsWith(".png")) {
-            contentType = MediaType.IMAGE_PNG_VALUE;
-        } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
-            contentType = MediaType.IMAGE_JPEG_VALUE;
-        } else if (filename.endsWith(".pdf")) {
-            contentType = MediaType.APPLICATION_PDF_VALUE;
-        } else {
-            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-        }
+        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
 
         return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
     }
