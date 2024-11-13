@@ -109,8 +109,7 @@ export const useTasksStore = defineStore("tasks", () => {
         addTask,
         switchSortOrder,
         addAttachmentToTask,
-        uploadFiles,
-        deleteFiles
+        uploadFiles
     }
 })
 
