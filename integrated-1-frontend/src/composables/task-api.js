@@ -103,7 +103,7 @@ export const useTaskApi = () => {
     async function updateTask(bid, task, files) {
         try {
             const taskData = { ...task }
-            delete taskData.attachments
+            // delete taskData.attachments
 
             await authStore.checkToken()
 

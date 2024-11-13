@@ -130,6 +130,7 @@ public class TaskService {
         existingTask.setDescription(task.getDescription());
         existingTask.setAssignees(task.getAssignees());
         existingTask.setStatus(status);
+        existingTask.setAttachments(task.getAttachments());
         existingTask.setUpdatedOn(null);
         return repository.save(existingTask);
     }
