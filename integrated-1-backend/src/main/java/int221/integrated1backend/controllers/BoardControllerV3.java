@@ -7,9 +7,7 @@ import int221.integrated1backend.repositories.in.TaskRepository;
 import int221.integrated1backend.services.*;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import org.bouncycastle.crypto.signers.ISOTrailers;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.bytebuddy.implementation.bytecode.assign.TypeCasting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 @RestController
@@ -262,13 +259,7 @@ public class BoardControllerV3 {
 //    }
 
     @PutMapping(path = "/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(
-            @RequestHeader(value = "Authorization") String authorizationHeader,
-            @PathVariable String id,
-            @PathVariable Integer taskId,
-            @Valid @RequestPart("input") TaskInputDTO input,
-            @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles
-    ) {
+    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestPart("input") TaskInputDTO input, @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
         Task task = taskService.updateTask(taskId, input, id);
 
@@ -324,9 +315,6 @@ public class BoardControllerV3 {
 
         return ResponseEntity.ok(outputDTO);
     }
-
-
-
 
 
     @DeleteMapping("/{id}/tasks/{taskId}")
@@ -456,10 +444,14 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/collabs/{collab_oid}")
-    public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) {
+    public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) throws MessagingException, UnsupportedEncodingException {
         Board board = permissionCheck(authorizationHeader, id, "patch", false);
-
+        String userName = null;
+        if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader);
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollab(id, collab_oid, input));
+//        if (collab.getStatus() == CollabStatus.PENDING) {
+//            emailService.sendInviteEmail(collab.getEmail(), userName, collab.getAccessRight(), board);
+//        }
         return ResponseEntity.ok(collab);
     }
 
@@ -487,11 +479,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
-    public ResponseEntity<Resource> loadFileDisplay(
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @PathVariable String id,
-            @PathVariable Integer taskId,
-            @PathVariable String filename) {
+    public ResponseEntity<Resource> loadFileDisplay(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @PathVariable String filename) {
 
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         Resource fileResource = fileService.loadFileAsResource(taskId, filename);
@@ -506,10 +494,7 @@ public class BoardControllerV3 {
             contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
         }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"")
-                .body(fileResource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
     }
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
