@@ -245,7 +245,7 @@ CREATE TABLE attachments (
     taskId INT NOT NULL,
     boardId VARCHAR(10) NOT NULL,
     location VARCHAR(255) NOT NULL,
-    fileSize INT NOT NULL, -- File size in KB
+    fileSize INT NOT NULL, 
     uploadDate DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (attachmentId),
     CONSTRAINT FK_task_attachment FOREIGN KEY (taskId, boardId) REFERENCES tasks(taskId, boardId) ON DELETE CASCADE
@@ -258,15 +258,13 @@ BEGIN
     DECLARE attachment_count INT;
     DECLARE total_size INT;
 
-    -- Count existing attachments for the task
     SELECT COUNT(*) INTO attachment_count FROM attachments WHERE taskId = NEW.taskId;
     IF attachment_count >= 10 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot attach more than 10 files to a task';
     END IF;
 
-    -- Calculate total size of attachments for the task
     SELECT SUM(fileSize) INTO total_size FROM attachments WHERE taskId = NEW.taskId;
-    IF (total_size + NEW.fileSize) > 20480 THEN -- 20MB in KB
+    IF (total_size + NEW.fileSize) > 20971520 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Total attachment size exceeds 20MB limit for a task';
     END IF;
 END$$
