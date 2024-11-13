@@ -264,7 +264,7 @@ BEGIN
     END IF;
 
     SELECT SUM(fileSize) INTO total_size FROM attachments WHERE taskId = NEW.taskId;
-    IF (total_size + NEW.fileSize) > 20971520 THEN
+    IF (total_size + NEW.fileSize) > 209715200 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Total attachment size exceeds 20MB limit for a task';
     END IF;
 END$$

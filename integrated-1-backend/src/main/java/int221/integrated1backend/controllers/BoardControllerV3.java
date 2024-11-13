@@ -268,7 +268,7 @@ public class BoardControllerV3 {
 
         // Calculate the total size of existing attachments
         long taskFileSize = Optional.ofNullable(attachmentRepository.getTotalFileSizeByTaskId(taskId)).orElse(0L);
-        final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024;
+        final long MAX_ATTACHMENT_SIZE = 20 * 1024 * 1024 * 10;
         long totalSize = 0;
 
         // Identify attachments in the request
