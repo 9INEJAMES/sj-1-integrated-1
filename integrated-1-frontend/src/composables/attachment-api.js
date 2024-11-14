@@ -112,10 +112,6 @@ export const useAttachmentApi = () => {
                 },
             })
 
-            if (response.status >= 400) {
-                toastStore.changeToast('error', 'Error', 'An error has occurred, the attachment does not exist.')
-                return
-            }
 
             const contentType = response.headers.get('Content-Type')
             const arrayBuffer = await response.arrayBuffer()
