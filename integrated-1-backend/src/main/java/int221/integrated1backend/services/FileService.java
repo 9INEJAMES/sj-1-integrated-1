@@ -184,6 +184,30 @@ public class FileService {
     }
 
 
+    public String storeTempAttachment(MultipartFile file) throws IOException {
+        String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
+        if (originalFileName.contains("..")) {
+            throw new RuntimeException("Invalid file name: " + originalFileName);
+        }
 
+        Path tempDir = rootStorageLocation.resolve(Paths.get("tempDir"));
+        if (!Files.exists(tempDir)) {
+            Files.createDirectories(tempDir);
+        }
 
+        Path targetLocation = tempDir.resolve(originalFileName);
+        Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+        return "File uploaded successfully to nested task directory: " + targetLocation.toString();
+    }
+
+    public void clearTempFile(){}
+    public String deleteFile() throws Exception {
+
+        Path tempDir = rootStorageLocation.resolve(Paths.get("tempDir"));
+        Files.deleteIfExists(tempDir);
+
+        return "File and related directories deleted successfully if empty.";
+
+    }
 }

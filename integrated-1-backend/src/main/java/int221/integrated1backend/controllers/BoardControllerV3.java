@@ -261,7 +261,7 @@ public class BoardControllerV3 {
 //    }
 
     @PutMapping(path = "/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestPart("input") TaskInputDTO input, @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
+    public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestPart("input") TaskInputDTO input, @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) throws Exception {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
         Task oldTask = taskService.findByID(taskId);
 
@@ -272,11 +272,16 @@ public class BoardControllerV3 {
 
         // Identify attachments in the request
         List<String> requestAttachmentLocations = new ArrayList<>();
+        List<RequestAttachment> requestAttachments = new ArrayList<>();
 
         //attachment of input
         for (Attachment attachmentFile : input.getAttachments()) {
             String fileName = Paths.get(attachmentFile.getLocation()).getFileName().toString();
             if (fileName != null) {
+                RequestAttachment newAtt = new RequestAttachment();
+                newAtt.setName(fileName);
+                newAtt.setFileSize(attachmentFile.getFileSize());
+                requestAttachments.add(newAtt);
                 requestAttachmentLocations.add(fileName);
             }
         }
@@ -289,9 +294,16 @@ public class BoardControllerV3 {
                     } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete unused attachment: " + e.getMessage());
                     }
+                } else {
+                    for (RequestAttachment requestAttachment : requestAttachments) {
+                        if (Objects.equals(requestAttachment.getName(), fileName) && !Objects.equals(requestAttachment.getFileSize(), attachment.getFileSize())) {
+                            fileService.deleteFile(attachment.getAttachmentId());
+                        }
+                    }
                 }
             }
         }
+
         Task task = taskService.updateTask(taskId, input, id);
 
         //attachment of attachmentFiles
@@ -342,8 +354,7 @@ public class BoardControllerV3 {
 
 
     @DeleteMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> deleteTask(@RequestHeader(value = "Authorization") String
-                                                     authorizationHeader, @PathVariable String id, @PathVariable Integer taskId) throws Exception {
+    public ResponseEntity<Object> deleteTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId) throws Exception {
         Board board = permissionCheck(authorizationHeader, id, "delete", true);
         fileService.removeAllFileOfTask(taskService.findByID(taskId));
         TaskOutputDTO taskWithIdDTO = taskService.removeTask(taskId, id);
@@ -353,8 +364,7 @@ public class BoardControllerV3 {
 
     //all statuses (public)
     @GetMapping("/{id}/statuses")
-    public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String
-                                                       authorizationHeader, @PathVariable String id) {
+    public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
 
         List<Status> statusList = statusService.getAllStatusByBoardId(id);
@@ -364,8 +374,7 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/statuses")
-    public ResponseEntity<Object> addNewStatus(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) StatusInputDTO input) {
+    public ResponseEntity<Object> addNewStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "post", true);
 
         Status status = statusService.createNewStatus(input, boardService.getBoard(id));
@@ -375,8 +384,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> getStatusById(@RequestHeader(value = "Authorization", required = false) String
-                                                        authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
+    public ResponseEntity<Object> getStatusById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
 
         Status status = statusService.findByID(statusId);
@@ -386,9 +394,7 @@ public class BoardControllerV3 {
 
     ///fixed self status
     @PutMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> updateStatus(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @PathVariable Integer
-                                                       statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
+    public ResponseEntity<Object> updateStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
 
         Status status = statusService.updateStatus(statusId, input);
@@ -398,8 +404,7 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
+    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId) {
         Board board = permissionCheck(authorizationHeader, id, "delete", true);
 
         Status status = statusService.removeStatus(statusId);
@@ -408,8 +413,7 @@ public class BoardControllerV3 {
     }
 
     @DeleteMapping("/{id}/statuses/{statusId}/{newStatusId}")
-    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
+    public ResponseEntity<Object> deleteStatus(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @PathVariable Integer newStatusId) {
         Board board = permissionCheck(authorizationHeader, id, "delete", true);
         List<Task> TaskList = taskService.updateStatusOfTask(statusId, newStatusId);
         Status status = statusService.removeStatus(statusId);
@@ -418,9 +422,7 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/statuses/{statusId}/maximum-task")
-    public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String
-                                                            authorizationHeader, @PathVariable String id, @PathVariable Integer
-                                                            statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
+    public ResponseEntity<Object> updateMaximumTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer statusId, @Valid @RequestBody(required = false) StatusInputDTO input) {
         Board board = permissionCheck(authorizationHeader, id, "patch", true);
         if (input == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
@@ -431,8 +433,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs")
-    public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String
-                                                    authorizationHeader, @PathVariable String id) {
+    public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
 
         List<CollabOutputDTO> collabs = collabService.mapOutputDTO(collabService.getAllCollabOfBoard(id));
@@ -440,8 +441,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs/{collab_oid}")
-    public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String
-                                                        authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
+    public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
@@ -449,8 +449,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs/invitation")
-    public ResponseEntity<Object> getInvitation(@RequestHeader(value = "Authorization", required = false) String
-                                                        authorizationHeader, @PathVariable String id) {
+    public ResponseEntity<Object> getInvitation(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader);
 
         CollabOutputDTOWithOwner collab = modelMapper.map(collabService.mapOutputDTO(collabService.getCollabOfBoard(id, oid, true)), CollabOutputDTOWithOwner.class);
@@ -462,8 +461,7 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/collabs/invitation/{isAccept}")
-    public ResponseEntity<Object> acceptedInvite(@RequestHeader(value = "Authorization", required = false) String
-                                                         authorizationHeader, @PathVariable String id, @PathVariable Boolean isAccept) {
+    public ResponseEntity<Object> acceptedInvite(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Boolean isAccept) {
         String oid = getOidFromHeader(authorizationHeader);
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollabStatus(id, oid, isAccept));
@@ -471,9 +469,7 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/collabs")
-    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws
-            MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException, UnsupportedEncodingException {
         Board board = permissionCheck(authorizationHeader, id, "post", false);
 
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input));
@@ -484,10 +480,7 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/collabs/{collab_oid}")
-    public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization") String
-                                                            authorizationHeader, @PathVariable String id, @PathVariable String
-                                                            collab_oid, @RequestBody(required = false) AccessRightDTO input) throws
-            MessagingException, UnsupportedEncodingException {
+    public ResponseEntity<Object> updateAccessRight(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid, @RequestBody(required = false) AccessRightDTO input) throws MessagingException, UnsupportedEncodingException {
         Board board = permissionCheck(authorizationHeader, id, "patch", false);
         String userName = null;
         if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader);
@@ -500,8 +493,7 @@ public class BoardControllerV3 {
 
 
     @DeleteMapping("/{id}/collabs/{collab_oid}")
-    public ResponseEntity<Object> deleteCollab(@RequestHeader(value = "Authorization") String
-                                                       authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
+    public ResponseEntity<Object> deleteCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable String collab_oid) {
         String method = "delete";
         String oid = getOidFromHeader(authorizationHeader);
         if (Objects.equals(oid, collab_oid)) method = "get";
@@ -513,8 +505,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<Resource> loadFile(@RequestHeader(value = "Authorization", required = false) String
-                                                     authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
+    public ResponseEntity<Resource> loadFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         try {
             return fileService.loadFile(attachmentId);
@@ -537,11 +528,7 @@ public class BoardControllerV3 {
 //    }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
-    public ResponseEntity<Resource> loadFileDisplay(
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @PathVariable String id,
-            @PathVariable Integer taskId,
-            @PathVariable String filename) throws UnsupportedEncodingException {
+    public ResponseEntity<Resource> loadFileDisplay(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @PathVariable String filename) throws UnsupportedEncodingException {
 
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         Resource fileResource = fileService.loadFileAsResource(taskId, filename);
@@ -550,16 +537,12 @@ public class BoardControllerV3 {
         // Encode filename in UTF-8 for compatibility
         String encodedFilename = URLEncoder.encode(Objects.requireNonNull(fileResource.getFilename()), StandardCharsets.UTF_8);
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=UTF-8''" + encodedFilename)
-                .body(fileResource);
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=UTF-8''" + encodedFilename).body(fileResource);
     }
 
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String
-                                                     authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
+    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         try {
             String result = fileService.deleteFile(attachmentId);
