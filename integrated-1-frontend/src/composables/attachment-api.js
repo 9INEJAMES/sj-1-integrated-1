@@ -108,7 +108,7 @@ export const useAttachmentApi = () => {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/displays/${filename}`, {
                 headers: {
-                    Accept: 'application/octet-stream', // Make sure backend sends arraybuffer
+                    Accept: 'application/octet-stream',
                 },
             })
 

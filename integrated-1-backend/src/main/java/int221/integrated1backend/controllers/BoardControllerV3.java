@@ -540,7 +540,7 @@ public class BoardControllerV3 {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFilename)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=UTF-8''" + encodedFilename)
                 .body(fileResource);
     }
 
