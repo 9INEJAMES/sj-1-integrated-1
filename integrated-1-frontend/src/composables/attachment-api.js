@@ -112,7 +112,7 @@ export const useAttachmentApi = () => {
                 },
             })
 
-
+            
             const contentType = response.headers.get('Content-Type')
             const arrayBuffer = await response.arrayBuffer()
 
