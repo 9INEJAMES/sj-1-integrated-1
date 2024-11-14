@@ -162,7 +162,7 @@ const removeFileFromInput = (index) => {
 
 const checkTaskChange = () => {
     if (Array.from(files.value).some(file => newTask.value.attachments.some(f => f.location.split('/').pop() == file.name))) {
-                toastStore.changeToast('error', 'Error', `File with the same filename cannot be added or updated to the attachements. Please delete the attachment and add again  to update the file.`)
+        toastStore.changeToast('error', 'Error', `File with the same filename cannot be added or updated to the attachements. Please delete the attachment and add again  to update the file.`)
         console.log('files', newTask.value.attachments)
         isChanged.value = false
     } else {
@@ -186,10 +186,9 @@ const handleFileUpload = (e) => {
         const left = maxFiles.value - newTask.value.attachments.length
         errorFiles.value = Array.from(files.value).slice(left)
         files.value = Array.from(files.value).slice(0, left)
-        console.log('files', files.value)
-        console.log('errorFiles', errorFiles.value)
         // isChanged.value = false
         toastStore.changeToast('error', 'Error', `Each task can have at most ${maxFiles.value} files. The following files are not added: ${errorFiles.value.map((file) => file.name).join(', ')}`)
+        errorFiles.value = []
     }
     // if (Array.from(files.value).some(file => newTask.value.attachments.some(f => f.location.split('/').pop() == file.name))) {
     //     console.log('errorFiles', Array.from(files.value).some(file => newTask.value.attachments.some(f => f.location.split('/').pop() == file.name)))
