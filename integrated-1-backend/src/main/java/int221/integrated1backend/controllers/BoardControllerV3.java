@@ -317,7 +317,6 @@ public class BoardControllerV3 {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size exceeds the 20MB limit.");
         }
 
-        if (attachmentFiles != null) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 if (!attachmentFile.isEmpty()) {
                     try {
@@ -325,7 +324,6 @@ public class BoardControllerV3 {
                     } catch (IOException e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to store attachment: " + e.getMessage());
                     }
-                }
             }
         }
 
