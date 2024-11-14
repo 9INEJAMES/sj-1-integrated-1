@@ -310,25 +310,8 @@ public class BoardControllerV3 {
         if (attachmentFiles != null) {
             for (MultipartFile attachmentFile : attachmentFiles) {
                 totalSize += attachmentFile.getSize();
-//                if (attachmentFile.getOriginalFilename() != null) {
-//                    requestAttachmentLocations.add(attachmentFile.getOriginalFilename());
-//                }
             }
         }
-//
-//        // Delete attachments not present in the request
-//        if (oldTask.getAttachments() != null && !oldTask.getAttachments().isEmpty()) {
-//            for (Attachment attachment : oldTask.getAttachments()) {
-//                String fileName = Paths.get(attachment.getLocation()).getFileName().toString();
-//                if (!requestAttachmentLocations.contains(fileName)) {
-//                    try {
-//                        fileService.deleteFile(attachment.getAttachmentId());
-//                    } catch (Exception e) {
-//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to delete unused attachment: " + e.getMessage());
-//                    }
-//                }
-//            }
-//        }
 
         if (taskFileSize + totalSize > MAX_ATTACHMENT_SIZE) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Total attachment size exceeds the 20MB limit.");
