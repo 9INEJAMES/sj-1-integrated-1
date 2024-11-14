@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 export const useToast = defineStore('toast', () => {
     const route = useRoute()
     const currToast = ref({ style: '', header: '', msg: '' })
+    const currToastArr = ref({style: '', header: '', msgArr: []})
     let myTimeout = null
     const changeToast = async (status, head, msg) => {
         resetToast()
@@ -26,13 +27,24 @@ export const useToast = defineStore('toast', () => {
             resetToast()
         }, 5000)
     }
+    const changeToastArr = async (status, head, msgArr) => {
+        resetToast()
+        clearTimeout(myTimeout)
+        currToastArr.value.header = head
+        currToastArr.value.style = status == 'success' ? 'alert-success' : status == 'error' ? 'alert-error' : status == 'load' || 'warn' ? 'alert-warning' : ''
+        currToastArr.value.msgArr = msgArr
+        myTimeout = setTimeout(() => {
+            resetToast()
+        }, 5000)
+    }
     const resetToast = async () => {
         currToast.value = { style: '', header: '', msg: '' }
+        currToastArr.value = {style: '', header: '', msgArr: []}
     }
     const displayLoading = async () => {
         changeToast('load', 'Loading', '')
     }
-    return { currToast, changeToast, resetToast, displayLoading }
+    return { currToast, changeToast, resetToast, displayLoading, currToastArr, changeToastArr }
 })
 
 if (import.meta.hot) {
