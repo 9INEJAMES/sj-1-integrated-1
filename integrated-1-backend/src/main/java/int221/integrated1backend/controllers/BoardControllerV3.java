@@ -20,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -509,18 +511,39 @@ public class BoardControllerV3 {
         }
     }
 
+//    @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
+//    public ResponseEntity<Resource> loadFileDisplay
+//            (@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String
+//                    id, @PathVariable Integer taskId, @PathVariable String filename) {
+//
+//        Board board = permissionCheck(authorizationHeader, id, "get", true);
+//        Resource fileResource = fileService.loadFileAsResource(taskId, filename);
+//        String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+//
+//
+//        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
+//    }
+
     @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
-    public ResponseEntity<Resource> loadFileDisplay
-            (@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @PathVariable String
-                    id, @PathVariable Integer taskId, @PathVariable String filename) {
+    public ResponseEntity<Resource> loadFileDisplay(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable String id,
+            @PathVariable Integer taskId,
+            @PathVariable String filename) throws UnsupportedEncodingException {
 
         Board board = permissionCheck(authorizationHeader, id, "get", true);
         Resource fileResource = fileService.loadFileAsResource(taskId, filename);
         String contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
 
+        // Encode filename in UTF-8 for compatibility
+        String encodedFilename = URLEncoder.encode(Objects.requireNonNull(fileResource.getFilename()), StandardCharsets.UTF_8);
 
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileResource.getFilename() + "\"").body(fileResource);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encodedFilename)
+                .body(fileResource);
     }
+
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
     public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String

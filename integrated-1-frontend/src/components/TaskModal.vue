@@ -243,10 +243,10 @@ const removeFileFromInput = (index) => {
 
                     <div class="col-span-3 ">
                         <div class="flex flex-col">
-                            <div v-if="$route.name == 'taskDetails' || $route.name == 'taskEdit'">
+                            <div v-if=" $route.name == 'taskEdit'">
                                 <p :class="themeStore.getTextHeaderTheme()" class="pt-[2vh] ">Uploading attachment{{
                                     files.length > 0 ? 's' : '' }}</p>
-                                <div v-if="$route.name == 'taskEdit'">
+                                <div>
                                     <input type="file" @change="handleFileUpload" multiple :disabled="disableFileInput" />
                                 </div>
                                 <div class="overflow-y-scroll h-fit">
