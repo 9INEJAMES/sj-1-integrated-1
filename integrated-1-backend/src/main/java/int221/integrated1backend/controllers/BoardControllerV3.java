@@ -264,7 +264,6 @@ public class BoardControllerV3 {
     public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestPart("input") TaskInputDTO input, @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) {
         Board board = permissionCheck(authorizationHeader, id, "put", true);
         Task oldTask = taskService.findByID(taskId);
-        Task task = taskService.updateTask(taskId, input, id);
 
         // Calculate the total size of existing attachments
         long taskFileSize = Optional.ofNullable(attachmentRepository.getTotalFileSizeByTaskId(taskId)).orElse(0L);
@@ -275,7 +274,7 @@ public class BoardControllerV3 {
         List<String> requestAttachmentLocations = new ArrayList<>();
 
         //attachment of input
-        for (Attachment attachmentFile : task.getAttachments()) {
+        for (Attachment attachmentFile : input.getAttachments()) {
             String fileName = Paths.get(attachmentFile.getLocation()).getFileName().toString();
             if (fileName != null) {
                 requestAttachmentLocations.add(fileName);
@@ -293,6 +292,8 @@ public class BoardControllerV3 {
                 }
             }
         }
+        Task task = taskService.updateTask(taskId, input, id);
+
         //attachment of attachmentFiles
         if (attachmentFiles != null) {
             for (MultipartFile attachmentFile : attachmentFiles) {
