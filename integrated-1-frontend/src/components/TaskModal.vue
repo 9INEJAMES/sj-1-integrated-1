@@ -296,7 +296,7 @@ watch(
                                                 {{ (fileName = attachments.location.split('/').pop()) }}
                                             </p>
                                             <div class="flex gap-3">
-                                                <img v-if="fileName.endsWith('.png') || fileName.endsWith('.jpg') || fileName.endsWith('.jpg')"
+                                                <img v-if="fileName.toLowerCase().endsWith('.png') || fileName.toLowerCase().endsWith('.jpeg') || fileName.toLowerCase().endsWith('.jpg')"
                                                     :src="fileUrls[fileName]" alt="Attachment preview"
                                                     class="w-[20px] h-[20px]" />
                                                 <img v-else src="/file.png" alt="file" class="w-[15px] h-[15px]" />

@@ -94,13 +94,31 @@ public class FileService {
 
         Path filePath = Paths.get(attachment.getLocation()).toAbsolutePath();
         Resource resource = new UrlResource(filePath.toUri());
-
         if (resource.exists() && resource.isReadable()) {
             String filename = resource.getFilename();
             try {
                 String encodedFilename = URLEncoder.encode(filename, "UTF-8").replaceAll("\\+", "%20");
+                String fileExtension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+                MediaType mediaType;
+                switch (fileExtension) {
+                    case "pdf":
+                        mediaType = MediaType.APPLICATION_PDF;
+                        break;
+                    case "jpg":
+                    case "jpeg":
+                        mediaType = MediaType.IMAGE_JPEG;
+                        break;
+                    case "png":
+                        mediaType = MediaType.IMAGE_PNG;
+                        break;
+                    case "gif":
+                        mediaType = MediaType.IMAGE_GIF;
+                        break;
+                    default:
+                        mediaType = MediaType.APPLICATION_OCTET_STREAM;
+                }
                 return ResponseEntity.ok()
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .contentType(mediaType)
                         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + encodedFilename + "\"")
                         .body(resource);
             } catch (UnsupportedEncodingException e) {
@@ -110,6 +128,7 @@ public class FileService {
             throw new Exception("File not found or not readable: " + attachment.getLocation());
         }
     }
+
     @Transactional("firstTransactionManager")
     public String deleteFile(Integer attachmentId) throws Exception {
         Attachment attachment = attachmentRepository.findById(attachmentId)
