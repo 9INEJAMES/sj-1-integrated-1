@@ -1,9 +1,9 @@
 package int221.integrated1backend.entities.in;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import int221.integrated1backend.models.Visibility;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

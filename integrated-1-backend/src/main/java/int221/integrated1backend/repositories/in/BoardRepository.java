@@ -1,7 +1,6 @@
 package int221.integrated1backend.repositories.in;
 
 import int221.integrated1backend.entities.in.Board;
-import int221.integrated1backend.entities.in.Visibility;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,64 +1,116 @@
 package int221.integrated1backend.Filter;
 
-import int221.integrated1backend.services.JwtTokenUtil;
+import int221.integrated1backend.entities.ex.User;
+import int221.integrated1backend.exceptions.UnauthenticatedException;
+import int221.integrated1backend.models.AuthType;
+import int221.integrated1backend.models.TokenType;
+import int221.integrated1backend.services.AzureService;
+import int221.integrated1backend.services.JwtService;
 import int221.integrated1backend.services.JwtUserDetailsService;
-import io.jsonwebtoken.ExpiredJwtException;
+import int221.integrated1backend.utils.Constant;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtUserDetailsService jwtUserDetailsService;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtService jwtService;
+    private final AzureService azureService;
+    private final JwtUserDetailsService userDetailsService;
+
+    private static final Set<String> PUBLIC_ENDPOINTS = Set.of(Constant.PUBLIC_ENDPOINTS);
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        String path = request.getRequestURI();
-        return path.equals("/token") || path.equals("/board") || path.equals("/login");
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return PUBLIC_ENDPOINTS.contains(request.getServletPath());
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, java.io.IOException {
-        final String requestTokenHeader = request.getHeader("Authorization");
-        String oid = null;
-        String jwtToken = null;
-        if (requestTokenHeader != null) {
-            if (requestTokenHeader.startsWith("Bearer ")) {
-                jwtToken = requestTokenHeader.substring(7);
-                try {
-                    oid = jwtTokenUtil.getClaimValueFromToken(jwtToken, "oid");
-                } catch (IllegalArgumentException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-                } catch (ExpiredJwtException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-                }
-            } else {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "JWT Token does not begin with Bearer String");
-            }
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException, java.io.IOException {
+        String authHeader = request.getHeader("Authorization");
+        String authType = request.getHeader("Auth-Type");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        String token = authHeader.substring(7);
+
+        if ("AZURE".equals(authType)) {
+            try {
+                handleAzureAuth(request, response, filterChain, token);
+            } catch (UnauthenticatedException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            handleLocalAuth(request, response, filterChain, token);
+        }
+    }
+
+    private void handleAzureAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token)
+            throws IOException, ServletException, UnauthenticatedException, java.io.IOException {
+        User user = azureService.azureMe(token);
+
+        if (user == null) {
+            sendUnauthorizedResponse(response, "Invalid Azure token");
+            return;
+        }
+
+        user.setAuthType(AuthType.AZURE);
+        user.setAccessToken(token);
+        setAuthentication(request, user);
+        filterChain.doFilter(request, response);
+    }
+
+    private void handleLocalAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token)
+            throws IOException, ServletException, java.io.IOException {
+        String oid;
+        try {
+            oid = jwtService.getClaimValueFromToken(token, TokenType.ACCESS,"oid");
+        } catch (JwtException ex) {
+            sendUnauthorizedResponse(response, "Invalid token: " + ex.getMessage());
+            return;
+        }
+
         if (oid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.jwtUserDetailsService.loadUserByOid(oid);
-            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+            User user = userDetailsService.loadUserByOid(oid);
+            user.setAuthType(AuthType.LOCAL);
+            user.setAccessToken(token);
+
+            if (!jwtService.validateAccessToken(token, user.getOid())) {
+                sendUnauthorizedResponse(response, "Token validation failed");
+                return;
             }
+
+            setAuthentication(request, user);
         }
-        chain.doFilter(request, response);
+
+        filterChain.doFilter(request, response);
     }
 
+    private void setAuthentication(HttpServletRequest request, User user) {
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+    }
+
+    private void sendUnauthorizedResponse(HttpServletResponse response, String message) throws IOException, java.io.IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.getWriter().write(message);
+    }
 }

@@ -1,7 +1,7 @@
 package int221.integrated1backend.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import int221.integrated1backend.entities.in.Visibility;
+import int221.integrated1backend.models.Visibility;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 

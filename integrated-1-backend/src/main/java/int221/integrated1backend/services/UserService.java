@@ -17,11 +17,11 @@ public class UserService {
     }
 
     public User findByUserName(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findByUsername(username).orElseThrow();
     }
 
-    public User findByOid(String oid) { return userRepository.findByOid(oid);}
+    public User findByOid(String oid) { return userRepository.findByOid(oid).orElseThrow();}
 
-    public User findByEmail(String email) { return userRepository.findByEmail(email);}
+    public User findByEmail(String email) { return userRepository.findByEmail(email).orElseThrow();}
 
 }

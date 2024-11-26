@@ -20,34 +20,15 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(userName);
-//        if (user == null)
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "username or password incorrect");//////////////exception
-        List<GrantedAuthority> roles = new ArrayList<>();
-        GrantedAuthority grantedAuthority = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole();
-            }
-        };
-        roles.add(grantedAuthority);
-        UserDetails userDetails = new AuthUser(userName, user.getPassword(), roles);
-        return userDetails;
+    public User loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
-    public UserDetails loadUserByOid(String oid) throws UsernameNotFoundException {
-        User user = userRepository.findByOid(oid);
-        List<GrantedAuthority> roles = new ArrayList<>();
-        GrantedAuthority grantedAuthority = new GrantedAuthority() {
-            @Override
-            public String getAuthority() {
-                return user.getRole();
-            }
-        };
-        roles.add(grantedAuthority);
-        UserDetails userDetails = new AuthUser(user.getUsername(), user.getPassword(), roles);
-        return userDetails;
+    public User loadUserByOid(String oid) throws UsernameNotFoundException {
+        return userRepository.findByOid(oid)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with oid: " + oid));
     }
 }

@@ -2,6 +2,10 @@ package int221.integrated1backend.controllers;
 
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.in.*;
+import int221.integrated1backend.models.AccessRight;
+import int221.integrated1backend.models.CollabStatus;
+import int221.integrated1backend.models.TokenType;
+import int221.integrated1backend.models.Visibility;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.repositories.in.TaskRepository;
 import int221.integrated1backend.services.*;
@@ -28,7 +32,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/v3/boards")
-@CrossOrigin(origins = {"http://ip23sj1.sit.kmutt.ac.th", "https://ip23sj1.sit.kmutt.ac.th", "http://intproj23.sit.kmutt.ac.th", "https://intproj23.sit.kmutt.ac.th", "http://localhost:5173"})
 public class BoardControllerV3 {
     @Autowired
     private BoardService boardService;
@@ -39,7 +42,7 @@ public class BoardControllerV3 {
     @Autowired
     private StatusService statusService;
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private JwtService jwtTokenUtil;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -59,13 +62,13 @@ public class BoardControllerV3 {
     private String getOidFromHeader(String header) {
         if (header == null) return null;
         String token = header.substring(7);
-        return jwtTokenUtil.getClaimValueFromToken(token, "oid");
+        return jwtTokenUtil.getClaimValueFromToken(token, TokenType.ACCESS, "oid");
     }
 
     private String getNameFromHeader(String header) {
         if (header == null) return null;
         String token = header.substring(7);
-        return jwtTokenUtil.getClaimValueFromToken(token, "name");
+        return jwtTokenUtil.getClaimValueFromToken(token,TokenType.ACCESS, "name");
     }
 
     private AccessRight oidCheck(Board board, String userOid, String method, Visibility visibility, Boolean isCollabCanDoOperation) {
@@ -227,38 +230,6 @@ public class BoardControllerV3 {
         boardService.updateฺInBoard(id);
         return ResponseEntity.ok(outputDTO);
     }
-
-//    @PutMapping(path = "/{id}/tasks/{taskId}")
-//    public ResponseEntity<Object> updateTask(
-//            @RequestHeader(value = "Authorization") String authorizationHeader,
-//            @PathVariable String id,
-//            @PathVariable Integer taskId,
-//            @RequestParam("input") TaskInputDTO input,
-//            @RequestParam(value = "attachmentFiles", required = false) MultipartFile[] attachmentFiles
-//    ) {
-//        Board board = permissionCheck(authorizationHeader, id, "put", true);
-//
-//        Task task = taskService.updateTask(taskId, input, id);
-//
-//        if (attachmentFiles != null && !(attachmentFiles.length == 0)) {
-//            for (MultipartFile attachmentFile : attachmentFiles) {
-//                if (!attachmentFile.isEmpty()) {
-//                    try {
-//                        System.out.println("Received file: " + attachmentFile.getOriginalFilename() + ", size: " + attachmentFile.getSize());
-//                        fileService.storeAttachment(attachmentFile, taskId);
-//                    } catch (IOException e) {
-//                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                                .body("Failed to store attachment: " + e.getMessage());
-//                    }
-//                }
-//            }
-//        }
-//
-//        TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
-//        boardService.updateฺInBoard(id);
-//
-//        return ResponseEntity.ok(outputDTO);
-//    }
 
     @PutMapping(path = "/{id}/tasks/{taskId}")
     public ResponseEntity<Object> updateTask(@RequestHeader(value = "Authorization") String authorizationHeader, @PathVariable String id, @PathVariable Integer taskId, @Valid @RequestPart("input") TaskInputDTO input, @RequestPart(name = "attachmentFiles", required = false) MultipartFile[] attachmentFiles) throws Exception {

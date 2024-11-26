@@ -1,5 +1,7 @@
 package int221.integrated1backend.entities.in;
 
+import int221.integrated1backend.models.AccessRight;
+import int221.integrated1backend.models.CollabStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

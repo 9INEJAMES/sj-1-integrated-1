@@ -38,6 +38,14 @@ const submitSignIn = async () => {
         console.error('Sign in error:', error)
     }
 }
+const signInWithAzure = async () => {
+    try {
+        const res = await authApi.azureLogin()
+    } catch (error) {
+        console.error('Sign in error:', error)
+    }
+}
+
 onMounted(async () => {
     authStore.isLogin = false
 })
@@ -111,10 +119,23 @@ onMounted(async () => {
                 <button
                     :disabled="loginField.userName.length <= 0 || loginField.password.length <= 0"
                     :class="loginField.userName.length <= 0 || loginField.password.length <= 0 ? 'opacity-50 cursor-not-allowed' : themeStore.getButtonTheme()"
-                    class="itbkk-button-signin w-full font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300 text-black hover:text-white"
+                    class="mb-2 itbkk-button-signin w-full font-bold py-4 rounded-full shadow-lg transition duration-200 disabled:bg-slate-300 text-black hover:text-white"
                     @click="submitSignIn"
                 >
                     LOGIN
+                </button>
+                <button
+                    :class="themeStore.getButtonTheme()"
+                    class="itbkk-button-signin w-full flex items-center justify-center font-bold py-4 rounded-full shadow-lg transition duration-200 text-black hover:text-white"
+                    @click="signInWithAzure"
+                >
+                    <svg class="mr-2" width="16" height="16" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#F1511B" d="M121.666 121.666H0V0h121.666z" />
+                        <path fill="#80CC28" d="M256 121.666H134.335V0H256z" />
+                        <path fill="#00ADEF" d="M121.663 256.002H0V134.336h121.663z" />
+                        <path fill="#FBBC09" d="M256 256.002H134.335V134.336H256z" />
+                    </svg>
+                    MICROSOFT LOGIN
                 </button>
             </div>
         </div>

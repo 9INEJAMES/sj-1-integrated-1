@@ -36,5 +36,27 @@ export const useAuthApi = () => {
         }
     }
 
-    return { signIn }
+    async function azureLogin() {
+        try {
+            // return await fetch(`${url}/login/oauth2/azure`)
+            window.location.href = `${url}/login/oauth2/azure`
+        } catch (error) {
+            console.error(`Error fetching boards: ${error}`)
+        }
+    }
+    async function azureCallback() {
+        try {
+            const response = await fetch(`${url}/login/oauth2/azure/callback`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            return response.json()
+        } catch (error) {
+            console.error(`Error fetching boards: ${error}`)
+        }
+    }
+
+    return { signIn, azureLogin, azureCallback }
 }

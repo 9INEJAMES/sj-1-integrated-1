@@ -1,7 +1,7 @@
 package int221.integrated1backend.dtos;
 
-import int221.integrated1backend.entities.in.AccessRight;
-import int221.integrated1backend.entities.in.CollabStatus;
+import int221.integrated1backend.models.AccessRight;
+import int221.integrated1backend.models.CollabStatus;
 import lombok.Data;
 
 @Data
