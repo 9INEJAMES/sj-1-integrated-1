@@ -44,15 +44,18 @@ export const useAuthApi = () => {
             console.error(`Error fetching boards: ${error}`)
         }
     }
-    async function azureCallback() {
+    async function azureCallback(code) {
+        console.log(code)
         try {
             const response = await fetch(`${url}/login/oauth2/azure/callback`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ code }),
             })
-            return response.json()
+            const data = await response.json()
+            return data
         } catch (error) {
             console.error(`Error fetching boards: ${error}`)
         }

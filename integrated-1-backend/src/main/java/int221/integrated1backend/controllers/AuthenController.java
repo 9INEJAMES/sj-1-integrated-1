@@ -20,6 +20,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("")
 public class AuthenController {
@@ -86,12 +88,11 @@ public class AuthenController {
     }
 
     @PostMapping("/login/oauth2/azure/callback")
-    public ResponseEntity<AuthResponse> azureCallback(@Valid @RequestBody AzureCallbackRequest request) {
+    public ResponseEntity<AuthResponse> azureCallback(@Valid @RequestBody AzureCallbackRequest request) throws IOException {
         AuthResponse response = azureService.exchangeAuthorizationCodeForToken(request.getCode());
 
         return ResponseEntity.ok(response);
     }
-
 }
 
 
