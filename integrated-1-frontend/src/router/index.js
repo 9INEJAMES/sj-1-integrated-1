@@ -160,6 +160,8 @@ router.beforeEach(async (to, from, next) => {
     let board
     let bStatus
 
+    await authStore.loadAzureData()
+    
     const reset = () => {
         boardStore.resetBoards()
         statusStore.resetStatuses()

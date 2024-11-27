@@ -13,6 +13,7 @@
     "test:unit:dev": "cypress open --component"
   },
   "dependencies": {
+    "@azure/msal-browser": "^3.27.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-jwt-decode": "^0.1.0",

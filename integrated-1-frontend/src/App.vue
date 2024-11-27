@@ -4,7 +4,6 @@ import { useTheme } from '@/stores/theme.js'
 import VToast from '@/ui/VToast.vue'
 import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
-
 const authStore = useAuthStore()
 const themeStore = useTheme()
 
@@ -14,7 +13,6 @@ onMounted(async () => {
 </script>
 
 <template>
-
     <VToast class="z-50" />
     <div class="roboto-light min-h-screen max-h-fit pb-16" :class="themeStore.getTheme()">
         <NavHeader />

@@ -28,8 +28,8 @@ public class AzureService {
     private String HOST_BASE;
 
 
-    public AuthResponse exchangeAuthorizationCodeForToken(String authorizationCode) throws UnauthenticatedException, IOException {
-//        try {
+    public AuthResponse exchangeAuthorizationCodeForToken(String authorizationCode) throws UnauthenticatedException {
+        try {
             String tokenEndpoint = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
 
             String requestBody = buildTokenRequestBody(authorizationCode);
@@ -44,9 +44,9 @@ public class AzureService {
             authResponse.setType(AuthType.AZURE);
 
             return authResponse;
-//        } catch (IOException e) {
-//            throw new UnauthenticatedException("Failed to exchange authorization code for token");
-//        }
+        } catch (IOException e) {
+            throw new UnauthenticatedException("Failed to exchange authorization code for token");
+        }
     }
 
     public AuthResponse refreshToken(String refreshToken) throws UnauthenticatedException {

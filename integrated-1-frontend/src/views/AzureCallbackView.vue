@@ -7,8 +7,8 @@ const router = useRouter()
 const route = useRoute()
 
 const authApi = useAuthApi()
-const res = await authApi.azureCallback(route.query.code)
-console.log(res)
+// const res = await authApi.azureCallback(route.query.code)
+// console.log(res)
 </script>
 
 <template>

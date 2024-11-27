@@ -5,6 +5,7 @@ import { useAuthApi } from '@/composables/auth-api.js'
 import router from '@/router'
 import { useAuthStore } from '@/stores/auth'
 import { useRoute } from 'vue-router'
+import { msalInstance, state } from '@/configs/msalConfig'
 
 const route = useRoute()
 const themeStore = useTheme()
@@ -39,15 +40,24 @@ const submitSignIn = async () => {
     }
 }
 const signInWithAzure = async () => {
+    await authStore.azureLogin()
+}
+
+const initailize = async () => {
     try {
-        const res = await authApi.azureLogin()
+        await msalInstance.initialize()
     } catch (error) {
-        console.error('Sign in error:', error)
+        console.error('MSAL initialization error:', error)
     }
+}
+const signout = async () => {
+    await authStore.azureLogout()
 }
 
 onMounted(async () => {
     authStore.isLogin = false
+    await initailize()
+    await authStore.azureHandleRedirect()
 })
 </script>
 
@@ -137,6 +147,8 @@ onMounted(async () => {
                     </svg>
                     MICROSOFT LOGIN
                 </button>
+                {{ authStore.isLogin }}
+                <button @click="signout">sign out</button>
             </div>
         </div>
     </div>

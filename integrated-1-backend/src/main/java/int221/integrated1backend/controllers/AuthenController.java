@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -80,19 +81,6 @@ public class AuthenController {
         return ResponseEntity.status(401).build();
     }
 
-    @GetMapping("/login/oauth2/azure")
-    public ResponseEntity<Object> azureLogin() {
-        return ResponseEntity.status(302)
-                .header(HttpHeaders.LOCATION, azureService.getURL())
-                .build();
-    }
-
-    @PostMapping("/login/oauth2/azure/callback")
-    public ResponseEntity<AuthResponse> azureCallback(@Valid @RequestBody AzureCallbackRequest request) throws IOException {
-        AuthResponse response = azureService.exchangeAuthorizationCodeForToken(request.getCode());
-
-        return ResponseEntity.ok(response);
-    }
 }
 
 
