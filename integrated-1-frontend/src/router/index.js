@@ -16,7 +16,6 @@ import { useStatusesStore } from '@/stores/status'
 import PageNotFound from '@/components/PageNotFound.vue'
 import CollabView from '@/views/CollabView.vue'
 import CollabInviteView from '@/views/CollabInviteView.vue'
-import AzureCallbackView from '@/views/AzureCallbackView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -133,11 +132,7 @@ const router = createRouter({
                 },
             ],
         },
-        {
-            path: '/login/oauth2/azure/callback',
-            name: 'azureCallback',
-            component: AzureCallbackView,
-        },
+
         {
             path: '/access-denied',
             name: 'accessDenied',
@@ -161,7 +156,7 @@ router.beforeEach(async (to, from, next) => {
     let bStatus
 
     await authStore.loadAzureData()
-    
+
     const reset = () => {
         boardStore.resetBoards()
         statusStore.resetStatuses()

@@ -1,5 +1,5 @@
-import { useToast } from "@/stores/toast"
-import { useAuthStore } from "@/stores/auth.js"
+import { useToast } from '@/stores/toast'
+import { useAuthStore } from '@/stores/auth.js'
 export const useAttachmentApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
@@ -9,12 +9,13 @@ export const useAttachmentApi = () => {
         await authStore.checkToken()
         const token = authStore.getToken()
         const headers = {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             ...options.headers,
         }
 
         if (token) {
-            headers["Authorization"] = `Bearer ${token}`
+            headers['Authorization'] = `Bearer ${token}`
+            headers['Auth-Type'] = await authStore.getTypeOfLogin()
         }
 
         toastStore.displayLoading()
@@ -25,12 +26,12 @@ export const useAttachmentApi = () => {
         await toastStore.resetToast()
 
         if (response.status === 401) {
-            await authStore.refreshAccessToken()
+            // await authStore.refreshAccessToken()
             // return fetchWithToken(endpoint, options)
         }
 
-        const contentType = response.headers.get("content-type")
-        if (contentType && contentType.includes("application/json")) {
+        const contentType = response.headers.get('content-type')
+        if (contentType && contentType.includes('application/json')) {
             return response.json()
         } else {
             return response
@@ -45,8 +46,8 @@ export const useAttachmentApi = () => {
                 throw new Error(`Error fetching attachment, status: ${response.status}`)
             }
 
-            const contentDisposition = response.headers.get("Content-Disposition")
-            let filename = location.split("/").pop() 
+            const contentDisposition = response.headers.get('Content-Disposition')
+            let filename = location.split('/').pop()
             const match = contentDisposition?.match(/filename\*?=(['"])?(.+?)\1(;|$)/)
             if (match) {
                 filename = decodeURIComponent(match[2])
@@ -55,35 +56,35 @@ export const useAttachmentApi = () => {
             const blob = await response.blob()
             const url = window.URL.createObjectURL(blob)
 
-            const contentType = response.headers.get("Content-Type")?.split(";")[0].trim()
-            const fileExtension = filename.split(".").pop().toLowerCase()
+            const contentType = response.headers.get('Content-Type')?.split(';')[0].trim()
+            const fileExtension = filename.split('.').pop().toLowerCase()
 
             console.log(`Content-Type: ${contentType}, File Extension: ${fileExtension}`)
 
-            if (fileExtension === "pdf") {
-                const pdfWindow = window.open(url, "_blank")
+            if (fileExtension === 'pdf') {
+                const pdfWindow = window.open(url, '_blank')
                 if (pdfWindow) {
                     pdfWindow.document.title = filename
-                    const downloadLink = pdfWindow.document.createElement("a")
+                    const downloadLink = pdfWindow.document.createElement('a')
                     downloadLink.href = url
                     downloadLink.download = filename
                     pdfWindow.document.body.appendChild(downloadLink)
                     downloadLink.click()
                 }
-            } else if (contentType.startsWith("image") || ["png", "jpeg", "jpg", "gif"].includes(fileExtension.toLowerCase())) {
-                const imageWindow = window.open("", "_blank")
+            } else if (contentType.startsWith('image') || ['png', 'jpeg', 'jpg', 'gif'].includes(fileExtension.toLowerCase())) {
+                const imageWindow = window.open('', '_blank')
                 if (imageWindow) {
                     imageWindow.document.write(`<img src="${url}" alt="${filename}" style="max-width: 100%; height: auto;">`)
-                    const link = document.createElement("a")
+                    const link = document.createElement('a')
                     link.href = url
-                    link.setAttribute("download", filename)
+                    link.setAttribute('download', filename)
                     imageWindow.document.body.appendChild(link)
                     link.click()
                 }
             } else {
-                const link = document.createElement("a")
+                const link = document.createElement('a')
                 link.href = url
-                link.setAttribute("download", filename)
+                link.setAttribute('download', filename)
                 document.body.appendChild(link)
                 link.click()
                 document.body.removeChild(link)
@@ -93,7 +94,7 @@ export const useAttachmentApi = () => {
 
             return response
         } catch (error) {
-            toastStore.changeToast("error", "Error", "An error has occurred, the attachment does not exist.")
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the attachment does not exist.')
             console.error(`Error fetching attachment by ID: ${error}`)
         }
     }
@@ -101,20 +102,20 @@ export const useAttachmentApi = () => {
     const deleteAttachmentFromTask = async (bid, taskId, attachmentId) => {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/${attachmentId}`, {
-                method: "DELETE",
+                method: 'DELETE',
             })
 
             if (response.status >= 400) {
-                const errorMessage = typeof response === "string" ? response : "An error occurred, the attachment could not be deleted."
-                toastStore.changeToast("error", "Error", errorMessage)
+                const errorMessage = typeof response === 'string' ? response : 'An error occurred, the attachment could not be deleted.'
+                toastStore.changeToast('error', 'Error', errorMessage)
                 return
             }
 
             if (response.ok) {
-                toastStore.changeToast("success", "Success", "The attachment has been deleted successfully")
+                toastStore.changeToast('success', 'Success', 'The attachment has been deleted successfully')
             }
         } catch (error) {
-            toastStore.changeToast("error", "Error", "An error occurred, the attachment could not be deleted.")
+            toastStore.changeToast('error', 'Error', 'An error occurred, the attachment could not be deleted.')
             console.error(`Error deleting attachment: ${error}`)
         }
     }
@@ -123,14 +124,14 @@ export const useAttachmentApi = () => {
         try {
             const response = await fetchWithToken(`${bid}/tasks/${taskId}/attachments/displays/${filename}`, {
                 headers: {
-                    Accept: "application/octet-stream",
+                    Accept: 'application/octet-stream',
                 },
             })
 
-            const contentType = response.headers.get("Content-Type")
+            const contentType = response.headers.get('Content-Type')
             const arrayBuffer = await response.arrayBuffer()
 
-            let binary = ""
+            let binary = ''
             const bytes = new Uint8Array(arrayBuffer)
             bytes.forEach((byte) => {
                 binary += String.fromCharCode(byte)
@@ -152,7 +153,7 @@ export const useAttachmentApi = () => {
 
             return base64URL
         } catch (error) {
-            toastStore.changeToast("error", "Error", "An error has occurred, the attachment does not exist.")
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the attachment does not exist.')
             console.error(`Error fetching attachment by filename: ${error}`)
         }
     }

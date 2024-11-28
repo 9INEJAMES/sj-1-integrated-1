@@ -19,6 +19,7 @@ export const useCollabApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
+            headers['Auth-Type'] = await authStore.getTypeOfLogin()
         }
 
         toastStore.displayLoading()
@@ -31,7 +32,7 @@ export const useCollabApi = () => {
         await toastStore.resetToast()
 
         if (response.status == 401) {
-            authStore.refreshAccessToken()
+            // authStore.refreshAccessToken()
             if (authStore.getToken) {
                 response = await fetch(`${url}${endpoint}`, {
                     ...options,

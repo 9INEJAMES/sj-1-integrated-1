@@ -94,7 +94,6 @@ onMounted(() => {
         newCollaborator.value.oid = props.collaborator.oid
     }
     if (props.action === 'leaveBoard') {
-        console.log('CollabBoard to delete:', props.collabBoard)
     }
 })
 </script>

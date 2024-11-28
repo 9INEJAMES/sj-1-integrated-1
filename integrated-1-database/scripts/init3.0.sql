@@ -341,6 +341,14 @@ END$$
 
 DELIMITER ;
 
+CREATE TABLE user_caches (
+    oid VARCHAR(36),
+    name VARCHAR(100),
+    username VARCHAR(50),
+    email VARCHAR(50),
+    PRIMARY KEY (oid)
+) ENGINE=InnoDB;
+
 USE integrated;
 
 INSERT INTO boards (boardId, boardName, ownerId) VALUES 
@@ -355,3 +363,4 @@ SELECT * FROM integrated.tasks;
 SELECT * FROM integrated.statuses;
 SELECT * FROM integrated.collabs;
 SELECT * FROM integrated.attachments;
+SELECT * FROM integrated.user_caches;

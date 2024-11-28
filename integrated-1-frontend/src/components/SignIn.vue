@@ -43,27 +43,12 @@ const submitSignIn = async () => {
 
 const signInWithAzure = async () => {
     if (isLoading.value) {
-        console.log('Authentication already in progress')
         return
     }
-
     try {
         isLoading.value = true
-        console.log('Starting Azure sign in...')
-        
-        // Check if we already have an account
-        const accounts = msalInstance.getAllAccounts()
-        if (accounts.length > 0) {
-            console.log('Account already exists, loading data...')
-            await authStore.loadAzureData()
-            router.push({ name: 'boardView' })
-            return
-        }
-        
-        // No account, start new login
         await authStore.azureLogin()
     } catch (error) {
-        console.error('Azure sign in error:', error)
         localStorage.removeItem('msal.interaction.status')
     } finally {
         isLoading.value = false
@@ -72,32 +57,25 @@ const signInWithAzure = async () => {
 
 const initialize = async () => {
     if (isLoading.value) {
-        console.log('Initialization already in progress')
         return
     }
 
     try {
         isLoading.value = true
-        console.log('Initializing MSAL...')
-        
+
         await msalInstance.initialize()
-        console.log('MSAL initialized successfully')
-    
+
         const response = await msalInstance.handleRedirectPromise()
-        console.log('Redirect response:', response)
-        
+
         if (response) {
-            console.log('Processing redirect response...')
             await authStore.azureHandleRedirect()
             router.push({ name: 'boardView' })
         } else {
             const accounts = msalInstance.getAllAccounts()
             if (accounts.length > 0) {
-                console.log('Found existing account, loading data...')
                 await authStore.loadAzureData()
                 router.push({ name: 'boardView' })
             } else {
-                console.log('No existing account found')
                 // Clear any stale state since we're starting fresh
                 localStorage.removeItem('msal.interaction.status')
             }
@@ -110,6 +88,9 @@ const initialize = async () => {
     }
 }
 
+const signout = async () => {
+    await authStore.azureLogout()
+}
 onMounted(async () => {
     authStore.isLogin = false
     await initialize()
@@ -202,8 +183,6 @@ onMounted(async () => {
                     </svg>
                     MICROSOFT LOGIN
                 </button>
-                {{ authStore.isLogin }}
-                <button @click="signout">sign out</button>
             </div>
         </div>
     </div>

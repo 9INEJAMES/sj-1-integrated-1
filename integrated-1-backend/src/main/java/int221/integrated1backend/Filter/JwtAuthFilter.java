@@ -1,20 +1,19 @@
 package int221.integrated1backend.Filter;
 
 import int221.integrated1backend.entities.ex.User;
-import int221.integrated1backend.exceptions.UnauthenticatedException;
 import int221.integrated1backend.models.AuthType;
 import int221.integrated1backend.models.TokenType;
 import int221.integrated1backend.services.AzureService;
 import int221.integrated1backend.services.JwtService;
 import int221.integrated1backend.services.JwtUserDetailsService;
 import int221.integrated1backend.utils.Constant;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.spi.ErrorMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -38,8 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException, java.io.IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, java.io.IOException {
         String authHeader = request.getHeader("Authorization");
         String authType = request.getHeader("Auth-Type");
 
@@ -49,62 +47,50 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-
         if ("AZURE".equals(authType)) {
-            try {
-                handleAzureAuth(request, response, filterChain, token);
-            } catch (UnauthenticatedException e) {
-                throw new RuntimeException(e);
-            }
+            handleAzureAuth(request, response, filterChain, token);
         } else {
             handleLocalAuth(request, response, filterChain, token);
         }
     }
 
-    private void handleAzureAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token)
-            throws IOException, ServletException, UnauthenticatedException, java.io.IOException {
-        User user = azureService.azureMe(token);
+    private void handleAzureAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token) throws IOException, ServletException, java.io.IOException {
+        User user = azureService.fetchUserDetails(token);
 
         if (user == null) {
-            sendUnauthorizedResponse(response, "Invalid Azure token");
             return;
         }
 
         user.setAuthType(AuthType.AZURE);
         user.setAccessToken(token);
         setAuthentication(request, user);
+
         filterChain.doFilter(request, response);
     }
 
-    private void handleLocalAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token)
-            throws IOException, ServletException, java.io.IOException {
+    private void handleLocalAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token) throws IOException, ServletException, java.io.IOException {
         String oid;
-        try {
-            oid = jwtService.getClaimValueFromToken(token, TokenType.ACCESS,"oid");
-        } catch (JwtException ex) {
-            sendUnauthorizedResponse(response, "Invalid token: " + ex.getMessage());
-            return;
-        }
+
+        oid = jwtService.getClaimValueFromToken(token, TokenType.ACCESS, "oid");
+
 
         if (oid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User user = userDetailsService.loadUserByOid(oid);
             user.setAuthType(AuthType.LOCAL);
             user.setAccessToken(token);
 
-            if (!jwtService.validateAccessToken(token, user.getOid())) {
-                sendUnauthorizedResponse(response, "Token validation failed");
+            if (jwtService.validateAccessToken(token, oid)) {
+                setAuthentication(request, user);
+            } else {
                 return;
             }
-
-            setAuthentication(request, user);
         }
 
         filterChain.doFilter(request, response);
     }
 
     private void setAuthentication(HttpServletRequest request, User user) {
-        UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
     }

@@ -2,8 +2,10 @@ package int221.integrated1backend.services;
 
 import int221.integrated1backend.dtos.AuthResponse;
 import int221.integrated1backend.entities.ex.User;
+import int221.integrated1backend.entities.in.UserCache;
 import int221.integrated1backend.exceptions.UnauthenticatedException;
 import int221.integrated1backend.models.AuthType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 
 @Service
 public class AzureService {
@@ -27,193 +28,164 @@ public class AzureService {
     @Value("${web.host}")
     private String HOST_BASE;
 
+    UserCacheService userCacheService;
+    public String generateAzureLoginUrl() {
+        return "https://login.microsoftonline.com/" + AZURE_TENANT_ID +
+                "/oauth2/v2.0/authorize?client_id=" + AZURE_CLIENT_ID +
+                "&response_type=code" +
+                "&redirect_uri=" + AZURE_REDIRECT_URI +
+                "&scope=openid%20profile%20email%20offline_access%20https://graph.microsoft.com/User.ReadBasic.All";
+    }
 
-    public AuthResponse exchangeAuthorizationCodeForToken(String authorizationCode) throws UnauthenticatedException {
+    @Deprecated
+    public AuthResponse exchangeAuthCodeForToken(String authorizationCode) {
         try {
-            String tokenEndpoint = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
+            String tokenEndpoint = buildTokenEndpoint();
 
-            String requestBody = buildTokenRequestBody(authorizationCode);
+            String requestBody = buildAuthCodeRequestBody(authorizationCode);
 
-            String response = sendHttpPostRequest(tokenEndpoint, requestBody);
-            System.out.println(response);
+            String response = sendPostRequest(tokenEndpoint, requestBody);
 
-            String accessToken = extractValueFromJson(response, "access_token");
-            String refreshToken = extractValueFromJson(response, "refresh_token");
+            String accessToken = extractJsonValue(response, "access_token");
+            String refreshToken = extractJsonValue(response, "refresh_token");
 
-            AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
-            authResponse.setType(AuthType.AZURE);
+            User user = fetchUserDetails(accessToken);
+            if (user == null) {
+                throw new UnauthenticatedException("Failed to retrieve user information from Azure.");
+            }
 
-            return authResponse;
+            cacheUserDetails(user);
+
+            return buildAuthResponse(accessToken, refreshToken, AuthType.AZURE);
         } catch (IOException e) {
-            throw new UnauthenticatedException("Failed to exchange authorization code for token");
+            throw new UnauthenticatedException("Failed to exchange authorization code for token.");
         }
     }
 
-    public AuthResponse refreshToken(String refreshToken) throws UnauthenticatedException {
+    public AuthResponse refreshAccessToken(String refreshToken) {
         try {
-            String tokenEndpoint = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
+            String tokenEndpoint = buildTokenEndpoint();
 
-            String requestBody = String.format(
-                    "grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s",
-                    URLEncoder.encode(refreshToken, "UTF-8"),
-                    URLEncoder.encode(AZURE_CLIENT_ID, "UTF-8"),
-                    URLEncoder.encode(AZURE_CLIENT_SECRET, "UTF-8")
-            );
+            String requestBody = buildRefreshTokenRequestBody(refreshToken);
 
-            String response = sendHttpPostRequest(tokenEndpoint, requestBody);
+            String response = sendPostRequest(tokenEndpoint, requestBody);
 
-            String accessToken = extractValueFromJson(response, "access_token");
-            refreshToken = extractValueFromJson(response, "refresh_token");
+            String accessToken = extractJsonValue(response, "access_token");
+            refreshToken = extractJsonValue(response, "refresh_token");
 
-            AuthResponse authResponse = new AuthResponse(accessToken, refreshToken);
-            authResponse.setType(AuthType.AZURE);
-
-            return authResponse;
+            return buildAuthResponse(accessToken, refreshToken, AuthType.AZURE);
         } catch (IOException e) {
-            throw new UnauthenticatedException("Failed to refresh token");
+            throw new UnauthenticatedException("Failed to refresh access token.");
         }
     }
 
-    public User getUserFromAzureMail(String email, String token) {
+    public User getUserDetailsByEmail(String email, String accessToken) {
         String endpoint = "https://graph.microsoft.com/v1.0/users/" + email;
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(endpoint).openConnection();
+            String response = sendGetRequest(endpoint, accessToken);
 
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Authorization", "Bearer " + token);
-            connection.setRequestProperty("Accept", "application/json");
+            String oid = extractJsonValue(response, "id");
+            String mail = extractJsonValue(response, "mail");
+            String name = extractJsonValue(response, "displayName");
 
-            connection.setDoOutput(false);
+            if (isNullOrEmpty(oid) || isNullOrEmpty(mail) || isNullOrEmpty(name)) return null;
 
-            int responseCode = connection.getResponseCode();
+            String username = generateUsername(name);
 
-            // Read the response
-            BufferedReader reader;
-            if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
-            }
+            userCacheService.save(new UserCache(oid, name, username, mail));
 
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = reader.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-
-            String jsonResponse = response.toString();
-            String oid = extractValueFromJson(jsonResponse, "id");
-            String mail = extractValueFromJson(jsonResponse, "mail");
-            String name = extractValueFromJson(jsonResponse, "displayName");
-
-            if (oid == null || oid.isEmpty() || mail == null || mail.isEmpty() || name == null || name.isEmpty()) {
-                return null;
-            }
-
-            User user = new User();
-            user.setOid(oid);
-            user.setEmail(mail);
-            user.setName(name);
-
-            connection.disconnect();
-
-            return user;
+            return buildUser(oid, name, mail);
         } catch (IOException e) {
             return null;
         }
     }
 
-    public User azureMe(String token) throws UnauthenticatedException {
-        String meEndpoint = "https://graph.microsoft.com/v1.0/me";
+    public User fetchUserDetails(String accessToken) {
+        String endpoint = "https://graph.microsoft.com/v1.0/me";
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(meEndpoint).openConnection();
+            String response = sendGetRequest(endpoint, accessToken);
 
-            connection.setRequestMethod("GET");
+            String oid = extractJsonValue(response, "id");
+            String email = extractJsonValue(response, "mail");
+            String name = extractJsonValue(response, "displayName");
 
-            connection.setRequestProperty("Authorization", "Bearer " + token);
-            connection.setRequestProperty("Accept", "application/json");
-
-            connection.setDoOutput(false);
-
-            int responseCode = connection.getResponseCode();
-
-            // Read the response
-            BufferedReader reader;
-            if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"));
+            if (isNullOrEmpty(oid) || isNullOrEmpty(email) || isNullOrEmpty(name)) {
+                throw new UnauthenticatedException("Failed to retrieve user information from Azure.");
             }
 
-            StringBuilder response = new StringBuilder();
-            String responseLine;
-            while ((responseLine = reader.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
+            String username = generateUsername(name);
 
-            String jsonResponse = response.toString();
-            String oid = extractValueFromJson(jsonResponse, "id");
-            String email = extractValueFromJson(jsonResponse, "mail");
-            String name = extractValueFromJson(jsonResponse, "displayName");
-
-            if (oid == null || email == null || name == null) {
-                throw new UnauthenticatedException("Failed to get user info from Azure");
-            }
-
-            User user = new User();
-            user.setOid(oid);
-            user.setEmail(email);
-            user.setName(name);
-
-            connection.disconnect();
-
-            return user;
+            return buildUser(oid, name, email, username);
         } catch (IOException e) {
-            throw new UnauthenticatedException("Failed to get user info from Azure");
+            throw new UnauthenticatedException("Failed to retrieve user information from Azure.");
         }
     }
 
-    private String buildTokenRequestBody(String authorizationCode) throws UnsupportedEncodingException {
+    private String buildTokenEndpoint() {
+        return String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
+    }
+
+    private String buildAuthCodeRequestBody(String authorizationCode) throws UnsupportedEncodingException {
         return String.format(
                 "grant_type=authorization_code&code=%s&redirect_uri=%s&client_id=%s&client_secret=%s",
-                URLEncoder.encode(authorizationCode, "UTF-8"),
-                URLEncoder.encode(AZURE_REDIRECT_URI, "UTF-8"),
-                URLEncoder.encode(AZURE_CLIENT_ID, "UTF-8"),
-                URLEncoder.encode(AZURE_CLIENT_SECRET, "UTF-8")
+                URLEncoder.encode(authorizationCode, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_REDIRECT_URI, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8)
         );
     }
 
-    private String sendHttpPostRequest(String url, String requestBody) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
+    private String buildRefreshTokenRequestBody(String refreshToken) throws UnsupportedEncodingException {
+        return String.format(
+                "grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s",
+                URLEncoder.encode(refreshToken, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8)
+        );
+    }
+
+    private void cacheUserDetails(User user) {
+        userCacheService.save(new UserCache(user.getOid(), user.getName(), user.getUsername(), user.getEmail()));
+    }
+
+    private AuthResponse buildAuthResponse(String accessToken, String refreshToken, AuthType authType) {
+        AuthResponse response = new AuthResponse(accessToken, refreshToken);
+        response.setType(authType);
+        return response;
+    }
+
+    private String sendPostRequest(String url, String requestBody) throws IOException {
+        HttpURLConnection connection = setupHttpConnection(url, "POST");
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
 
         try (OutputStream os = connection.getOutputStream()) {
-            os.write(requestBody.getBytes());
+            os.write(requestBody.getBytes(StandardCharsets.UTF_8));
             os.flush();
         }
 
-        return readResponse(connection);
+        return readHttpResponse(connection);
     }
 
-    private void sendHttpPostRequestWithAuth(String url, String requestBody, String token) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+    private String sendGetRequest(String url, String token) throws IOException {
+        HttpURLConnection connection = setupHttpConnection(url, "GET");
         connection.setRequestProperty("Authorization", "Bearer " + token);
+        connection.setRequestProperty("Accept", "application/json");
 
-        try (OutputStream os = connection.getOutputStream()) {
-            os.write(requestBody.getBytes());
-            os.flush();
-        }
-
-        readResponse(connection);
+        return readHttpResponse(connection);
     }
 
-    private String readResponse(HttpURLConnection connection) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+    private HttpURLConnection setupHttpConnection(String url, String method) throws IOException {
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestMethod(method);
+        connection.setDoOutput("POST".equalsIgnoreCase(method));
+        return connection;
+    }
+
+    private String readHttpResponse(HttpURLConnection connection) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST
+                        ? connection.getInputStream()
+                        : connection.getErrorStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -223,32 +195,32 @@ public class AzureService {
         }
     }
 
-    private String extractIdTokenFromResponse(String response) {
-        return extractValueFromJson(response, "id_token");
-    }
-
-    private String extractClaimFromToken(String idToken, String claimKey) {
-        String[] parts = idToken.split("\\.");
-        if (parts.length == 3) {
-            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
-            return extractValueFromJson(payload, claimKey);
-        }
-        return null;
-    }
-
-    private String extractValueFromJson(String json, String key) {
+    private String extractJsonValue(String json, String key) {
         String keyPattern = String.format("\"%s\":\"", key);
         int startIndex = json.indexOf(keyPattern) + keyPattern.length();
         int endIndex = json.indexOf("\"", startIndex);
-        return startIndex >= 0 && endIndex >= 0 ? json.substring(startIndex, endIndex) : null;
+        return startIndex >= keyPattern.length() && endIndex > startIndex ? json.substring(startIndex, endIndex) : null;
     }
 
-    public String getURL() {
-        String url = "https://login.microsoftonline.com/" + AZURE_TENANT_ID +
-                "/oauth2/v2.0/authorize?client_id=" + AZURE_CLIENT_ID +
-                "&response_type=code" +
-                "&redirect_uri=" + HOST_BASE + AZURE_REDIRECT_URI +
-                "&scope=openid%20profile%20email%20offline_access%20https://graph.microsoft.com/User.ReadBasic.All";
-        return url;
+    private String generateUsername(String name) {
+        return "itbkk." + name.replace(" ", ".").toLowerCase();
+    }
+
+    private User buildUser(String oid, String name, String email) {
+        User user = new User();
+        user.setOid(oid);
+        user.setName(name);
+        user.setEmail(email);
+        return user;
+    }
+
+    private User buildUser(String oid, String name, String email, String username) {
+        User user = buildUser(oid, name, email);
+        user.setUsername(username);
+        return user;
+    }
+
+    private boolean isNullOrEmpty(String value) {
+        return value == null || value.isEmpty();
     }
 }

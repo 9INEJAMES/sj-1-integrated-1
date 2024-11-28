@@ -1,27 +1,20 @@
 package int221.integrated1backend.controllers;
 
-import int221.integrated1backend.dtos.AccessToken;
 import int221.integrated1backend.dtos.AuthResponse;
-import int221.integrated1backend.dtos.AzureCallbackRequest;
-import int221.integrated1backend.dtos.JwtRequestUser;
+import int221.integrated1backend.dtos.AuthRequest;
 import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.exceptions.UnauthenticatedException;
 import int221.integrated1backend.models.TokenType;
 import int221.integrated1backend.services.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("")
@@ -38,11 +31,11 @@ public class AuthenController {
     AzureService azureService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid JwtRequestUser jwtRequestUser) {
+    public ResponseEntity<Object> login(@RequestBody @Valid AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(jwtRequestUser.getUserName(), jwtRequestUser.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUserName(), request.getPassword())
         );
-        User user = jwtUserDetailsService.loadUserByUsername(jwtRequestUser.getUserName());
+        User user = jwtUserDetailsService.loadUserByUsername(request.getUserName());
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }
@@ -59,13 +52,11 @@ public class AuthenController {
             @RequestHeader("Auth-Type") String authType
     ) throws UnauthenticatedException {
         String refreshToken = requestTokenHeader.substring(7);
-
         if (authType != null && authType.equals("AZURE")) {
-            AuthResponse response = azureService.refreshToken(refreshToken);
+            AuthResponse response = azureService.refreshAccessToken(refreshToken);
             if (response == null) {
                 return ResponseEntity.status(401).build();
             }
-
             return ResponseEntity.ok(response);
         }
 
@@ -80,6 +71,25 @@ public class AuthenController {
 
         return ResponseEntity.status(401).build();
     }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<AuthResponse> authenticateAndGetToken(@Valid @RequestBody AuthRequest request) {
+//        AuthResponse response = authenticationService.login(request);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PostMapping("/logout")
+//    public ResponseEntity<Void> logout(HttpServletRequest request) {
+//        System.out.println("Logging out");
+//        authenticationService.logout(request);
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    @PostMapping("/token")
+//    public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request) {
+//        AuthResponse response = authenticationService.refreshToken(request);
+//        return ResponseEntity.ok(response);
+//    }
 
 }
 

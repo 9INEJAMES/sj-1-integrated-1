@@ -20,7 +20,6 @@ export const useAuthStore = defineStore('auth', () => {
             try {
                 await msalInstance.initialize()
                 msalInitialized = true
-                console.log('MSAL initialized successfully')
             } catch (error) {
                 console.error('MSAL initialization error:', error)
                 throw error
@@ -37,15 +36,19 @@ export const useAuthStore = defineStore('auth', () => {
         return accessToken.value
     }
 
-    const addToken = (newAccessToken, newRefreshToken, type) => {
+    const addToken = (newAccessToken, newRefreshToken, newType) => {
         accessToken.value = newAccessToken
         refreshToken.value = newRefreshToken || refreshToken.value // Keep current refresh token if not passed
-        const userTokenObject = {
+        typeLogin.value = newType || typeLogin.value
+        let userTokenObject
+
+        userTokenObject = {
             username: decodeToken(newAccessToken).username,
-            access_token: newAccessToken,
+            access_token: accessToken.value,
             refresh_token: refreshToken.value,
-            type: type,
+            typeLogin: typeLogin.value,
         }
+
         localStorage.setItem('authData', JSON.stringify(userTokenObject))
         isLogin.value = true
         return userTokenObject
@@ -62,6 +65,10 @@ export const useAuthStore = defineStore('auth', () => {
     const getLoginStatus = async () => {
         getToken()
         return isLogin.value
+    }
+    const getTypeOfLogin = async () => {
+        getToken()
+        return typeLogin.value
     }
 
     const checkToken = async () => {
@@ -123,8 +130,9 @@ export const useAuthStore = defineStore('auth', () => {
         return VueJwtDecode.decode(token)
     }
 
-    const logout = () => {
+    const logout = async () => {
         localStorage.removeItem('authData')
+        if (typeLogin.value == 'AZURE') await azureLogout()
         accessToken.value = ''
         refreshToken.value = ''
         typeLogin.value = ''
@@ -164,23 +172,19 @@ export const useAuthStore = defineStore('auth', () => {
 
             const currentAccounts = msalInstance.getAllAccounts()
             if (currentAccounts.length === 0) {
-                console.log('No accounts found, starting new login')
-                await azureLogin()
+                // await azureLogin()
                 return null
             }
 
             const account = currentAccounts[0]
-            console.log('Found account:', account)
             msalInstance.setActiveAccount(account)
 
             try {
                 // Get both ID token and access token
                 const response = await msalInstance.acquireTokenSilent({
                     ...loginRequest,
-                    account: account
+                    account: account,
                 })
-
-                console.log('Azure tokens acquired successfully')
 
                 // Store user info
                 state.user = account
@@ -189,15 +193,24 @@ export const useAuthStore = defineStore('auth', () => {
                 typeLogin.value = 'azure'
 
                 // Store tokens securely
-                localStorage.setItem('msal.idToken', response.idToken)
-                localStorage.setItem('msal.accessToken', response.accessToken)
+                // localStorage.setItem('msal.idToken', response.idToken)
+                // localStorage.setItem('msal.accessToken', response.accessToken)
+                const tokenKeys = JSON.parse(localStorage.getItem(`msal.token.keys.${import.meta.env.VITE_CLIENT_ID}`))
+                const accessKey = JSON.parse(localStorage.getItem(`${tokenKeys.accessToken[0]}`))
+                const refreshKey = JSON.parse(localStorage.getItem(`${tokenKeys.refreshToken[0]}`))
+                const idKey = JSON.parse(localStorage.getItem(`${tokenKeys.idToken[0]}`))
+
+                // console.log('access token ', accessKey.secret)
+                // console.log('access token ', refreshKey.secret)
+                // console.log('access token ', idKey.secret)
+
+                addToken(accessKey.secret, refreshKey.secret, 'AZURE')
 
                 return account
             } catch (silentError) {
                 console.error('Silent token acquisition failed:', silentError)
                 if (silentError.name === 'InteractionRequiredAuthError') {
-                    console.log('Interaction required, starting login')
-                    await azureLogin()
+                    // await azureLogin()
                     return null
                 }
                 throw silentError
@@ -211,21 +224,20 @@ export const useAuthStore = defineStore('auth', () => {
     const azureLogin = async () => {
         try {
             await initializeMsal()
-            
-            // Clear any existing auth state before starting new login
-            localStorage.removeItem('msal.idToken')
-            localStorage.removeItem('msal.accessToken')
             state.isAuthenticated = false
             state.user = null
             isLogin.value = false
             typeLogin.value = ''
 
-            console.log('Starting Azure login redirect...')
             await msalInstance.loginRedirect(loginRequest)
+            const response = await msalInstance.acquireTokenSilent({
+                ...loginRequest,
+                account: account,
+            })
+
+            await loadAzureData()
         } catch (error) {
-            if (error.name === 'BrowserAuthError' && 
-                error.message.includes('interaction_in_progress')) {
-                console.log('Login interaction already in progress')
+            if (error.name === 'BrowserAuthError' && error.message.includes('interaction_in_progress')) {
                 localStorage.removeItem('msal.interaction.status')
                 return
             }
@@ -237,35 +249,26 @@ export const useAuthStore = defineStore('auth', () => {
     const azureHandleRedirect = async () => {
         try {
             await initializeMsal()
-            console.log('Handling redirect...')
 
             const response = await msalInstance.handleRedirectPromise()
-            
+
             if (response) {
-                console.log('Redirect response received')
                 const account = response.account
                 msalInstance.setActiveAccount(account)
-                
+
                 // Store user info
                 state.user = account
                 state.isAuthenticated = true
                 isLogin.value = true
                 typeLogin.value = 'azure'
 
-                // Store tokens securely
-                localStorage.setItem('msal.idToken', response.idToken)
-                localStorage.setItem('msal.accessToken', response.accessToken)
-
                 return account
             } else {
-                console.log('No redirect response, checking for existing session')
                 return await loadAzureData()
             }
         } catch (error) {
             console.error('Handle redirect error:', error)
-            if (error.name === 'BrowserAuthError' && 
-                error.message.includes('interaction_in_progress')) {
-                console.log('Clearing interaction in progress')
+            if (error.name === 'BrowserAuthError' && error.message.includes('interaction_in_progress')) {
                 localStorage.removeItem('msal.interaction.status')
                 return await loadAzureData()
             }
@@ -285,7 +288,7 @@ export const useAuthStore = defineStore('auth', () => {
 
             const response = await msalInstance.acquireTokenSilent({
                 ...graphScopes,
-                account: account
+                account: account,
             })
 
             return response.accessToken
@@ -304,13 +307,7 @@ export const useAuthStore = defineStore('auth', () => {
             throw new Error('MSAL is not initialized')
         }
 
-        // Clear stored tokens
-        localStorage.removeItem('msal.idToken')
-        localStorage.removeItem('msal.accessToken')
-
         await msalInstance.logoutRedirect()
-        isLogin.value = false
-        typeLogin.value = ''
     }
 
     return {
@@ -330,6 +327,7 @@ export const useAuthStore = defineStore('auth', () => {
         azureHandleRedirect,
         loadAzureData,
         getGraphToken,
+        getTypeOfLogin,
     }
 })
 

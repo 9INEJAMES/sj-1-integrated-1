@@ -17,9 +17,9 @@ export const useBoardApi = () => {
             'Content-Type': 'application/json',
             ...options.headers,
         }
-
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
+            headers['Auth-Type'] = await authStore.getTypeOfLogin()
         }
         toastStore.displayLoading()
         const response = await fetch(`${url}${endpoint}`, {
@@ -29,7 +29,7 @@ export const useBoardApi = () => {
         await toastStore.resetToast()
 
         if (response.status == 401) {
-            authStore.refreshAccessToken()
+            // authStore.refreshAccessToken()
         }
 
         return response

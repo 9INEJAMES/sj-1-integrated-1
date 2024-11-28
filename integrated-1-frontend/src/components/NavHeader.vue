@@ -53,8 +53,8 @@ watch(() => route.params.bid, updateBoardName)
 
 updateBoardName()
 
-const logout = () => {
-    authStore.logout()
+const logout = async () => {
+    await authStore.logout()
     !authStore.checkToken()
     router.push({ name: 'login' })
 }
@@ -68,6 +68,9 @@ const handleDeleteModal = (confirmed) => {
         router.push({ name: 'boardView' })
     }
     deleteModal.value = false
+}
+const getLoginStatus = async () => {
+    return await authStore.getLoginStatus()
 }
 </script>
 <template>
@@ -100,7 +103,7 @@ const handleDeleteModal = (confirmed) => {
                         {{ authStore.getAuthData() ? authStore.getAuthData().name : 'Guest' }}
                     </p>
                     <img
-                        v-show="authStore.getLoginStatus()"
+                        v-show="getLoginStatus"
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
                         class="itbkk-sign-out w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"

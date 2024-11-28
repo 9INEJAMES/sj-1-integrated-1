@@ -25,6 +25,7 @@ export const useTaskApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
+            headers['Auth-Type'] = await authStore.getTypeOfLogin()
         }
         toastStore.displayLoading()
         const response = await fetch(`${url}/v3/boards/${endpoint}`, {
@@ -37,9 +38,9 @@ export const useTaskApi = () => {
             tasksStore.fetchTasks(route.params.bid)
         }
         if (response.status == 401) {
-            authStore.refreshAccessToken()
+            // authStore.refreshAccessToken()
         }
-        
+
         return response
     }
 

@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class JwtRequestUser {
+public class AuthRequest {
     @NotBlank
     @Size(max = 50)
     private String userName;
