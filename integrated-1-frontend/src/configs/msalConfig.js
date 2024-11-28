@@ -8,7 +8,7 @@ export const msalConfig = {
     auth: {
         clientId: import.meta.env.VITE_CLIENT_ID,
         authority: 'https://login.microsoftonline.com/' + import.meta.env.VITE_TENANT_ID,
-        redirectUri: `${baseUrl}/`, // Use full URL for redirect
+        redirectUri: `${baseUrl}/${import.meta.env.VITE_BASE ?? ''}`, // Use full URL for redirect
         postLogoutRedirectUri: `${baseUrl}`, // Use full URL for logout redirect
         navigateToLoginRequestUrl: true,
     },
