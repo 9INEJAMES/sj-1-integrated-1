@@ -11,6 +11,7 @@ const route = useRoute()
 const themeStore = useTheme()
 const authApi = useAuthApi()
 const authStore = useAuthStore()
+const isLoading = ref(false)
 
 const isPasswordVisible = ref(false)
 const base = import.meta.env.VITE_BASE
@@ -39,25 +40,79 @@ const submitSignIn = async () => {
         console.error('Sign in error:', error)
     }
 }
-const signInWithAzure = async () => {
-    await authStore.azureLogin()
-}
 
-const initailize = async () => {
+const signInWithAzure = async () => {
+    if (isLoading.value) {
+        console.log('Authentication already in progress')
+        return
+    }
+
     try {
-        await msalInstance.initialize()
+        isLoading.value = true
+        console.log('Starting Azure sign in...')
+        
+        // Check if we already have an account
+        const accounts = msalInstance.getAllAccounts()
+        if (accounts.length > 0) {
+            console.log('Account already exists, loading data...')
+            await authStore.loadAzureData()
+            router.push({ name: 'boardView' })
+            return
+        }
+        
+        // No account, start new login
+        await authStore.azureLogin()
     } catch (error) {
-        console.error('MSAL initialization error:', error)
+        console.error('Azure sign in error:', error)
+        localStorage.removeItem('msal.interaction.status')
+    } finally {
+        isLoading.value = false
     }
 }
-const signout = async () => {
-    await authStore.azureLogout()
+
+const initialize = async () => {
+    if (isLoading.value) {
+        console.log('Initialization already in progress')
+        return
+    }
+
+    try {
+        isLoading.value = true
+        console.log('Initializing MSAL...')
+        
+        await msalInstance.initialize()
+        console.log('MSAL initialized successfully')
+    
+        const response = await msalInstance.handleRedirectPromise()
+        console.log('Redirect response:', response)
+        
+        if (response) {
+            console.log('Processing redirect response...')
+            await authStore.azureHandleRedirect()
+            router.push({ name: 'boardView' })
+        } else {
+            const accounts = msalInstance.getAllAccounts()
+            if (accounts.length > 0) {
+                console.log('Found existing account, loading data...')
+                await authStore.loadAzureData()
+                router.push({ name: 'boardView' })
+            } else {
+                console.log('No existing account found')
+                // Clear any stale state since we're starting fresh
+                localStorage.removeItem('msal.interaction.status')
+            }
+        }
+    } catch (error) {
+        console.error('MSAL initialization error:', error)
+        localStorage.removeItem('msal.interaction.status')
+    } finally {
+        isLoading.value = false
+    }
 }
 
 onMounted(async () => {
     authStore.isLogin = false
-    await initailize()
-    await authStore.azureHandleRedirect()
+    await initialize()
 })
 </script>
 

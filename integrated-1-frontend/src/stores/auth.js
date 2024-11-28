@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import VueJwtDecode from 'vue-jwt-decode'
 import { useToast } from '@/stores/toast.js'
 import { useBoardApi } from '@/composables/board-api'
-import { msalInstance, graphScopes, state } from '@/configs/msalConfig'
+import { msalInstance, graphScopes, state, loginRequest } from '@/configs/msalConfig'
 
 export const useAuthStore = defineStore('auth', () => {
     const toastStore = useToast()
@@ -13,6 +13,21 @@ export const useAuthStore = defineStore('auth', () => {
     const isLogin = ref(false)
     const typeLogin = ref('')
 
+    // Initialize MSAL
+    let msalInitialized = false
+    const initializeMsal = async () => {
+        if (!msalInitialized) {
+            try {
+                await msalInstance.initialize()
+                msalInitialized = true
+                console.log('MSAL initialized successfully')
+            } catch (error) {
+                console.error('MSAL initialization error:', error)
+                throw error
+            }
+        }
+    }
+
     const getToken = () => {
         const auth = JSON.parse(localStorage.getItem('authData'))
         isLogin.value = auth ? true : false
@@ -20,6 +35,33 @@ export const useAuthStore = defineStore('auth', () => {
         accessToken.value = auth ? auth.access_token : null
         refreshToken.value = auth ? auth.refresh_token : null
         return accessToken.value
+    }
+
+    const addToken = (newAccessToken, newRefreshToken, type) => {
+        accessToken.value = newAccessToken
+        refreshToken.value = newRefreshToken || refreshToken.value // Keep current refresh token if not passed
+        const userTokenObject = {
+            username: decodeToken(newAccessToken).username,
+            access_token: newAccessToken,
+            refresh_token: refreshToken.value,
+            type: type,
+        }
+        localStorage.setItem('authData', JSON.stringify(userTokenObject))
+        isLogin.value = true
+        return userTokenObject
+    }
+
+    const clearToken = () => {
+        localStorage.removeItem('authData')
+        accessToken.value = ''
+        refreshToken.value = ''
+        typeLogin.value = ''
+        isLogin.value = false
+    }
+
+    const getLoginStatus = async () => {
+        getToken()
+        return isLogin.value
     }
 
     const checkToken = async () => {
@@ -69,20 +111,6 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
-    const addToken = (newAccessToken, newRefreshToken, type) => {
-        accessToken.value = newAccessToken
-        refreshToken.value = newRefreshToken || refreshToken.value // Keep current refresh token if not passed
-        const userTokenObject = {
-            username: decodeToken(newAccessToken).username,
-            access_token: newAccessToken,
-            refresh_token: refreshToken.value,
-            type: type,
-        }
-        localStorage.setItem('authData', JSON.stringify(userTokenObject))
-        isLogin.value = true
-        return userTokenObject
-    }
-
     const getAuthData = () => {
         if (!accessToken.value) {
             return null
@@ -130,78 +158,159 @@ export const useAuthStore = defineStore('auth', () => {
         return decodeToken(t)?.email
     }
 
-    const getLoginStatus = async () => {
-        getToken()
-        return isLogin.value
-    }
-
     const loadAzureData = async () => {
         try {
-            //Check if MSAL is intialized before using it.
-            if (!msalInstance) {
-                throw new Error('MSAL is not initialized')
+            await initializeMsal()
+
+            const currentAccounts = msalInstance.getAllAccounts()
+            if (currentAccounts.length === 0) {
+                console.log('No accounts found, starting new login')
+                await azureLogin()
+                return null
             }
 
-            //i store data in local storage
-            const account = msalInstance.getAllAccounts()
-            if (account.length > 0) {
-                state.user = account[0]
+            const account = currentAccounts[0]
+            console.log('Found account:', account)
+            msalInstance.setActiveAccount(account)
+
+            try {
+                // Get both ID token and access token
+                const response = await msalInstance.acquireTokenSilent({
+                    ...loginRequest,
+                    account: account
+                })
+
+                console.log('Azure tokens acquired successfully')
+
+                // Store user info
+                state.user = account
                 state.isAuthenticated = true
                 isLogin.value = true
                 typeLogin.value = 'azure'
+
+                // Store tokens securely
+                localStorage.setItem('msal.idToken', response.idToken)
+                localStorage.setItem('msal.accessToken', response.accessToken)
+
+                return account
+            } catch (silentError) {
+                console.error('Silent token acquisition failed:', silentError)
+                if (silentError.name === 'InteractionRequiredAuthError') {
+                    console.log('Interaction required, starting login')
+                    await azureLogin()
+                    return null
+                }
+                throw silentError
             }
-            const token = JSON.parse(localStorage.getItem(`msal.token.keys.${import.meta.env.VITE_CLIENT_ID}`))
-
-            console.log(token.accessToken[0])
-            console.log(token.refreshToken[0])
-            toastStore.changeToast('success', 'Success', 'You have successfully logged in')
-
-            return account
         } catch (error) {
-            console.error(error)
+            console.error('Load Azure data error:', error)
+            throw error
         }
     }
 
     const azureLogin = async () => {
         try {
-            //Check if MSAL is intialized before using it.
-            if (!msalInstance) {
-                throw new Error('MSAL is not initialized')
+            await initializeMsal()
+            
+            // Clear any existing auth state before starting new login
+            localStorage.removeItem('msal.idToken')
+            localStorage.removeItem('msal.accessToken')
+            state.isAuthenticated = false
+            state.user = null
+            isLogin.value = false
+            typeLogin.value = ''
+
+            console.log('Starting Azure login redirect...')
+            await msalInstance.loginRedirect(loginRequest)
+        } catch (error) {
+            if (error.name === 'BrowserAuthError' && 
+                error.message.includes('interaction_in_progress')) {
+                console.log('Login interaction already in progress')
+                localStorage.removeItem('msal.interaction.status')
+                return
+            }
+            console.error('Azure login error:', error)
+            throw error
+        }
+    }
+
+    const azureHandleRedirect = async () => {
+        try {
+            await initializeMsal()
+            console.log('Handling redirect...')
+
+            const response = await msalInstance.handleRedirectPromise()
+            
+            if (response) {
+                console.log('Redirect response received')
+                const account = response.account
+                msalInstance.setActiveAccount(account)
+                
+                // Store user info
+                state.user = account
+                state.isAuthenticated = true
+                isLogin.value = true
+                typeLogin.value = 'azure'
+
+                // Store tokens securely
+                localStorage.setItem('msal.idToken', response.idToken)
+                localStorage.setItem('msal.accessToken', response.accessToken)
+
+                return account
+            } else {
+                console.log('No redirect response, checking for existing session')
+                return await loadAzureData()
+            }
+        } catch (error) {
+            console.error('Handle redirect error:', error)
+            if (error.name === 'BrowserAuthError' && 
+                error.message.includes('interaction_in_progress')) {
+                console.log('Clearing interaction in progress')
+                localStorage.removeItem('msal.interaction.status')
+                return await loadAzureData()
+            }
+            throw error
+        }
+    }
+
+    // Helper function to get MS Graph access token
+    const getGraphToken = async () => {
+        try {
+            await initializeMsal()
+
+            const account = msalInstance.getActiveAccount()
+            if (!account) {
+                throw new Error('No active account')
             }
 
-            const loginResponse = await msalInstance.loginRedirect()
-            state.user = loginResponse.account
-            state.isAuthenticated = true
-            isLogin.value = true
-            typeLogin.value = 'azure'
+            const response = await msalInstance.acquireTokenSilent({
+                ...graphScopes,
+                account: account
+            })
+
+            return response.accessToken
         } catch (error) {
-            console.error(error)
+            console.error('Get Graph token error:', error)
+            if (error.name === 'InteractionRequiredAuthError') {
+                const response = await msalInstance.acquireTokenPopup(graphScopes)
+                return response.accessToken
+            }
+            throw error
         }
     }
 
     const azureLogout = async () => {
-        //Check if MSAL is intialized before using it.
         if (!msalInstance) {
             throw new Error('MSAL is not initialized')
         }
+
+        // Clear stored tokens
+        localStorage.removeItem('msal.idToken')
+        localStorage.removeItem('msal.accessToken')
 
         await msalInstance.logoutRedirect()
         isLogin.value = false
         typeLogin.value = ''
-    }
-
-    const azureHandleRedirect = async () => {
-        //Check if MSAL is intialized before using it.
-        if (!msalInstance) {
-            throw new Error('MSAL is not initialized')
-        }
-
-        const response = await msalInstance.handleRedirectPromise()
-        if (response) {
-            state.user = response.account
-            isLogin.value = true
-            typeLogin.value = 'azure'
-        }
     }
 
     return {
@@ -220,6 +329,7 @@ export const useAuthStore = defineStore('auth', () => {
         azureLogout,
         azureHandleRedirect,
         loadAzureData,
+        getGraphToken,
     }
 })
 
