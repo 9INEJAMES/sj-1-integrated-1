@@ -4,6 +4,7 @@ export const useAttachmentApi = () => {
     const toastStore = useToast()
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
+    let count = 0
 
     async function fetchWithToken(endpoint, options = {}) {
         await authStore.checkToken()
@@ -25,10 +26,16 @@ export const useAttachmentApi = () => {
         })
         await toastStore.resetToast()
 
-        if (response.status === 401) {
-            // await authStore.refreshAccessToken()
-            // return fetchWithToken(endpoint, options)
-        }
+        if (response.status == 401) {
+            count++
+            await authStore.refreshAccessToken()
+            if (authStore.getToken()) {
+                response = await fetch(`${url}${endpoint}`, {
+                    ...options,
+                    headers,
+                })
+            }
+        } else count = 0
 
         const contentType = response.headers.get('content-type')
         if (contentType && contentType.includes('application/json')) {

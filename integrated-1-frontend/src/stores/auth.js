@@ -54,18 +54,11 @@ export const useAuthStore = defineStore('auth', () => {
         return userTokenObject
     }
 
-    const clearToken = () => {
-        localStorage.removeItem('authData')
-        accessToken.value = ''
-        refreshToken.value = ''
-        typeLogin.value = ''
-        isLogin.value = false
-    }
-
     const getLoginStatus = async () => {
         getToken()
         return isLogin.value
     }
+
     const getTypeOfLogin = async () => {
         getToken()
         return typeLogin.value
@@ -97,6 +90,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const refreshAccessToken = async () => {
         try {
+            console.log('Refreshing token...')
             getToken() // test
             const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
                 method: 'POST',

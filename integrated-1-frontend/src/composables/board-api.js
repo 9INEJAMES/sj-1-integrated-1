@@ -8,8 +8,12 @@ export const useBoardApi = () => {
     const url = import.meta.env.VITE_BASE_URL
     const route = useRoute()
     const router = useRouter()
+    let count = 0
 
     async function fetchWithToken(endpoint, options = {}) {
+        //re fetch more than once
+        if (count > 1) return
+
         await authStore.checkToken()
         const token = authStore.getToken()
 
@@ -29,8 +33,15 @@ export const useBoardApi = () => {
         await toastStore.resetToast()
 
         if (response.status == 401) {
-            // authStore.refreshAccessToken()
-        }
+            count++
+            await authStore.refreshAccessToken()
+            if (authStore.getToken()) {
+                response = await fetch(`${url}${endpoint}`, {
+                    ...options,
+                    headers,
+                })
+            }
+        } else count = 0
 
         return response
     }

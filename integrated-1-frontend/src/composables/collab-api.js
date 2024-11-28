@@ -7,8 +7,12 @@ export const useCollabApi = () => {
     const toastStore = useToast()
     const route = useRoute()
     const url = import.meta.env.VITE_BASE_URL
+    let count = 0
 
     async function fetchWithToken(endpoint, options = {}) {
+        //re fetch more than once
+        if (count > 1) return
+
         await authStore.checkToken()
         const token = authStore.getToken()
 
@@ -32,14 +36,16 @@ export const useCollabApi = () => {
         await toastStore.resetToast()
 
         if (response.status == 401) {
-            // authStore.refreshAccessToken()
-            if (authStore.getToken) {
+            count++
+            await authStore.refreshAccessToken()
+            if (authStore.getToken()) {
                 response = await fetch(`${url}${endpoint}`, {
                     ...options,
                     headers,
                 })
             }
-        }
+        } else count = 0
+
         return response
     }
 

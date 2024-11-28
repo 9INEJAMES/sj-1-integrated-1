@@ -8,10 +8,13 @@ export const useStatusApi = () => {
     const url = import.meta.env.VITE_BASE_URL
     const authStore = useAuthStore()
     const route = useRoute()
+    let count = 0
 
     async function fetchWithToken(endpoint, options = {}) {
-        await authStore.checkToken()
+        //re fetch more than once
+        if (count > 1) return
 
+        await authStore.checkToken()
         const token = authStore.getToken()
 
         const headers = {
@@ -31,8 +34,16 @@ export const useStatusApi = () => {
         await toastStore.resetToast()
 
         if (response.status == 401) {
-            // authStore.refreshAccessToken()
-        }
+            count++
+            await authStore.refreshAccessToken()
+            if (authStore.getToken()) {
+                response = await fetch(`${url}${endpoint}`, {
+                    ...options,
+                    headers,
+                })
+            }
+        } else count = 0
+
         return response
     }
 
