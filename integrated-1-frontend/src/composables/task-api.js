@@ -115,17 +115,8 @@ export const useTaskApi = () => {
     async function updateTask(bid, task, files) {
         try {
             const taskData = { ...task }
-            // delete taskData.attachments
-
-            await authStore.checkToken()
-
-            const token = authStore.getToken()
-
-            const myHeaders = new Headers()
-            myHeaders.append('Authorization', `Bearer ${token}`)
 
             const formdata = new FormData()
-
             const json = JSON.stringify(taskData)
             const blob = new Blob([json], {
                 type: 'application/json',
@@ -137,29 +128,32 @@ export const useTaskApi = () => {
                     formdata.append('attachmentFiles', files[i], files[i].name)
                 }
             }
-            const requestOptions = {
+
+            const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
                 method: 'PUT',
-                headers: myHeaders,
-                body: formdata,
-                redirect: 'follow',
+                overrideHeaders: {
+                    'Authorization': `Bearer ${await authStore.getToken()}`,
+                    'Auth-Type': await authStore.getTypeOfLogin()
+                },
+                body: formdata
+            })
+
+            if (response.status >= 500) {
+                const status = statusesStore.findStatusById(task.status)
+                toastStore.changeToast('error', 'Error', `The status ${status.name} will have too many tasks. Please make progress and update the status of existing tasks first.`)
+                return
             }
-
-            fetch(`${url}/v3/boards/${bid}/tasks/${task.id}`, requestOptions)
-                .then((response) => response.text())
-                .then((result) => console.log(result))
-                .catch((error) => console.error(error))
-
-            // if (response.ok) {
-            //     const updatedTask = await response.json()
-            //     toastStore.changeToast("success", "The task has been updated")
-            //     return updatedTask
-            // } else {
-            //     const errorText = await response.text()
-            //     console.error("Error details:", errorText)
-            //     toastStore.changeToast("error", response.status >= 500 ? "Please make progress and update the status of existing tasks first." : "The update was unsuccessful")
-            // }
+            if (response.status >= 400) {
+                toastStore.changeToast('error', 'Error', 'An error has occurred, the task could not be updated.')
+                return
+            }
+            if (response.ok) {
+                const result = await response.json()
+                toastStore.changeToast('success', 'Success', 'The task has been successfully updated')
+                return result
+            }
         } catch (error) {
-            toastStore.changeToast('error', 'Error', 'The update was unsuccessful')
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the task could not be updated.')
             console.error(`Error updating task: ${error}`)
         }
     }
