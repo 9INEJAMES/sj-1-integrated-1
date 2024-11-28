@@ -29,13 +29,6 @@ public class AzureService {
 
     UserCacheService userCacheService;
 
-    public String generateAzureLoginUrl() {
-        return "https://login.microsoftonline.com/" + AZURE_TENANT_ID +
-                "/oauth2/v2.0/authorize?client_id=" + AZURE_CLIENT_ID +
-                "&response_type=code" +
-                "&redirect_uri=" + AZURE_REDIRECT_URI +
-                "&scope=openid%20profile%20email%20offline_access%20https://graph.microsoft.com/User.ReadBasic.All";
-    }
 
     @Deprecated
     public AuthResponse exchangeAuthCodeForToken(String authorizationCode) {
