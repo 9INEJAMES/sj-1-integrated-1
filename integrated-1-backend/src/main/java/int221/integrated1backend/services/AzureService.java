@@ -5,7 +5,6 @@ import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.UserCache;
 import int221.integrated1backend.exceptions.UnauthenticatedException;
 import int221.integrated1backend.models.AuthType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +28,7 @@ public class AzureService {
     private String HOST_BASE;
 
     UserCacheService userCacheService;
+
     public String generateAzureLoginUrl() {
         return "https://login.microsoftonline.com/" + AZURE_TENANT_ID +
                 "/oauth2/v2.0/authorize?client_id=" + AZURE_CLIENT_ID +
@@ -87,12 +87,13 @@ public class AzureService {
             String oid = extractJsonValue(response, "id");
             String mail = extractJsonValue(response, "mail");
             String name = extractJsonValue(response, "displayName");
-
+            System.out.println(response);
+            System.out.println(endpoint);
             if (isNullOrEmpty(oid) || isNullOrEmpty(mail) || isNullOrEmpty(name)) return null;
 
             String username = generateUsername(name);
-
-            userCacheService.save(new UserCache(oid, name, username, mail));
+            UserCache newUserCache = new UserCache(oid, name, username, mail);
+            userCacheService.save(newUserCache);
 
             return buildUser(oid, name, mail);
         } catch (IOException e) {

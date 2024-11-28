@@ -6,6 +6,7 @@ import int221.integrated1backend.models.TokenType;
 import int221.integrated1backend.services.AzureService;
 import int221.integrated1backend.services.JwtService;
 import int221.integrated1backend.services.JwtUserDetailsService;
+import int221.integrated1backend.services.UserService;
 import int221.integrated1backend.utils.Constant;
 import io.jsonwebtoken.io.IOException;
 import jakarta.servlet.FilterChain;
@@ -13,7 +14,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.spi.ErrorMessage;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -28,6 +28,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final AzureService azureService;
     private final JwtUserDetailsService userDetailsService;
+    private final UserService userService;
 
     private static final Set<String> PUBLIC_ENDPOINTS = Set.of(Constant.PUBLIC_ENDPOINTS);
 
@@ -64,6 +65,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         user.setAuthType(AuthType.AZURE);
         user.setAccessToken(token);
         setAuthentication(request, user);
+
+//        if(userService.findByEmail(user.getEmail())==null){
+//            azureService.getUserDetailsByEmail(user.getEmail(), token);
+//        }
 
         filterChain.doFilter(request, response);
     }

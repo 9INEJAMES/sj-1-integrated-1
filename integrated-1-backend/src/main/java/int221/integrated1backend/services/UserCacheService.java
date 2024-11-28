@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class UserCacheService {
+public class UserCacheService implements UserCacheInterface{
 
     private final UserCacheRepository userCacheRepository;
 

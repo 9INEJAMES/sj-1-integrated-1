@@ -39,6 +39,7 @@ public class User implements UserDetails {
 
     @Transient
     private AuthType authType = AuthType.LOCAL;
+
     @Transient
     private String accessToken;
 

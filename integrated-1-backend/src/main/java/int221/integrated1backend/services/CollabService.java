@@ -4,9 +4,9 @@ import int221.integrated1backend.dtos.AccessRightDTO;
 import int221.integrated1backend.dtos.CollabCreateInputDTO;
 import int221.integrated1backend.dtos.CollabOutputDTO;
 import int221.integrated1backend.entities.ex.User;
-import int221.integrated1backend.models.AccessRight;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Collab;
+import int221.integrated1backend.models.AccessRight;
 import int221.integrated1backend.models.CollabStatus;
 import int221.integrated1backend.repositories.in.CollabRepository;
 import org.modelmapper.ModelMapper;
@@ -50,8 +50,8 @@ public class CollabService {
         return repository.findAllByOwnerIdOrderByCreatedOn(oid);
     }
 
-    public Integer getNumOfCollab(String bId){
-        return repository.findAllByBoardIdAndStatusOrderByCreatedOn(bId,CollabStatus.JOINED).size();
+    public Integer getNumOfCollab(String bId) {
+        return repository.findAllByBoardIdAndStatusOrderByCreatedOn(bId, CollabStatus.JOINED).size();
     }
 
     public Collab getCollabOfBoard(String bId, String oId, boolean isThrowError) {
@@ -68,13 +68,11 @@ public class CollabService {
     }
 
     @Transactional("firstTransactionManager")
-    public Collab createNewCollab(Board board, CollabCreateInputDTO input) {
+    public Collab createNewCollab(Board board, CollabCreateInputDTO input, User user) {
 
         if (input == null || !Objects.equals(input.getAccessRight(), "WRITE") && !Objects.equals(input.getAccessRight(), "READ")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
-
-        User user = userService.findByEmail(input.getEmail());
 
         if (user == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User with specified email not found.");
@@ -107,14 +105,15 @@ public class CollabService {
     @Transactional("firstTransactionManager")
     public Collab updateCollabStatus(String boardId, String userId, Boolean isAccept) {
         Collab collab = getCollabOfBoard(boardId, userId, true);
-        if(isAccept){
+        if (isAccept) {
             collab.setStatus(CollabStatus.JOINED);
             repository.save(collab);
-        }else {
-            deleteCollab(boardId,userId);
+        } else {
+            deleteCollab(boardId, userId);
         }
         return collab;
     }
+
     @Transactional("firstTransactionManager")
     public Collab deleteCollab(String boardId, String userId) {
         Collab collab = getCollabOfBoard(boardId, userId, true);
