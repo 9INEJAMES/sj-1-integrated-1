@@ -5,6 +5,7 @@ import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.UserCache;
 import int221.integrated1backend.exceptions.UnauthenticatedException;
 import int221.integrated1backend.models.AuthType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Service
 public class AzureService {
@@ -27,6 +29,7 @@ public class AzureService {
     @Value("${web.host}")
     private String HOST_BASE;
 
+    @Autowired
     UserCacheService userCacheService;
 
 
@@ -120,26 +123,25 @@ public class AzureService {
     }
 
     private String buildAuthCodeRequestBody(String authorizationCode) throws UnsupportedEncodingException {
-        return String.format(
-                "grant_type=authorization_code&code=%s&redirect_uri=%s&client_id=%s&client_secret=%s",
-                URLEncoder.encode(authorizationCode, StandardCharsets.UTF_8),
-                URLEncoder.encode(AZURE_REDIRECT_URI, StandardCharsets.UTF_8),
-                URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8),
-                URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8)
-        );
+        return String.format("grant_type=authorization_code&code=%s&redirect_uri=%s&client_id=%s&client_secret=%s", URLEncoder.encode(authorizationCode, StandardCharsets.UTF_8), URLEncoder.encode(AZURE_REDIRECT_URI, StandardCharsets.UTF_8), URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8), URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8));
     }
 
     private String buildRefreshTokenRequestBody(String refreshToken) throws UnsupportedEncodingException {
-        return String.format(
-                "grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s",
-                URLEncoder.encode(refreshToken, StandardCharsets.UTF_8),
-                URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8),
-                URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8)
-        );
+        return String.format("grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s", URLEncoder.encode(refreshToken, StandardCharsets.UTF_8), URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8), URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8));
     }
 
-    private void cacheUserDetails(User user) {
+    public void cacheUserDetails(User user) {
         userCacheService.save(new UserCache(user.getOid(), user.getName(), user.getUsername(), user.getEmail()));
+
+    }
+
+    public Optional<UserCache> getCacheUserByEmail(String email) {
+        Optional<UserCache> userCache = userCacheService.findByEmail(email);
+        if (userCache == null) {
+            // Handle the case where the user is not found
+            System.out.println("User not found");
+        }
+        return userCache;
     }
 
     private AuthResponse buildAuthResponse(String accessToken, String refreshToken, AuthType authType) {
@@ -176,10 +178,7 @@ public class AzureService {
     }
 
     private String readHttpResponse(HttpURLConnection connection) throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST
-                        ? connection.getInputStream()
-                        : connection.getErrorStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST ? connection.getInputStream() : connection.getErrorStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {

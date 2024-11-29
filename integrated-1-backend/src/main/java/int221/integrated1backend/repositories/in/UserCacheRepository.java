@@ -10,4 +10,7 @@ import java.util.Optional;
 @Repository
 public interface UserCacheRepository extends JpaRepository<UserCache, String> {
     Optional<UserCache> findByEmail(String email);
+
+    Optional<UserCache> findByOid(String oid);
+
 }

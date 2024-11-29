@@ -23,28 +23,42 @@ public class BoardService {
     private ModelMapper modelMapper;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserCacheService userCacheService;
 
 
-    public BoardOutputDTOwithLimit mapOutputDTO(Board board) {//input board must have oid!!
+    public BoardOutputDTOwithLimit mapOutputDTO(Board board, String type) {//input board must have oid!!
         BoardOutputDTOwithLimit boardOutputDTO = modelMapper.map(board, BoardOutputDTOwithLimit.class);
-        boardOutputDTO.setOName(userService.findByOid(board.getOid()).getName());
+        String name = null;
+        if ("AZURE".equals(type)) {
+            userCacheService.findByOid(board.getOid()).getName();
+        } else {
+            userService.findByOid(board.getOid()).getName();
+        }
+        boardOutputDTO.setOName(name);
         return boardOutputDTO;
     }
 
-    public BoardOutputDTO mapOutputDTONoLimit(Board board) {//input board must have oid!!
+    public BoardOutputDTO mapOutputDTONoLimit(Board board, String type) {//input board must have oid!!
         BoardOutputDTO boardOutputDTO = modelMapper.map(board, BoardOutputDTO.class);
-        boardOutputDTO.setOName(userService.findByOid(board.getOid()).getName());
+        String name = null;
+        if ("AZURE".equals(type)) {
+            userCacheService.findByOid(board.getOid()).getName();
+        } else {
+            userService.findByOid(board.getOid()).getName();
+        }
+        boardOutputDTO.setOName(name);
         return boardOutputDTO;
     }
 
-    public List<BoardOutputDTOwithLimit> mapOutputDTO(List<Board> source) {
-        return source.stream().map(entity -> mapOutputDTO(entity)).collect(Collectors.toList());
+    public List<BoardOutputDTOwithLimit> mapOutputDTO(List<Board> source,String type) {
+        return source.stream().map(entity -> mapOutputDTO(entity,type)).collect(Collectors.toList());
     }
+
 
     @Transactional("firstTransactionManager")
     public Board getBoard(String id) {
-        if (id == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist");
+        if (id == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist");
 
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Board doesn't exist"));
     }

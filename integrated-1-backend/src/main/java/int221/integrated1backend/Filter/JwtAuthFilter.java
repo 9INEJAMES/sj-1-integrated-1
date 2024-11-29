@@ -67,8 +67,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         setAuthentication(request, user);
 
 //        if(userService.findByEmail(user.getEmail())==null){
-//            azureService.getUserDetailsByEmail(user.getEmail(), token);
+            azureService.cacheUserDetails(user);
 //        }
+
 
         filterChain.doFilter(request, response);
     }

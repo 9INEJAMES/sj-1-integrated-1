@@ -123,13 +123,13 @@ public class BoardControllerV3 {
         String userId = getOidFromHeader(authorizationHeader, authType);
 
         List<Board> boardList = boardService.getBoardByOId(userId);
-        List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTO(boardList);
+        List<BoardOutputDTOwithLimit> boardOutputDTOList = boardService.mapOutputDTO(boardList, authType);
         List<CollabBoardOutputDTO> collabBoards = new ArrayList<>();
 
         /////////////
         List<Collab> collabs = collabService.getAllCollabBoardByOid(userId);
         for (Collab collab : collabs) {
-            CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId())), CollabBoardOutputDTO.class);
+            CollabBoardOutputDTO collabOutputDTO = modelMapper.map(boardService.mapOutputDTO(boardService.getBoard(collab.getBoardId()), authType), CollabBoardOutputDTO.class);
             collabOutputDTO.setAccessRight(collab.getAccessRight());
             collabOutputDTO.setStatus(collab.getStatus());
             collabBoards.add(collabOutputDTO);
@@ -153,7 +153,7 @@ public class BoardControllerV3 {
         board.setOid(oid);
         Board newBoard = boardService.createNewBoard(board);
         statusService.createNewDefaultStatus(board);
-        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(newBoard);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(newBoard, authType);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(boardOutputDTO);
     }
@@ -163,7 +163,7 @@ public class BoardControllerV3 {
 
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
-        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board, authType);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -172,7 +172,7 @@ public class BoardControllerV3 {
         Board existingBoard = permissionCheck(authorizationHeader, authType, id, "put", false);
 
         Board board = boardService.updateฺBoard(id, input);
-        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board, authType);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -183,7 +183,7 @@ public class BoardControllerV3 {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Request body is missing or unreadable");
         }
         Board board = boardService.updateฺBoard(id, input);
-        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board, authType);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -197,7 +197,7 @@ public class BoardControllerV3 {
         collabService.removeAllCollabOfBoard(id);
 
         Board board = boardService.deleteBoard(id);
-        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board);
+        BoardOutputDTOwithLimit boardOutputDTO = boardService.mapOutputDTO(board, authType);
         return ResponseEntity.ok(boardOutputDTO);
     }
 
@@ -431,7 +431,8 @@ public class BoardControllerV3 {
         Board board = permissionCheck(authorizationHeader, authType, id, "post", false);
         User user = null;
         System.out.println(authType);
-        if ("AZURE".equals(authType)) user = azureService.getUserDetailsByEmail(input.getEmail(),authorizationHeader);
+        if ("AZURE".equals(authType))
+            user = modelMapper.map(azureService.getCacheUserByEmail(input.getEmail()), User.class);
 
         if (user == null) user = userService.findByEmail(input.getEmail());
 
