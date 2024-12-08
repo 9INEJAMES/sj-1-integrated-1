@@ -3,10 +3,7 @@ package int221.integrated1backend.controllers;
 import int221.integrated1backend.dtos.*;
 import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.*;
-import int221.integrated1backend.models.AccessRight;
-import int221.integrated1backend.models.CollabStatus;
-import int221.integrated1backend.models.TokenType;
-import int221.integrated1backend.models.Visibility;
+import int221.integrated1backend.models.*;
 import int221.integrated1backend.repositories.in.AttachmentRepository;
 import int221.integrated1backend.repositories.in.TaskRepository;
 import int221.integrated1backend.services.*;
@@ -427,18 +424,14 @@ public class BoardControllerV3 {
     }
 
     @PostMapping("/{id}/collabs")
-    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException, UnsupportedEncodingException {
-        Board board = permissionCheck(authorizationHeader, authType, id, "post", false);
-        User user = null;
-        System.out.println(authType);
-        if ("AZURE".equals(authType))
-            user = modelMapper.map(azureService.getCacheUserByEmail(input.getEmail()), User.class);
+    public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @RequestHeader("Auth-Type") AuthType authType, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException, UnsupportedEncodingException {
+        Board board = permissionCheck(authorizationHeader, String.valueOf(authType), id, "post", false);
 
-        if (user == null) user = userService.findByEmail(input.getEmail());
+        User user = collabService.findUserByEmail(input.getEmail(),authType,authorizationHeader.substring(7));
 
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input, user));
         String userName = null;
-        if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader, authType);
+        if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader, String.valueOf(authType));
         emailService.sendInviteEmail(input.getEmail(), userName, newCollab.getAccessRight(), board);
         return ResponseEntity.status(HttpStatus.CREATED).body(newCollab);
     }

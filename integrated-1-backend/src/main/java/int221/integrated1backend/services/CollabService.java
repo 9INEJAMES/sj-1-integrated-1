@@ -6,7 +6,9 @@ import int221.integrated1backend.dtos.CollabOutputDTO;
 import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Collab;
+import int221.integrated1backend.exceptions.NotFoundException;
 import int221.integrated1backend.models.AccessRight;
+import int221.integrated1backend.models.AuthType;
 import int221.integrated1backend.models.CollabStatus;
 import int221.integrated1backend.repositories.in.CollabRepository;
 import org.modelmapper.ModelMapper;
@@ -28,6 +30,8 @@ public class CollabService {
     private ModelMapper modelMapper;
     @Autowired
     private UserService userService;
+    @Autowired
+    private AzureService azureService;
 
     public CollabOutputDTO mapOutputDTO(Collab collab) {//input board must have oid!!
         CollabOutputDTO collabOutputDTO = modelMapper.map(collab, CollabOutputDTO.class);
@@ -125,5 +129,23 @@ public class CollabService {
     @Transactional("firstTransactionManager")
     public void removeAllCollabOfBoard(String bid) {
         repository.deleteAllByBoardId(bid);
+    }
+
+    public User findUserByEmail(String email, AuthType authType, String accessToken) {
+        User user;
+        if (authType == AuthType.AZURE) {
+            user = azureService.getUserDetailsByEmail(email, String.valueOf(accessToken));
+            if (user == null) {
+                user = userService.findByEmail(email);
+            }
+        } else {
+            user = userService.findByEmail(email);
+        }
+
+        if (user == null) {
+            throw new NotFoundException("USER NOT FOUND!!");
+        }
+
+        return user;
     }
 }

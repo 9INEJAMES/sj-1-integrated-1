@@ -84,13 +84,11 @@ public class AzureService {
             String mail = extractJsonValue(response, "mail");
             String name = extractJsonValue(response, "displayName");
             System.out.println(response);
-            System.out.println(endpoint);
             if (isNullOrEmpty(oid) || isNullOrEmpty(mail) || isNullOrEmpty(name)) return null;
+            System.out.println("USER FOUND IN AZURE!!");
 
             String username = generateUsername(name);
-            UserCache newUserCache = new UserCache(oid, name, username, mail);
-            userCacheService.save(newUserCache);
-
+            userCacheService.save(new UserCache(oid, name, username, mail));
             return buildUser(oid, name, mail);
         } catch (IOException e) {
             return null;
