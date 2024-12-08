@@ -390,8 +390,8 @@ public class BoardControllerV3 {
     @GetMapping("/{id}/collabs")
     public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
-
         List<CollabOutputDTO> collabs = collabService.mapOutputDTO(collabService.getAllCollabOfBoard(id));
+        System.out.println(collabs);
         return ResponseEntity.ok(collabs);
     }
 
@@ -426,9 +426,7 @@ public class BoardControllerV3 {
     @PostMapping("/{id}/collabs")
     public ResponseEntity<Object> createCollab(@RequestHeader(value = "Authorization") String authorizationHeader, @RequestHeader("Auth-Type") AuthType authType, @PathVariable String id, @Valid @RequestBody(required = false) CollabCreateInputDTO input) throws MessagingException, UnsupportedEncodingException {
         Board board = permissionCheck(authorizationHeader, String.valueOf(authType), id, "post", false);
-
         User user = collabService.findUserByEmail(input.getEmail(),authType,authorizationHeader.substring(7));
-
         CollabOutputDTO newCollab = collabService.mapOutputDTO(collabService.createNewCollab(board, input, user));
         String userName = null;
         if (authorizationHeader != null) userName = getNameFromHeader(authorizationHeader, String.valueOf(authType));

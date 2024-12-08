@@ -6,11 +6,14 @@ import int221.integrated1backend.dtos.CollabOutputDTO;
 import int221.integrated1backend.entities.ex.User;
 import int221.integrated1backend.entities.in.Board;
 import int221.integrated1backend.entities.in.Collab;
+import int221.integrated1backend.entities.in.UserCache;
 import int221.integrated1backend.exceptions.NotFoundException;
 import int221.integrated1backend.models.AccessRight;
 import int221.integrated1backend.models.AuthType;
 import int221.integrated1backend.models.CollabStatus;
+import int221.integrated1backend.repositories.ex.UserRepository;
 import int221.integrated1backend.repositories.in.CollabRepository;
+import int221.integrated1backend.repositories.in.UserCacheRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,13 +36,35 @@ public class CollabService {
     private UserService userService;
     @Autowired
     private AzureService azureService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserCacheRepository userCacheRepository;
+    @Autowired
+    private UserCacheService userCacheService;
 
     public CollabOutputDTO mapOutputDTO(Collab collab) {//input board must have oid!!
         CollabOutputDTO collabOutputDTO = modelMapper.map(collab, CollabOutputDTO.class);
-        User user = userService.findByOid(collab.getOwnerId());
-        collabOutputDTO.setName(user.getName());
-        collabOutputDTO.setEmail(user.getEmail());
-        collabOutputDTO.setOid(user.getOid());
+        
+        // First try to find in users table
+        User user = userRepository.findByOid(collab.getOwnerId()).orElse(null);
+        
+        if (user != null) {
+            // If found in users table, use that data
+            collabOutputDTO.setName(user.getName());
+            collabOutputDTO.setEmail(user.getEmail());
+            collabOutputDTO.setOid(user.getOid());
+        } else {
+            // If not in users table, try user_caches
+            UserCache userCache = userCacheService.findByOid(collab.getOwnerId());
+            if (userCache != null) {
+                collabOutputDTO.setName(userCache.getName());
+                collabOutputDTO.setEmail(userCache.getEmail());
+                collabOutputDTO.setOid(userCache.getOid());
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user does not exist");
+            }
+        }
         return collabOutputDTO;
     }
 

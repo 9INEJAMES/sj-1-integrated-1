@@ -32,7 +32,6 @@ export const useCollabApi = () => {
             ...options,
             headers,
         })
-
         await toastStore.resetToast()
 
         if (response.status == 401) {
@@ -45,8 +44,8 @@ export const useCollabApi = () => {
                 })
             }
         } else count = 0
-
         return response
+
     }
 
     async function getAllCollabBoard() {
@@ -95,6 +94,8 @@ export const useCollabApi = () => {
                 toastStore.changeToast('error', 'Error', 'The user does not exists.')
             } else if (response.status === 500) {
                 toastStore.changeToast('error', 'Error', 'There is a problem. Please try again later.')
+            } else if (response.status === 401) {
+                toastStore.changeToast('error', 'Error', 'The user does not exists.')
             }
             return response
         } catch (error) {

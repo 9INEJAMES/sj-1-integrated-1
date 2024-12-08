@@ -116,6 +116,65 @@ public class AzureService {
         }
     }
 
+    public User getUserDetailsByOid(String oid) {
+        try {
+            String graphEndpoint = "https://graph.microsoft.com/beta/users/" + oid;
+            String accessToken = getClientCredentialsToken();
+            
+            if (accessToken == null) {
+                return null;
+            }
+
+            HttpURLConnection connection = (HttpURLConnection) new URL(graphEndpoint).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+            connection.setRequestProperty("Accept", "application/json");
+
+            if (connection.getResponseCode() == 200) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    
+                    String userJson = result.toString();
+                    String name = extractJsonValue(userJson, "displayName");
+                    String email = extractJsonValue(userJson, "mail");
+                    String userOid = extractJsonValue(userJson, "id");
+                    
+                    if (name != null && email != null) {
+                        User user = new User();
+                        user.setOid(userOid);
+                        user.setName(name);
+                        user.setEmail(email);
+                        return user;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private String getClientCredentialsToken() {
+        try {
+            String tokenEndpoint = String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
+            String requestBody = String.format(
+                "client_id=%s&scope=https://graph.microsoft.com/.default&client_secret=%s&grant_type=client_credentials",
+                URLEncoder.encode(AZURE_CLIENT_ID, StandardCharsets.UTF_8),
+                URLEncoder.encode(AZURE_CLIENT_SECRET, StandardCharsets.UTF_8)
+            );
+
+            String response = sendPostRequest(tokenEndpoint, requestBody);
+            return extractJsonValue(response, "access_token");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private String buildTokenEndpoint() {
         return String.format("https://login.microsoftonline.com/%s/oauth2/v2.0/token", AZURE_TENANT_ID);
     }
