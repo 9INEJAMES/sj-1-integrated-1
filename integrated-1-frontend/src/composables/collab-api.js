@@ -10,7 +10,6 @@ export const useCollabApi = () => {
     let count = 0
 
     async function fetchWithToken(endpoint, options = {}) {
-        //re fetch more than once
         if (count > 1) return
 
         await authStore.checkToken()
@@ -23,8 +22,11 @@ export const useCollabApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
-            headers['Auth-Type'] = await authStore.getTypeOfLogin()
+            const loginType = await authStore.getTypeOfLogin()
+            headers['Auth-Type'] = loginType.toUpperCase()
         }
+
+        console.log('Request headers:', headers)
 
         toastStore.displayLoading()
 
@@ -38,6 +40,7 @@ export const useCollabApi = () => {
             count++
             await authStore.refreshAccessToken()
             if (authStore.getToken()) {
+                headers['Authorization'] = `Bearer ${authStore.getToken()}`
                 response = await fetch(`${url}${endpoint}`, {
                     ...options,
                     headers,
@@ -80,10 +83,19 @@ export const useCollabApi = () => {
     }
     async function addCollaborator(newCollaborator) {
         try {
+            console.log('Adding collaborator:', newCollaborator)
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`, {
                 method: 'POST',
-                body: JSON.stringify({ ...newCollaborator }),
+                body: JSON.stringify(newCollaborator)
             })
+
+            if (!response.ok) {
+                const errorText = await response.text()
+                console.log('Response status:', response.status)
+                console.log('Response headers:', Object.fromEntries([...response.headers]))
+                console.log('Error response:', errorText)
+            }
+
             if (response.ok) {
                 toastStore.changeToast('success', 'Success', 'The collaborator has been added.')
             } else if (response.status === 409) {
@@ -99,8 +111,8 @@ export const useCollabApi = () => {
             }
             return response
         } catch (error) {
+            console.error('Error adding collaborator:', error)
             toastStore.changeToast('error', 'Error', 'An error occurred, the collaborator could not be added.')
-            console.error(`Error adding collaborator: ${error}`)
         }
         return { success: false }
     }
