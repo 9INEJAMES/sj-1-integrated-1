@@ -1,17 +1,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useCollabApi } from '@/composables/collab-api'
-import { useCollabStore } from '@/stores/collab'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { useTheme } from '@/stores/theme'
 
-const themeStore = useTheme()
 const collabApi = useCollabApi()
 const route = useRoute()
 const router = useRouter()
-const authStore = useAuthStore()
-const collabStore = useCollabStore()
 const invite = ref({})
 const localTimeZone = ref('')
 const currentDate = ref('')

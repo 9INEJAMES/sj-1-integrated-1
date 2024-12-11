@@ -49,6 +49,17 @@ const deleteCollaborator = async (collaboratorId) => {
     } catch (error) {}
 }
 
+const cancelCollaborator = async (collaboratorId) => {
+    try {
+        const response = await collabApi.cancelCollaborator(route.params.bid, collaboratorId)
+        if (response.success) {
+            collabStore.removeCollaborator(collaboratorId)
+            closeModal()
+        } else {
+        }
+    } catch (error) {}
+}
+
 const updateCollaborator = async (collaboratorId, newCol) => {
     const updatedAccessRight = newCol.accessRight === 'READ' ? 'WRITE' : 'READ'
     newCol.accessRight = updatedAccessRight
@@ -63,7 +74,7 @@ const updateCollaborator = async (collaboratorId, newCol) => {
 }
 
 const deleteCollabBoard = (collabBoard) => {
-    collabApi.deleteCollabBoard(collabBoard.id, authStore.getAuthData().oid)
+    collabApi.leaveCollabBoard(collabBoard.id, authStore.getAuthData().oid)
     collabStore.removeCollabBoard(collabBoard.id)
 
     closeModal()
@@ -148,7 +159,7 @@ onMounted(() => {
                     Confirm
                 </button>
                 <button v-if="props.action === 'delete'" @click="deleteCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Delete</button>
-                <button v-if="props.action === 'cancel'" @click="deleteCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
+                <button v-if="props.action === 'cancel'" @click="cancelCollaborator(props.collaborator.oid)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'update'" @click="updateCollaborator(props.collaborator.oid, newCollaborator)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
                 <button v-if="props.action === 'leaveBoard'" @click="deleteCollabBoard(props.collabBoard)" class="px-4 py-2 text-black rounded-md bg-pink-500">Confirm</button>
 

@@ -26,7 +26,6 @@ const openModal = (action, collaborator = null, accessRight = null) => {
 
 const closeCollabModal = () => {
     // collabStore.fetchCollaborator(route.params.bid)
-
     showModal.value = false
     modalAction.value = ''
     selectedCollaborator.value = null // Clear the selected collaborator

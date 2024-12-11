@@ -9,6 +9,7 @@ import { useBoardStore } from '@/stores/board'
 import ConfirmDelete from './ConfirmDelete.vue'
 import { useBoardApi } from '@/composables/board-api'
 import { useCollabStore } from '@/stores/collab'
+import LogoutModal from './LogoutModal.vue'
 
 const isChecked = ref(false)
 const themeStore = useTheme()
@@ -22,6 +23,7 @@ const boardStore = useBoardStore()
 const boardApi = useBoardApi()
 const bName = ref('default')
 const collab = useCollabStore()
+const isLogoutPopupVisible = ref(false)
 
 const goBackHome = () => {
     if (!!authStore.checkToken()) {
@@ -53,11 +55,27 @@ watch(() => route.params.bid, updateBoardName)
 
 updateBoardName()
 
+const showLogoutPopup = () => {
+    if (!authStore.getAuthData()) {
+        logout()
+    } else {
+        isLogoutPopupVisible.value = true
+    }
+}
+
+const hideLogoutPopup = async (isLogout) => {
+    isLogoutPopupVisible.value = false
+    if (isLogout) {
+        await logout()
+    }
+}
+
 const logout = async () => {
     await authStore.logout()
     !authStore.checkToken()
     router.push({ name: 'login' })
 }
+
 const deleteModal = ref(false)
 const deleteBoard = () => {
     deleteModal.value = true
@@ -75,6 +93,7 @@ const getLoginStatus = async () => {
 </script>
 <template>
     <ConfirmDelete v-if="deleteModal" mode="board" :object="boardStore.findBoard(route.params.bid)" :number="1" @closeModal="handleDeleteModal" />
+    <LogoutModal v-if="isLogoutPopupVisible" @closeModal="hideLogoutPopup" />
     <div class="poetsen-one-regular justify-between pt-[3vh] flex px-[5vh] items-center">
         <div class="flex gap-5 items-center">
             <img
@@ -107,7 +126,7 @@ const getLoginStatus = async () => {
                         :src="`${base ? base : ''}/logout.png`"
                         alt="pig"
                         class="itbkk-sign-out w-[24px] h-[24px] transition-transform duration-300 transform hover:scale-105 flex self-center ml-1 hover:cursor-pointer"
-                        @click="logout"
+                        @click="showLogoutPopup"
                     />
                 </div>
             </div>

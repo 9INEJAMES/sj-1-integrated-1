@@ -16,7 +16,7 @@ export const useAttachmentApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
-            headers['Auth-Type'] = await authStore.getTypeOfLogin()
+            headers['Auth-Type'] = await authStore.getTypeOfLogin() || 'LOCAL'
         }
 
         toastStore.displayLoading()

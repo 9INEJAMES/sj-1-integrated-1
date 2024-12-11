@@ -91,12 +91,12 @@ public class JwtService {
     }
 
     // Get access token signing key
-    private Key getAccessKey() {
+    public Key getAccessKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(ACCESS_SECRET_KEY));
     }
 
     // Get refresh token signing key
-    private Key getRefreshKey() {
+    public Key getRefreshKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(REFRESH_SECRET_KEY));
     }
 }

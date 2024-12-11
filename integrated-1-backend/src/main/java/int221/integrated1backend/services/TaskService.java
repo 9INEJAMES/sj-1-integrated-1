@@ -144,11 +144,12 @@ public class TaskService {
         List<Task> TaskList = repository.findAllByStatus(status);
         Status newStatus = statusRepository.findById(newId).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "the specified status for task transfer does not exist"));
         Board board = boardService.getBoard(newStatus.getBoard().getId());
-
         if (board.getLimit() && !Objects.equals(newStatus.getName().toLowerCase(), "no status") && !Objects.equals(newStatus.getName().toLowerCase(), "done") && newStatus.getNoOfTasks() + TaskList.size() > board.getLimitMaximumTask()) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "CAN NOT MOVE ALL TASKS TO NEW STATUS BECAUSE ITS OVER LIMIT");
         }
+
         TaskList.stream().map(task -> task.setStatus(newStatus)).collect(Collectors.toList());
+
         return TaskList;
     }
 }

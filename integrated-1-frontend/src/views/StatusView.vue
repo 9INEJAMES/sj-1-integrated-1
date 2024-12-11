@@ -1,7 +1,6 @@
 <script setup>
 import { useStatusApi } from '@/composables/status-api'
 import StatusTable from '@/components/StatusTable.vue'
-import { useTheme } from '@/stores/theme'
 import VButton from '@/ui/VButton.vue'
 import StatusSetting from '@/components/StatusSetting.vue'
 import { ref } from 'vue'
@@ -11,7 +10,6 @@ import { onMounted } from 'vue'
 import { useTasksStore } from '@/stores/task'
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
-import BoardModal from '@/components/BoardModal.vue'
 import { useBoardApi } from '@/composables/board-api'
 import VisibleModal from '@/components/VisibleModal.vue'
 
@@ -19,14 +17,13 @@ const route = useRoute()
 const router = useRouter()
 const base = import.meta.env.VITE_BASE
 const isSettingOpen = ref(false)
-const themeStore = useTheme()
 const statusApi = useStatusApi()
 const statusStore = useStatusesStore()
 const boardStore = useBoardStore()
 const taskStore = useTasksStore()
 const authStore = useAuthStore()
 const isCanEdit = ref(false)
-const currentBoard = {}
+const currentBoard = { value: { isPublic: true } }
 const boardApi = useBoardApi()
 const isViModal = ref(false)
 const isOwner = ref(false)
