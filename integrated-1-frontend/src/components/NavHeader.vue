@@ -134,7 +134,7 @@ const getLoginStatus = async () => {
         <div class="flex flex-row items-center align-middle gap-8">
             <div class="flex justify-center items-center h-full">
                 <img
-                    v-if="checkPage(['accessDenied', 'notFound'])"
+                    v-if="checkPage(['accessDenied', 'notFound','collabInviteView'])"
                     @click="deleteBoard()"
                     :src="`${base ? base : ''}/delete${themeStore.isLight ? '' : '2'}.png`"
                     class="w-[20px] h-[20px] hover:cursor-pointer"
