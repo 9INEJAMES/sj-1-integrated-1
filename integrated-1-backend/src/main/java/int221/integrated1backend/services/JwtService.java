@@ -44,10 +44,10 @@ public class JwtService {
         return extractAllClaims(token, key).get("oid", (Class<T>) String.class);
     }
 
-    public String getClaimValueFromToken(String token, TokenType type, String claim) {
+    public String getClaimValueFromToken(String token, Key key, String claim) {
         // Parse the JWT token to get the claims
         Claims claims = Jwts.parser()
-                .setSigningKey(Objects.equals(type, TokenType.ACCESS) ?getAccessKey():getRefreshKey())
+                .setSigningKey(key)
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get(claim, String.class);
@@ -62,14 +62,12 @@ public class JwtService {
 
     }
 
-    // Validate access token (checks OID)
     public boolean validateAccessToken(String token, String oid) {
-        return oid.equals(extractClaim(token, getAccessKey())) && !isTokenExpired(token, getAccessKey());
+        return oid.equals(getClaimValueFromToken(token, getAccessKey(), "oid")) && !isTokenExpired(token, getAccessKey());
     }
 
-    // Validate refresh token (only checks expiration)
-    public boolean validateRefreshToken(String token) {
-        return !isTokenExpired(token, getRefreshKey());
+    public boolean validateRefreshToken(String token, String oid) {
+        return oid.equals(getClaimValueFromToken(token, getRefreshKey(), "oid")) && !isTokenExpired(token, getRefreshKey());
     }
 
     // Create token with expiration and key
@@ -80,10 +78,10 @@ public class JwtService {
                 "email", user.getEmail(),
                 "role", user.getRole()
         );
-        return doGenerateToken(claims, user.getUsername(), expiration, key);
+        return doGenerateToken(claims, expiration, key);
     }
 
-    private String doGenerateToken(Map<String, Object> claims, String secret, long expiration,Key key) {
+    private String doGenerateToken(Map<String, Object> claims, long expiration,Key key) {
         return Jwts.builder().setHeaderParam("typ", "JWT")
                 .setClaims(claims)
                 .setIssuer(ISS)

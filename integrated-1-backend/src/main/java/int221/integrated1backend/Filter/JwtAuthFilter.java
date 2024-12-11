@@ -66,10 +66,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         user.setAccessToken(token);
         setAuthentication(request, user);
 
-//        if(userService.findByEmail(user.getEmail())==null){
-            azureService.cacheUserDetails(user);
-//        }
-
+        azureService.cacheUserDetails(user);
 
         filterChain.doFilter(request, response);
     }
@@ -77,7 +74,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private void handleLocalAuth(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain, String token) throws IOException, ServletException, java.io.IOException {
         String oid;
 
-        oid = jwtService.getClaimValueFromToken(token, TokenType.ACCESS, "oid");
+        oid = jwtService.getClaimValueFromToken(token, jwtService.getAccessKey(), "oid");
 
 
         if (oid != null && SecurityContextHolder.getContext().getAuthentication() == null) {

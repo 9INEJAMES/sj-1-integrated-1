@@ -63,7 +63,7 @@ public class BoardControllerV3 {
         if (header == null) return null;
         String token = header.substring(7);
         if ("AZURE".equals(type)) return azureService.fetchUserDetails(token).getOid();
-        else return jwtTokenUtil.getClaimValueFromToken(token, TokenType.ACCESS, "oid");
+        else return jwtTokenUtil.getClaimValueFromToken(token, jwtTokenUtil.getAccessKey(), "oid");
 
     }
 
@@ -71,7 +71,7 @@ public class BoardControllerV3 {
         if (header == null) return null;
         String token = header.substring(7);
         if ("AZURE".equals(type)) return azureService.fetchUserDetails(token).getName();
-        else return jwtTokenUtil.getClaimValueFromToken(token, TokenType.ACCESS, "name");
+        else return jwtTokenUtil.getClaimValueFromToken(token, jwtTokenUtil.getAccessKey(), "name");
     }
 
     private AccessRight oidCheck(Board board, String userOid, String method, Visibility visibility, Boolean isCollabCanDoOperation) {

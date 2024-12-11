@@ -60,8 +60,8 @@ public class AuthenController {
             return ResponseEntity.ok(response);
         }
 
-        String oid = jwtService.getClaimValueFromToken(refreshToken, TokenType.REFRESH,"oid");
-        if (oid != null && jwtService.validateRefreshToken(refreshToken)) {
+        String oid = jwtService.getClaimValueFromToken(refreshToken, jwtService.getRefreshKey(), "oid");
+        if (oid != null && jwtService.validateRefreshToken(refreshToken, oid)) {
             User user = jwtUserDetailsService.loadUserByOid(oid);
             String newToken = jwtService.generateAccessToken(user);
 
@@ -71,25 +71,6 @@ public class AuthenController {
 
         return ResponseEntity.status(401).build();
     }
-
-//    @PostMapping("/login")
-//    public ResponseEntity<AuthResponse> authenticateAndGetToken(@Valid @RequestBody AuthRequest request) {
-//        AuthResponse response = authenticationService.login(request);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    @PostMapping("/logout")
-//    public ResponseEntity<Void> logout(HttpServletRequest request) {
-//        System.out.println("Logging out");
-//        authenticationService.logout(request);
-//        return ResponseEntity.ok().build();
-//    }
-//
-//    @PostMapping("/token")
-//    public ResponseEntity<AuthResponse> refreshToken(HttpServletRequest request) {
-//        AuthResponse response = authenticationService.refreshToken(request);
-//        return ResponseEntity.ok(response);
-//    }
 
 }
 
