@@ -11,6 +11,7 @@ const themeStore = useTheme()
 
 onMounted(async () => {
     authStore.checkToken()
+    authStore.showSuccessLoginToast()
 })
 </script>
 

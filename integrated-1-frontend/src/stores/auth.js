@@ -309,10 +309,10 @@ export const useAuthStore = defineStore('auth', () => {
         await msalInstance.logoutRedirect()
     }
 
-    const showSuccessLoginToast = () => {
+    const showSuccessLoginToast = async () => {
         const loginStatus = JSON.parse(localStorage.getItem(`loginStatus`))
         if (loginStatus?.isFirstLogin) {
-            toastStore.changeToast('success', 'Success', 'You have successfully logged in')
+            await toastStore.changeToast('success', 'Success', 'You have successfully logged in')
         }
         localStorage.setItem('loginStatus', JSON.stringify({ isFirstLogin: false }))
     }
@@ -335,6 +335,7 @@ export const useAuthStore = defineStore('auth', () => {
         loadAzureData,
         getGraphToken,
         getTypeOfLogin,
+        showSuccessLoginToast,
     }
 })
 
