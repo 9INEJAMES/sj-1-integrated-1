@@ -169,16 +169,16 @@ router.beforeEach(async (to, from, next) => {
     }
     const isLogin = await authStore.getLoginStatus()
     if (to.meta.requireOwner) {
-        if (await authStore.isOwner(to.params.bid)) {
-            next()
-        } else {
+        if ((await authStore.isOwner(to.params.bid)) == false) {
             next({ name: 'accessDenied' })
+        } else {
+            next()
         }
     } else if (to.meta.requireEditor || (to.meta.requireViewer && bStatus == 403)) {
         if ((await authStore.isOwner(to.params.bid)) || (await authStore.isEditor(to.params.bid))) next()
         else next({ name: 'accessDenied' })
     } else if (!isLogin) {
-        if (to.meta.requireLogin || to.meta.requireOwner || to.meta.requireEditor || to.meta.requireViewer) {
+        if (to.meta.requireLogin || to.meta.requireOwner || to.meta.requireEditor) {
             const redirectTo = to.fullPath
             next({ name: 'login', query: { redirectTo } })
         } else {

@@ -23,7 +23,7 @@ export const useBoardApi = () => {
         }
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
-            headers['Auth-Type'] = await authStore.getTypeOfLogin()
+            headers['Auth-Type'] = (await authStore.getTypeOfLogin()) || 'LOCAL'
         }
         toastStore.displayLoading()
         const response = await fetch(`${url}${endpoint}`, {

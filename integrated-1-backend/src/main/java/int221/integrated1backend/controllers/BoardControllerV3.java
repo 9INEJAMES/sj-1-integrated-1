@@ -108,7 +108,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/access")
-    public ResponseEntity<Object> getBoardAccess(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
+    public ResponseEntity<Object> getBoardAccess(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         AccessRightDTO output = new AccessRightDTO();
         output.setAccessRight(String.valueOf(oidCheck(board, getOidFromHeader(authorizationHeader, authType), "get", board.getVisibility(), true)));
@@ -156,7 +156,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getBoard(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
+    public ResponseEntity<Object> getBoard(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id) {
 
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
@@ -201,7 +201,7 @@ public class BoardControllerV3 {
     //Task operation
 
     @GetMapping("/{id}/tasks")
-    public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses) {
+    public ResponseEntity<Object> getTasks(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @RequestParam(defaultValue = "") String[] filterStatuses) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
         if (filterStatuses.length > 0) return ResponseEntity.ok(taskService.getAllTaskOfBoard(id, filterStatuses));
@@ -226,7 +226,7 @@ public class BoardControllerV3 {
 
     //check task id in board is exist? do it later
     @GetMapping("/{id}/tasks/{taskId}")
-    public ResponseEntity<Object> getTaskById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable Integer taskId, @PathVariable String id) {
+    public ResponseEntity<Object> getTaskById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable Integer taskId, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         Task task = taskService.findByIdAndAndBoardId(taskId, id);
         TaskOutputAllFieldDTO outputDTO = modelMapper.map(task, TaskOutputAllFieldDTO.class);
@@ -319,7 +319,7 @@ public class BoardControllerV3 {
 
     //all statuses (public)
     @GetMapping("/{id}/statuses")
-    public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
+    public ResponseEntity<Object> getAllStatus(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
         List<Status> statusList = statusService.getAllStatusByBoardId(id);
@@ -339,7 +339,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/statuses/{statusId}")
-    public ResponseEntity<Object> getStatusById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable Integer statusId) {
+    public ResponseEntity<Object> getStatusById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable Integer statusId) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
         Status status = statusService.findByID(statusId);
@@ -388,7 +388,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs")
-    public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
+    public ResponseEntity<Object> getCollab(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         List<CollabOutputDTO> collabs = collabService.mapOutputDTO(collabService.getAllCollabOfBoard(id));
         System.out.println(collabs);
@@ -396,7 +396,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs/{collab_oid}")
-    public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable String collab_oid) {
+    public ResponseEntity<Object> getCollabById(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable String collab_oid) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.getCollabOfBoard(id, collab_oid, true));
@@ -404,7 +404,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/collabs/invitation")
-    public ResponseEntity<Object> getInvitation(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id) {
+    public ResponseEntity<Object> getInvitation(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id) {
         String oid = getOidFromHeader(authorizationHeader, authType);
 
         CollabOutputDTOWithOwner collab = modelMapper.map(collabService.mapOutputDTO(collabService.getCollabOfBoard(id, oid, true)), CollabOutputDTOWithOwner.class);
@@ -416,7 +416,7 @@ public class BoardControllerV3 {
     }
 
     @PatchMapping("/{id}/collabs/invitation/{isAccept}")
-    public ResponseEntity<Object> acceptedInvite(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable Boolean isAccept) {
+    public ResponseEntity<Object> acceptedInvite(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable Boolean isAccept) {
         String oid = getOidFromHeader(authorizationHeader, authType);
 
         CollabOutputDTO collab = collabService.mapOutputDTO(collabService.updateCollabStatus(id, oid, isAccept));
@@ -460,7 +460,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<Resource> loadFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable Integer attachmentId) {
+    public ResponseEntity<Resource> loadFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         try {
             return fileService.loadFile(attachmentId);
@@ -470,7 +470,7 @@ public class BoardControllerV3 {
     }
 
     @GetMapping("/{id}/tasks/{taskId}/attachments/displays/{filename:.+}")
-    public ResponseEntity<Resource> loadFileDisplay(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable Integer taskId, @PathVariable String filename) throws UnsupportedEncodingException {
+    public ResponseEntity<Resource> loadFileDisplay(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable Integer taskId, @PathVariable String filename) throws UnsupportedEncodingException {
 
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         Resource fileResource = fileService.loadFileAsResource(taskId, filename);
@@ -484,7 +484,7 @@ public class BoardControllerV3 {
 
 
     @DeleteMapping("/{id}/tasks/{taskId}/attachments/{attachmentId}")
-    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader("Auth-Type") String authType, @PathVariable String id, @PathVariable Integer attachmentId) {
+    public ResponseEntity<String> deleteFile(@RequestHeader(value = "Authorization", required = false) String authorizationHeader, @RequestHeader(value = "Auth-type", required = false) String authType, @PathVariable String id, @PathVariable Integer attachmentId) {
         Board board = permissionCheck(authorizationHeader, authType, id, "get", true);
         try {
             String result = fileService.deleteFile(attachmentId);

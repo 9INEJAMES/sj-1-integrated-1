@@ -22,7 +22,7 @@ export const useAuthApi = () => {
             if (response.ok) {
                 const token = await response.json()
                 const userTokenObject = authStore.addToken(token.access_token, token.refresh_token, 'LOCAL') // Store token
-                toastStore.changeToast('success', 'Success', 'You have successfully logged in')
+                localStorage.setItem('loginStatus', JSON.stringify({ isFirstLogin: true })) // Set login status to true
 
                 return userTokenObject
             } else if (response.status === 400 || response.status === 401) {

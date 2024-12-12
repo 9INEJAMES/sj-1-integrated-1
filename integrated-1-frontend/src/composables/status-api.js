@@ -24,7 +24,7 @@ export const useStatusApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
-            headers['Auth-Type'] = await authStore.getTypeOfLogin()
+            headers['Auth-Type'] = (await authStore.getTypeOfLogin()) || 'LOCAL'
         }
         toastStore.displayLoading()
         const response = await fetch(`${url}/v3/boards/${endpoint}`, {
@@ -106,7 +106,6 @@ export const useStatusApi = () => {
                 method: 'DELETE',
             })
             if (response.ok) {
-                toastStore.changeToast('success', 'Success', 'The status has been deleted.')
                 return response.json()
             }
         } catch (error) {
@@ -123,8 +122,6 @@ export const useStatusApi = () => {
             if (response.ok) {
                 toastStore.changeToast('success', 'Success', `${tasks} task${tasks > 1 ? 's' : ''} have been transferred and the status has been deleted.`)
                 return response.json()
-            } else {
-                toastStore.changeToast('error', 'Error', 'can not move all taks to new status because its over limit.')
             }
         } catch (error) {
             toastStore.changeToast('error', 'Error', 'An error has occurred, the status does not exist.')

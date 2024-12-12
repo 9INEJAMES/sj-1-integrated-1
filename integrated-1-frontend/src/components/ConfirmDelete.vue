@@ -9,6 +9,7 @@ import { useBoardApi } from '@/composables/board-api'
 import { useBoardStore } from '@/stores/board'
 import { useAuthStore } from '@/stores/auth'
 import { useRoute, useRouter } from 'vue-router'
+import { useToast } from '@/stores/toast'
 
 const taskApi = useTaskApi()
 const statusApi = useStatusApi()
@@ -23,6 +24,7 @@ const authStore = useAuthStore()
 const isCanEdit = ref(false)
 const route = useRoute()
 const router = useRouter()
+const toastStore = useToast()
 
 const props = defineProps({
     mode: {
@@ -53,17 +55,20 @@ const submitDelete = async () => {
                 taskStore.removeTask(result.id)
                 emit('closeModal', true)
             } else {
-                router.push({ name: 'accessDenied' })
+                toastStore.changeToast('error', 'Error', 'An error has occurred, the task does not exist.')
             }
         } else if (props.mode == 'status') {
             if (isInUsed.value) {
                 const newStatus = statusStore.findStatusById(newStatusId.value)
                 const result = await statusApi.deleteStatusAndTransfer(route.params.bid, props.object.id, newStatus, props.object.noOfTasks)
+                await taskStore.fetchTasks(route.params.bid)
                 if (result) {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 } else {
-                    router.push({ name: 'accessDenied' })
+                    console.log('Error')
+                    toastStore.resetToast()
+                    toastStore.changeToast('error', 'Error', 'can not move all taks to new status because its over limit.')
                 }
             } else {
                 const result = await statusApi.deleteStatus(route.params.bid, props.object.id)
@@ -71,7 +76,7 @@ const submitDelete = async () => {
                     statusStore.removeStatus(props.object.id)
                     emit('closeModal', true)
                 } else {
-                    router.push({ name: 'accessDenied' })
+                    toastStore.changeToast('success', 'Success', 'The status has been deleted.')
                 }
             }
         } else if (props.mode == 'board') {
@@ -82,7 +87,7 @@ const submitDelete = async () => {
                 taskStore.resetTasks()
                 emit('closeModal', true)
             } else {
-                router.push({ name: 'accessDenied' })
+                toastStore.changeToast('error', 'Error', 'An error has occurred, the board could not be deleted.')
             }
         }
     } catch (error) {
@@ -143,7 +148,7 @@ watch(newStatusId, (newVal) => {
                         :class="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && (object.name == 'No Status' || object.name == 'Done')) || !isCanEdit ? 'disabled' : ''"
                         :disabled="(mode == 'status' && isInUsed && !isSelectNewStatus) || (mode == 'status' && (object.name == 'No Status' || object.name == 'Done')) || !isCanEdit"
                     >
-                        {{ mode == 'status' && isInUsed && (object.name !== 'No Status' && object.name !== 'Done') ? 'Transfer' : 'Confirm' }}
+                        {{ mode == 'status' && isInUsed && object.name !== 'No Status' && object.name !== 'Done' ? 'Transfer' : 'Confirm' }}
                     </button>
                 </div>
             </div>

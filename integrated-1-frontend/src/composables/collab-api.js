@@ -23,7 +23,7 @@ export const useCollabApi = () => {
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
             const loginType = await authStore.getTypeOfLogin()
-            headers['Auth-Type'] = loginType.toUpperCase()
+            headers['Auth-Type'] = loginType.toUpperCase() || 'LOCAL'
         }
 
         console.log('Request headers:', headers)
@@ -48,7 +48,6 @@ export const useCollabApi = () => {
             }
         } else count = 0
         return response
-
     }
 
     async function getAllCollabBoard() {
@@ -73,6 +72,20 @@ export const useCollabApi = () => {
             console.error(`Error deleting board: ${error}`)
         }
     }
+    async function leaveCollabBoard(bid, oid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
+                method: 'DELETE',
+            })
+            if (response.ok) {
+                toastStore.changeToast('success', 'Success', 'Leaving collab board success.')
+                return response.json()
+            }
+        } catch (error) {
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the collab board could not be deleted.')
+            console.error(`Error deleting board: ${error}`)
+        }
+    }
 
     async function getAllCollaborator() {
         try {
@@ -86,7 +99,7 @@ export const useCollabApi = () => {
             console.log('Adding collaborator:', newCollaborator)
             const response = await fetchWithToken(`/v3/boards/${route.params.bid}/collabs`, {
                 method: 'POST',
-                body: JSON.stringify(newCollaborator)
+                body: JSON.stringify(newCollaborator),
             })
 
             if (!response.ok) {
@@ -124,6 +137,25 @@ export const useCollabApi = () => {
             })
             if (response.ok) {
                 toastStore.changeToast('success', 'Success', 'The collaborator has been deleted.')
+                return { success: true, data: await response.json() }
+            } else {
+                toastStore.changeToast('error', 'Error', 'Failed to delete the collaborator.')
+                return { success: false }
+            }
+        } catch (error) {
+            toastStore.changeToast('error', 'Error', 'An error has occurred, the collaborator could not be deleted.')
+            console.error(`Error deleting collaborator: ${error}`)
+            return { success: false, error } // Return false with error info
+        }
+    }
+
+    async function cancelCollaborator(bid, oid) {
+        try {
+            const response = await fetchWithToken(`/v3/boards/${bid}/collabs/${oid}`, {
+                method: 'DELETE',
+            })
+            if (response.ok) {
+                toastStore.changeToast('success', 'Success', 'The pending invite for collaborator has been cancel.')
                 return { success: true, data: await response.json() }
             } else {
                 toastStore.changeToast('error', 'Error', 'Failed to delete the collaborator.')
@@ -183,5 +215,17 @@ export const useCollabApi = () => {
             console.error(`Error fetching collaborator: ${error}`)
         }
     }
-    return { getAllCollabBoard, deleteCollabBoard, getAllCollaborator, addCollaborator, deleteCollaborator, updateCollaborator, getCollaboratorById, getCollaboratorInvitation, updateCollabStatus }
+    return {
+        leaveCollabBoard,
+        getAllCollabBoard,
+        deleteCollabBoard,
+        getAllCollaborator,
+        addCollaborator,
+        deleteCollaborator,
+        updateCollaborator,
+        getCollaboratorById,
+        getCollaboratorInvitation,
+        updateCollabStatus,
+        cancelCollaborator,
+    }
 }

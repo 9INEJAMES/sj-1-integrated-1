@@ -79,6 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
             } else {
             }
         }
+
         return isTokenExpired()
     }
 
@@ -92,20 +93,22 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             console.log('Refreshing token...')
             getToken() // test
-            const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${refreshToken.value}`,
-                    'Auth-Type': typeLogin.value || undefined,
-                },
-            })
-            const data = await response.json()
-            if (response.ok && data.access_token) {
-                addToken(data.access_token) // Keep the same refresh token
-                return true
+            if (refreshToken.value) {
+                const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${refreshToken.value}`,
+                        'Auth-Type': typeLogin.value || 'LOCAL',
+                    },
+                })
+                const data = await response.json()
+                if (response.ok && data.access_token) {
+                    addToken(data.access_token) // Keep the same refresh token
+                    return true
+                }
+                return false
             }
-            return false
         } catch (error) {
             console.error('Error refreshing token:', error)
             return false
@@ -126,6 +129,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = async () => {
         localStorage.removeItem('authData')
+        localStorage.removeItem('loginStatus')
         if (typeLogin.value == 'AZURE') await azureLogout()
         accessToken.value = ''
         refreshToken.value = ''
@@ -199,6 +203,7 @@ export const useAuthStore = defineStore('auth', () => {
                 // console.log('access token ', idKey.secret)
 
                 addToken(accessKey.secret, refreshKey.secret, 'AZURE')
+                localStorage.setItem('loginStatus', JSON.stringify({ isFirstLogin: true }))
 
                 return account
             } catch (silentError) {
@@ -304,6 +309,14 @@ export const useAuthStore = defineStore('auth', () => {
         await msalInstance.logoutRedirect()
     }
 
+    const showSuccessLoginToast = async () => {
+        const loginStatus = JSON.parse(localStorage.getItem(`loginStatus`))
+        if (loginStatus?.isFirstLogin) {
+            await toastStore.changeToast('success', 'Success', 'You have successfully logged in')
+        }
+        localStorage.setItem('loginStatus', JSON.stringify({ isFirstLogin: false }))
+    }
+
     return {
         getLoginStatus,
         getAuthData,
@@ -322,6 +335,7 @@ export const useAuthStore = defineStore('auth', () => {
         loadAzureData,
         getGraphToken,
         getTypeOfLogin,
+        showSuccessLoginToast,
     }
 })
 

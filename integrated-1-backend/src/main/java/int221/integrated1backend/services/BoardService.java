@@ -30,10 +30,9 @@ public class BoardService {
     public BoardOutputDTOwithLimit mapOutputDTO(Board board, String type) {//input board must have oid!!
         BoardOutputDTOwithLimit boardOutputDTO = modelMapper.map(board, BoardOutputDTOwithLimit.class);
         String name = null;
-        if ("AZURE".equals(type)) {
-            userCacheService.findByOid(board.getOid()).getName();
-        } else {
-            userService.findByOid(board.getOid()).getName();
+        name = userService.findByOid(board.getOid()).getName();
+        if(name==null){
+            name = userCacheService.findByOid(board.getOid()).getName();
         }
         boardOutputDTO.setOName(name);
         return boardOutputDTO;

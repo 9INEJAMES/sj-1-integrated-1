@@ -3,8 +3,6 @@ import { ref } from 'vue'
 import TaskTable from '@/components/TaskTable.vue'
 import { useTasksStore } from '@/stores/task.js'
 import VButton from '@/ui/VButton.vue'
-import { useTaskApi } from '@/composables/task-api.js'
-import { useTheme } from '@/stores/theme'
 import StatusSetting from '@/components/StatusSetting.vue'
 import FilterModal from '@/components/FilterModal.vue'
 import { useStatusesStore } from '@/stores/status'
@@ -18,26 +16,18 @@ import VisibleModal from '@/components/VisibleModal.vue'
 const route = useRoute()
 const router = useRouter()
 const base = import.meta.env.VITE_BASE
-const taskApi = useTaskApi()
 const taskStore = useTasksStore()
 const statusStore = useStatusesStore()
 const boardStore = useBoardStore()
-const isSelectTask = ref(false)
-const themeStore = useTheme()
-const selectedTask = ref({})
 const isSettingOpen = ref(false)
 const isFilterOpen = ref(false)
 const isCanEdit = ref(false)
-const currentBoard = {}
+const currentBoard = { value: { isPublic: true } }
 const boardApi = useBoardApi()
 const isViModal = ref(false)
 const isOwner = ref(false)
 
 const authStore = useAuthStore()
-const chosenTask = async (id) => {
-    selectedTask.value = await taskApi.getTaskById(route.params.bid, id)
-    isSelectTask.value = true
-}
 onMounted(async () => {
     currentBoard.value = await boardStore.getCurrentBoard()
     currentBoard.value.isPublic = currentBoard.value.visibility === 'PRIVATE' ? false : true

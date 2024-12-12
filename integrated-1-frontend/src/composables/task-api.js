@@ -28,7 +28,7 @@ export const useTaskApi = () => {
 
         if (token) {
             headers['Authorization'] = `Bearer ${token}`
-            headers['Auth-Type'] = await authStore.getTypeOfLogin()
+            headers['Auth-Type'] = (await authStore.getTypeOfLogin()) || 'LOCAL'
         }
         toastStore.displayLoading()
         const response = await fetch(`${url}/v3/boards/${endpoint}`, {
@@ -132,10 +132,10 @@ export const useTaskApi = () => {
             const response = await fetchWithToken(`${bid}/tasks/${task.id}`, {
                 method: 'PUT',
                 overrideHeaders: {
-                    'Authorization': `Bearer ${await authStore.getToken()}`,
-                    'Auth-Type': await authStore.getTypeOfLogin()
+                    Authorization: `Bearer ${authStore.getToken()}`,
+                    'Auth-Type': (await authStore.getTypeOfLogin()) || 'LOCAL',
                 },
-                body: formdata
+                body: formdata,
             })
 
             if (response.status >= 500) {
@@ -164,7 +164,6 @@ export const useTaskApi = () => {
             })
 
             if (response.status >= 400) {
-                toastStore.changeToast('error', 'Error', 'An error has occurred, the task does not exist.')
                 return
             }
             if (response.ok) {
