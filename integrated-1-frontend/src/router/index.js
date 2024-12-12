@@ -42,7 +42,7 @@ const router = createRouter({
             path: '/board',
             name: 'boardView',
             component: BoardView,
-            meta: { requireViewer: true },
+            meta: { requireLogin: true }, //requireViewer
 
             children: [
                 {
@@ -177,6 +177,7 @@ router.beforeEach(async (to, from, next) => {
     } else if (to.meta.requireEditor || (to.meta.requireViewer && bStatus == 403)) {
         if ((await authStore.isOwner(to.params.bid)) || (await authStore.isEditor(to.params.bid))) next()
         else next({ name: 'accessDenied' })
+        
     } else if (!isLogin) {
         if (to.meta.requireLogin || to.meta.requireOwner || to.meta.requireEditor) {
             const redirectTo = to.fullPath
