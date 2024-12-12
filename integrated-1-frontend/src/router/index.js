@@ -56,7 +56,7 @@ const router = createRouter({
                     path: 'add',
                     name: 'boardAdd',
                     component: BoardModal,
-                    // meta: { requireOwner: true },
+                    meta: { requireLogin: true },
                 },
                 {
                     path: 'delete',
